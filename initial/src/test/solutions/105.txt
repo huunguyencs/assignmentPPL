@@ -1,1 +1,1 @@
-Error Token "
+7.5,<=.,8e-9,<EOF>
