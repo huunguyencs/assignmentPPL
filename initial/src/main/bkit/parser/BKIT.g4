@@ -90,16 +90,23 @@ RIGHTBRACE:     '}';
 INTEGER_LITERAL:
     DECIMALDIGIT
     | ('0o'|'0O') [1-7] OCTALDIGIT*
-    | ('0x'|'0X') [1-9a-fA-F] HEXADECIMALDIGIT*;
+    | ('0x'|'0X') [1-9a-fA-F] HEXADECIMALDIGIT*
+    ;
 
 FLOATING_LITERAL:
     DECIMALDIGIT '.'? (EXPONENT_FLOAT | DIGIT* )?
-    | DECIMALDIGIT '.' DIGIT* EXPONENT_FLOAT;
+    | DECIMALDIGIT '.' DIGIT* EXPONENT_FLOAT
+    ;
 
 BOOLEAN_LITERAL: TRUE_ | FALSE_;
 
-STRING_LITERAL: '"' SCHAR*? '\'"' SCHAR*? '\'"' SCHAR*?  '"';
+STRING_LITERAL: UNTERMINAL_STRING '"';
 
+//COMMENT
+LINE_COMMENT: '**' ~ [\r\n]* '**' -> skip;
+BLOCK_COMMENT: '**' ~ [\n\r]* ('\n' ('*' (~ [\n\r])*)?)* '**' ->skip;
+
+//FRAGMENT
 fragment NONDIGIT: [a-zA-Z_];
 fragment DIGIT: [0-9];
 fragment NONZERODIGIT: [1-9];
@@ -113,22 +120,30 @@ fragment SIGN: [+-];
 fragment EXPONENT_FLOAT: [eE] SIGN? DIGIT+;
 
 fragment SIMPLE_ESCAPE_SEQUENCE: 
-    '\b' 
-    | '\f' 
-    | '\r' 
-    | '\n' 
-    | '\t' 
-    | '\'' 
-    | '\\';
-fragment SCHAR: (~["] | '\\' (.));
+    '\\b' 
+    | '\\f' 
+    | '\\r' 
+    | '\\n' 
+    | '\\t' 
+    | '\\\'' 
+    | '\\\\'
+    ;
+
+fragment SCHAR: 
+    ~ ["\\\r\n]
+    | SIMPLE_ESCAPE_SEQUENCE
+    ;
+fragment UNTERMINAL_STRING: '"' (SCHAR | DOUBLE_QUOTE_IN_STRING)*?;
+fragment DOUBLE_QUOTE_IN_STRING: '\'"' SCHAR*? '\'"';
 
 
-
-
-
+//SPACE_SKIP
 WS : [ \t\r\n]+ -> skip ; // skip spaces, tabs, newlines
 
+//ERROR
+UNCLOSE_STRING: UNTERMINAL_STRING;
 ERROR_CHAR: .;
-UNCLOSE_STRING: .;
-ILLEGAL_ESCAPE: .;
-UNTERMINATED_COMMENT: .;
+ILLEGAL_ESCAPE: UNTERMINAL_STRING (SIMPLE_ESCAPE_SEQUENCE| EOF);
+UNTERMINATED_COMMENT: 
+    .
+    ;
