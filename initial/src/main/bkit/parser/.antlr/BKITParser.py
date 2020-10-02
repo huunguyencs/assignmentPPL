@@ -11,7 +11,7 @@ else:
 
 def serializedATN():
     with StringIO() as buf:
-        buf.write("\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3?")
+        buf.write("\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3@")
         buf.write("\7\4\2\t\2\3\2\3\2\3\2\2\2\3\2\2\2\2\5\2\4\3\2\2\2\4\5")
         buf.write("\13\2\2\2\5\3\3\2\2\2\2")
         return buf.getvalue()
@@ -48,8 +48,9 @@ class BKITParser ( Parser ):
                       "GREATER_EQUAL_FLOAT", "LEFTPAREN", "RIGHTPAREN", 
                       "LEFTBRACKET", "RIGHTBRACKET", "COLON", "DOT", "COMMA", 
                       "SEMI", "LEFTBRACE", "RIGHTBRACE", "INTEGER_LITERAL", 
-                      "FLOATING_LITERAL", "BOOLEAN_LITERAL", "WS", "ERROR_CHAR", 
-                      "UNCLOSE_STRING", "ILLEGAL_ESCAPE", "UNTERMINATED_COMMENT" ]
+                      "FLOATING_LITERAL", "BOOLEAN_LITERAL", "STRING_LITERAL", 
+                      "WS", "ERROR_CHAR", "UNCLOSE_STRING", "ILLEGAL_ESCAPE", 
+                      "UNTERMINATED_COMMENT" ]
 
     RULE_program = 0
 
@@ -112,11 +113,12 @@ class BKITParser ( Parser ):
     INTEGER_LITERAL=54
     FLOATING_LITERAL=55
     BOOLEAN_LITERAL=56
-    WS=57
-    ERROR_CHAR=58
-    UNCLOSE_STRING=59
-    ILLEGAL_ESCAPE=60
-    UNTERMINATED_COMMENT=61
+    STRING_LITERAL=57
+    WS=58
+    ERROR_CHAR=59
+    UNCLOSE_STRING=60
+    ILLEGAL_ESCAPE=61
+    UNTERMINATED_COMMENT=62
 
     def __init__(self, input:TokenStream, output:TextIO = sys.stdout):
         super().__init__(input, output)

@@ -15,17 +15,16 @@ class LexerSuite(unittest.TestCase):
 
     def test_integer(self):
         """test integers"""
-        self.assertTrue(TestLexer.checkLexeme("4&&2","4,&&,2,<EOF>",104))
+        self.assertTrue(TestLexer.checkLexeme("\"NguyenVan \\\'\"Huu\'\"\t\"","\"NguyenVan \\\'\"Huu\'\"\t\",<EOF>",104))
 
     def test_illegal_escape(self):
         """test illegal escape"""
-        self.assertTrue(TestLexer.checkLexeme("7.5<=.8e-9","7.5,<=.,8e-9,<EOF>",105))
+        self.assertTrue(TestLexer.checkLexeme("7.5<=.8.e-9","7.5,<=.,8.e-9,<EOF>",105))
 
     def test_unterminated_string(self):
         """test unclosed string"""
-        self.assertTrue(TestLexer.checkLexeme("(12+8=/=21) || 8 != 5","(,12,+,8,=/=,21,),||,8,!=,5,<EOF>",106))
+        self.assertTrue(TestLexer.checkLexeme("(12+8=/=21.) || 8 != 5","(,12,+,8,=/=,21.,),||,8,!=,5,<EOF>",106))
 
     def test_normal_string_with_escape(self):
         """test normal string with escape"""
         self.assertTrue(TestLexer.checkLexeme("0X12 + 0o45 * 45","0X12,+,0o45,*,45,<EOF>",107))
-
