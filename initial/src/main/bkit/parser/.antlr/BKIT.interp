@@ -64,6 +64,8 @@ null
 null
 null
 null
+null
+null
 
 token symbolic names:
 null
@@ -120,13 +122,15 @@ COMMA
 SEMI
 LEFTBRACE
 RIGHTBRACE
+LITERAL
 INTEGER_LITERAL
 FLOATING_LITERAL
 BOOLEAN_LITERAL
 STRING_LITERAL
+IDENTIFIERS
+WS
 LINE_COMMENT
 BLOCK_COMMENT
-WS
 UNCLOSE_STRING
 ERROR_CHAR
 ILLEGAL_ESCAPE
@@ -137,4 +141,4 @@ program
 
 
 atn:
-[3, 24715, 42794, 33075, 47597, 16764, 15335, 30598, 22884, 3, 66, 7, 4, 2, 9, 2, 3, 2, 3, 2, 3, 2, 2, 2, 3, 2, 2, 2, 2, 5, 2, 4, 3, 2, 2, 2, 4, 5, 11, 2, 2, 2, 5, 3, 3, 2, 2, 2, 2]
+[3, 24715, 42794, 33075, 47597, 16764, 15335, 30598, 22884, 3, 68, 7, 4, 2, 9, 2, 3, 2, 3, 2, 3, 2, 2, 2, 3, 2, 2, 2, 2, 5, 2, 4, 3, 2, 2, 2, 4, 5, 11, 2, 2, 2, 5, 3, 3, 2, 2, 2, 2]

@@ -15,7 +15,7 @@ class LexerSuite(unittest.TestCase):
 
     def test_integer(self):
         """test integers"""
-        self.assertTrue(TestLexer.checkLexeme("**NguyenVan\n*Huu*\n\n** \"Huu\"","\"Huu\",<EOF>",104))
+        self.assertTrue(TestLexer.checkLexeme("**Nguyen\n*van**Huu**","<EOF>",104))
 
     def test_illegal_escape(self):
         """test illegal escape"""

@@ -11,7 +11,7 @@ else:
 
 def serializedATN():
     with StringIO() as buf:
-        buf.write("\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3B")
+        buf.write("\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3D")
         buf.write("\7\4\2\t\2\3\2\3\2\3\2\2\2\3\2\2\2\2\5\2\4\3\2\2\2\4\5")
         buf.write("\13\2\2\2\5\3\3\2\2\2\2")
         return buf.getvalue()
@@ -47,10 +47,11 @@ class BKITParser ( Parser ):
                       "LESS_FLOAT", "GREATER_FLOAT", "LESS_EQUAL_FLOAT", 
                       "GREATER_EQUAL_FLOAT", "LEFTPAREN", "RIGHTPAREN", 
                       "LEFTBRACKET", "RIGHTBRACKET", "COLON", "DOT", "COMMA", 
-                      "SEMI", "LEFTBRACE", "RIGHTBRACE", "INTEGER_LITERAL", 
+                      "SEMI", "LEFTBRACE", "RIGHTBRACE", "LITERAL", "INTEGER_LITERAL", 
                       "FLOATING_LITERAL", "BOOLEAN_LITERAL", "STRING_LITERAL", 
-                      "LINE_COMMENT", "BLOCK_COMMENT", "WS", "UNCLOSE_STRING", 
-                      "ERROR_CHAR", "ILLEGAL_ESCAPE", "UNTERMINATED_COMMENT" ]
+                      "IDENTIFIERS", "WS", "LINE_COMMENT", "BLOCK_COMMENT", 
+                      "UNCLOSE_STRING", "ERROR_CHAR", "ILLEGAL_ESCAPE", 
+                      "UNTERMINATED_COMMENT" ]
 
     RULE_program = 0
 
@@ -110,17 +111,19 @@ class BKITParser ( Parser ):
     SEMI=51
     LEFTBRACE=52
     RIGHTBRACE=53
-    INTEGER_LITERAL=54
-    FLOATING_LITERAL=55
-    BOOLEAN_LITERAL=56
-    STRING_LITERAL=57
-    LINE_COMMENT=58
-    BLOCK_COMMENT=59
+    LITERAL=54
+    INTEGER_LITERAL=55
+    FLOATING_LITERAL=56
+    BOOLEAN_LITERAL=57
+    STRING_LITERAL=58
+    IDENTIFIERS=59
     WS=60
-    UNCLOSE_STRING=61
-    ERROR_CHAR=62
-    ILLEGAL_ESCAPE=63
-    UNTERMINATED_COMMENT=64
+    LINE_COMMENT=61
+    BLOCK_COMMENT=62
+    UNCLOSE_STRING=63
+    ERROR_CHAR=64
+    ILLEGAL_ESCAPE=65
+    UNTERMINATED_COMMENT=66
 
     def __init__(self, input:TokenStream, output:TextIO = sys.stdout):
         super().__init__(input, output)
