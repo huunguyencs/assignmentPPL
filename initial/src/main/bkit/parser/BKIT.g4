@@ -50,6 +50,7 @@ FALSE_:     'Fasle';
 END_DO:     'EndDo';
 
 //OPERATORS
+ASSIGN:     '=';
 PLUS:       '+';
 PLUS_FLOAT: '+.';
 SUB:        '-';
@@ -106,6 +107,9 @@ FLOATING_LITERAL:
 BOOLEAN_LITERAL: TRUE_ | FALSE_;
 STRING_LITERAL: UNTERMINAL_STRING '"';
 
+
+
+
 IDENTIFIERS: [a-z] [0-9a-zA-Z_]*;
 
 
@@ -135,17 +139,17 @@ fragment SCHAR:
     ~ ["\\\r\n]
     | SIMPLE_ESCAPE_SEQUENCE
     ;
-fragment UNTERMINAL_STRING: '"' (SCHAR | DOUBLE_QUOTE_IN_STRING)*?;
-fragment DOUBLE_QUOTE_IN_STRING: '\'"' SCHAR*? '\'"';
+fragment UNTERMINAL_STRING: '"' (SCHAR | DOUBLE_QUOTE_IN_STRING)*;
+fragment DOUBLE_QUOTE_IN_STRING: '\'"' SCHAR* '\'"';
+
 
 
 //SKIP
 WS : [ \t\r\n]+ -> skip ; // skip spaces, tabs, newlines
-LINE_COMMENT: '**' ~ [\r\n]*? '**' -> skip;
-BLOCK_COMMENT: '**' ~ [\r\n]*?('\n' ('*' (~ [*\r\n]*))?)* '**' ->skip;
+LINE_COMMENT: '**' .*? '**' -> skip;
 
 //ERROR
 UNCLOSE_STRING: UNTERMINAL_STRING;
 ERROR_CHAR: .;
 ILLEGAL_ESCAPE: UNTERMINAL_STRING (SIMPLE_ESCAPE_SEQUENCE| EOF);
-UNTERMINATED_COMMENT: '**' ~ [\r\n]*?('\n' ('*' (~ [*\r\n]*))?)*;
+UNTERMINATED_COMMENT: '**' .*? ;

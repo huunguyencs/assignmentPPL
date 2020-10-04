@@ -31,17 +31,18 @@ class BKITParser ( Parser ):
                      "'Else'", "'ElseIf'", "'EndBody'", "'EndIf'", "'EndFor'", 
                      "'EndWhile'", "'For'", "'Function'", "'If'", "'Parameter'", 
                      "'Return'", "'Then'", "'Var'", "'While'", "'True'", 
-                     "'Fasle'", "'EndDo'", "'+'", "'+.'", "'-'", "'-.'", 
-                     "'*'", "'*.'", "'\\'", "'\\.'", "'%'", "'!'", "'&&'", 
-                     "'||'", "'=='", "<INVALID>", "'<'", "'>'", "'<='", 
-                     "'>='", "'<.'", "'>.'", "'<=.'", "'>=.'", "'('", "')'", 
-                     "'['", "']'", "':'", "'.'", "','", "';'", "'{'", "'}'" ]
+                     "'Fasle'", "'EndDo'", "'='", "'+'", "'+.'", "'-'", 
+                     "'-.'", "'*'", "'*.'", "'\\'", "'\\.'", "'%'", "'!'", 
+                     "'&&'", "'||'", "'=='", "<INVALID>", "'<'", "'>'", 
+                     "'<='", "'>='", "'<.'", "'>.'", "'<=.'", "'>=.'", "'('", 
+                     "')'", "'['", "']'", "':'", "'.'", "','", "';'", "'{'", 
+                     "'}'" ]
 
     symbolicNames = [ "<INVALID>", "BODY", "BREAK", "CONTINUE", "DO", "ELSE", 
                       "ELSE_IF", "END_BODY", "END_IF", "END_FOR", "END_WHILE", 
                       "FOR", "FUNCTION", "IF", "PARAMETER", "RETURN", "THEN", 
-                      "VAR", "WHILE", "TRUE_", "FALSE_", "END_DO", "PLUS", 
-                      "PLUS_FLOAT", "SUB", "SUB_FLOAT", "MUL", "MUL_FLOAT", 
+                      "VAR", "WHILE", "TRUE_", "FALSE_", "END_DO", "ASSIGN", 
+                      "PLUS", "PLUS_FLOAT", "SUB", "SUB_FLOAT", "MUL", "MUL_FLOAT", 
                       "DIV", "DIV_FLOAT", "MOD", "NOT", "AND", "OR", "EQUAL", 
                       "NOT_EQUAl", "LESS", "GREATER", "LESS_EQUAL", "GREATER_EQUAL", 
                       "LESS_FLOAT", "GREATER_FLOAT", "LESS_EQUAL_FLOAT", 
@@ -49,9 +50,8 @@ class BKITParser ( Parser ):
                       "LEFTBRACKET", "RIGHTBRACKET", "COLON", "DOT", "COMMA", 
                       "SEMI", "LEFTBRACE", "RIGHTBRACE", "LITERAL", "INTEGER_LITERAL", 
                       "FLOATING_LITERAL", "BOOLEAN_LITERAL", "STRING_LITERAL", 
-                      "IDENTIFIERS", "WS", "LINE_COMMENT", "BLOCK_COMMENT", 
-                      "UNCLOSE_STRING", "ERROR_CHAR", "ILLEGAL_ESCAPE", 
-                      "UNTERMINATED_COMMENT" ]
+                      "IDENTIFIERS", "WS", "LINE_COMMENT", "UNCLOSE_STRING", 
+                      "ERROR_CHAR", "ILLEGAL_ESCAPE", "UNTERMINATED_COMMENT" ]
 
     RULE_program = 0
 
@@ -79,47 +79,47 @@ class BKITParser ( Parser ):
     TRUE_=19
     FALSE_=20
     END_DO=21
-    PLUS=22
-    PLUS_FLOAT=23
-    SUB=24
-    SUB_FLOAT=25
-    MUL=26
-    MUL_FLOAT=27
-    DIV=28
-    DIV_FLOAT=29
-    MOD=30
-    NOT=31
-    AND=32
-    OR=33
-    EQUAL=34
-    NOT_EQUAl=35
-    LESS=36
-    GREATER=37
-    LESS_EQUAL=38
-    GREATER_EQUAL=39
-    LESS_FLOAT=40
-    GREATER_FLOAT=41
-    LESS_EQUAL_FLOAT=42
-    GREATER_EQUAL_FLOAT=43
-    LEFTPAREN=44
-    RIGHTPAREN=45
-    LEFTBRACKET=46
-    RIGHTBRACKET=47
-    COLON=48
-    DOT=49
-    COMMA=50
-    SEMI=51
-    LEFTBRACE=52
-    RIGHTBRACE=53
-    LITERAL=54
-    INTEGER_LITERAL=55
-    FLOATING_LITERAL=56
-    BOOLEAN_LITERAL=57
-    STRING_LITERAL=58
-    IDENTIFIERS=59
-    WS=60
-    LINE_COMMENT=61
-    BLOCK_COMMENT=62
+    ASSIGN=22
+    PLUS=23
+    PLUS_FLOAT=24
+    SUB=25
+    SUB_FLOAT=26
+    MUL=27
+    MUL_FLOAT=28
+    DIV=29
+    DIV_FLOAT=30
+    MOD=31
+    NOT=32
+    AND=33
+    OR=34
+    EQUAL=35
+    NOT_EQUAl=36
+    LESS=37
+    GREATER=38
+    LESS_EQUAL=39
+    GREATER_EQUAL=40
+    LESS_FLOAT=41
+    GREATER_FLOAT=42
+    LESS_EQUAL_FLOAT=43
+    GREATER_EQUAL_FLOAT=44
+    LEFTPAREN=45
+    RIGHTPAREN=46
+    LEFTBRACKET=47
+    RIGHTBRACKET=48
+    COLON=49
+    DOT=50
+    COMMA=51
+    SEMI=52
+    LEFTBRACE=53
+    RIGHTBRACE=54
+    LITERAL=55
+    INTEGER_LITERAL=56
+    FLOATING_LITERAL=57
+    BOOLEAN_LITERAL=58
+    STRING_LITERAL=59
+    IDENTIFIERS=60
+    WS=61
+    LINE_COMMENT=62
     UNCLOSE_STRING=63
     ERROR_CHAR=64
     ILLEGAL_ESCAPE=65

@@ -21,6 +21,7 @@ null
 'True'
 'Fasle'
 'EndDo'
+'='
 '+'
 '+.'
 '-'
@@ -65,7 +66,6 @@ null
 null
 null
 null
-null
 
 token symbolic names:
 null
@@ -90,6 +90,7 @@ WHILE
 TRUE_
 FALSE_
 END_DO
+ASSIGN
 PLUS
 PLUS_FLOAT
 SUB
@@ -130,7 +131,6 @@ STRING_LITERAL
 IDENTIFIERS
 WS
 LINE_COMMENT
-BLOCK_COMMENT
 UNCLOSE_STRING
 ERROR_CHAR
 ILLEGAL_ESCAPE
