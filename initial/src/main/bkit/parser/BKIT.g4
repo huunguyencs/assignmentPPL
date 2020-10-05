@@ -146,10 +146,10 @@ fragment DOUBLE_QUOTE_IN_STRING: '\'"' SCHAR* '\'"';
 
 //SKIP
 WS : [ \t\r\n]+ -> skip ; // skip spaces, tabs, newlines
-LINE_COMMENT: '**' .*? '**' -> skip;
+COMMENT: '**' .*? '**' -> skip;
 
 //ERROR
 UNCLOSE_STRING: UNTERMINAL_STRING;
 ERROR_CHAR: .;
 ILLEGAL_ESCAPE: UNTERMINAL_STRING (SIMPLE_ESCAPE_SEQUENCE| EOF);
-UNTERMINATED_COMMENT: '**' .*? ;
+UNTERMINATED_COMMENT: '**' (.*? | EOF );

@@ -50,7 +50,7 @@ class BKITParser ( Parser ):
                       "LEFTBRACKET", "RIGHTBRACKET", "COLON", "DOT", "COMMA", 
                       "SEMI", "LEFTBRACE", "RIGHTBRACE", "LITERAL", "INTEGER_LITERAL", 
                       "FLOATING_LITERAL", "BOOLEAN_LITERAL", "STRING_LITERAL", 
-                      "IDENTIFIERS", "WS", "LINE_COMMENT", "UNCLOSE_STRING", 
+                      "IDENTIFIERS", "WS", "COMMENT", "UNCLOSE_STRING", 
                       "ERROR_CHAR", "ILLEGAL_ESCAPE", "UNTERMINATED_COMMENT" ]
 
     RULE_program = 0
@@ -119,7 +119,7 @@ class BKITParser ( Parser ):
     STRING_LITERAL=59
     IDENTIFIERS=60
     WS=61
-    LINE_COMMENT=62
+    COMMENT=62
     UNCLOSE_STRING=63
     ERROR_CHAR=64
     ILLEGAL_ESCAPE=65

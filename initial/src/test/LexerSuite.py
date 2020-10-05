@@ -62,3 +62,63 @@ class LexerSuite(unittest.TestCase):
         out = "Unclosed String: \"hello"
         num = 10
         self.assertTrue(TestLexer.checkLexeme(inp,out,num))
+
+    def test_11(self):
+        inp = ""
+        out = "<EOF>"
+        num = 11
+        self.assertTrue(TestLexer.checkLexeme(inp,out,num))
+
+    def test_12(self):
+        inp = "VAR..."
+        out = "Error Token V"
+        num = 12
+        self.assertTrue(TestLexer.checkLexeme(inp,out,num))
+
+    def test_13(self):
+        inp = "\"'Nguyen van\""
+        out = "\"'Nguyen van\",<EOF>"
+        num = 13
+        self.assertTrue(TestLexer.checkLexeme(inp,out,num))
+
+    def test_14(self):
+        inp = "x = True;"
+        out = "x,=,True,;,<EOF>"
+        num = 14
+        self.assertTrue(TestLexer.checkLexeme(inp,out,num))
+
+    def test_15(self):
+        inp = "15e--12"
+        out = "15,e,-,-,12,<EOF>"
+        num = 15
+        self.assertTrue(TestLexer.checkLexeme(inp,out,num))
+
+    def test_16(self):
+        inp = "**thisiscomment**isTrue == True;"
+        out = "isTrue,==,True,;,<EOF>"
+        num = 16
+        self.assertTrue(TestLexer.checkLexeme(inp,out,num))
+
+    def test_17(self):
+        inp = "17.2<=.48e1"
+        out = "17.2,<=.,48e1,<EOF>"
+        num = 17
+        self.assertTrue(TestLexer.checkLexeme(inp,out,num))
+
+    def test_18(self):
+        inp = "0x12 + 0o45 - 23e0"
+        out = "0x12,+,0o45,-,23e0,<EOF>"
+        num = 18
+        self.assertTrue(TestLexer.checkLexeme(inp,out,num))
+
+    def test_19(self):
+        inp = "If(x!=1)\nThen:y=y+1;"
+        out = "If,(,x,!=,1,),Then,:,y,=,y,+,1,;,<EOF>"
+        num = 19
+        self.assertTrue(TestLexer.checkLexeme(inp,out,num))
+    
+    def test_20(self):
+        inp = "**NguyenVan*"
+        out = "Unterminated Comment"
+        num = 20
+        self.assertTrue(TestLexer.checkLexeme(inp,out,num))
