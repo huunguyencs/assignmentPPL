@@ -1,1 +1,1 @@
-nameOfStu,=,"Huu",<EOF>
+nameOfStu,=,"This is a string: ",<EOF>

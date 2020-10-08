@@ -1,1 +1,1 @@
-nameOfStu = "Huu"
+nameOfStu = "This is a string: " 

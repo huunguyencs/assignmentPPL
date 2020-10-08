@@ -1,5 +1,4 @@
-If(x=/=3 && y>6)
-	Then:
-		x=3;
-		y=6;
-EndIf.
+If(x=/=3 && y>6) Then:
+            x=3;
+            y=6;
+        EndIf.

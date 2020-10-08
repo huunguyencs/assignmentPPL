@@ -4,121 +4,107 @@ from TestUtils import TestLexer
 class LexerSuite(unittest.TestCase):
 
     def test_1(self):
-        inp = "**Hello**"
-        out = "<EOF>"
-        num = 1
-        self.assertTrue(TestLexer.checkLexeme(inp,out,num))
+        inp = """**Hello**"""
+        out = """<EOF>"""
+        self.assertTrue(TestLexer.checkLexeme(inp,out,1))
 
     def test_2(self):
-        inp = "nameOfStu = \"Huu\""
-        out = "nameOfStu,=,\"Huu\",<EOF>"
-        num = 2
-        self.assertTrue(TestLexer.checkLexeme(inp,out,num))
+        inp = """nameOfStu = "This is a string: " """
+        out = """nameOfStu,=,"This is a string: ",<EOF>"""
+        self.assertTrue(TestLexer.checkLexeme(inp,out,2))
 
     def test_3(self):
-        inp = "**Nguyen*"
-        out = "Unterminated Comment"
-        num = 3
-        self.assertTrue(TestLexer.checkLexeme(inp,out,num))
+        inp = """**Nguyen*"""
+        out = """Unterminated Comment"""
+        self.assertTrue(TestLexer.checkLexeme(inp,out,3))
 
     def test_4(self):
-        inp = "\"Nguyen Van '\"Huu'\"\""
-        out = "\"Nguyen Van '\"Huu'\"\",<EOF>"
-        num = 4
-        self.assertTrue(TestLexer.checkLexeme(inp,out,num))
+        inp = """ "Nguyen'"" """
+        out = """"Nguyen'"",<EOF>"""
+        self.assertTrue(TestLexer.checkLexeme(inp,out,4))
 
     def test_5(self):
-        inp = "x = 1.e-2 + 2.0000e+9 \. 80e9"
+        inp = """x = 1.e-2 + 2.0000e+9 \. 80e9"""
         out = "x,=,1.e-2,+,2.0000e+9,\.,80e9,<EOF>"
-        num = 5
-        self.assertTrue(TestLexer.checkLexeme(inp,out,num))
+        self.assertTrue(TestLexer.checkLexeme(inp,out,5))
 
     def test_6(self):
-        inp = "{ hehe }"
-        out = "{,hehe,},<EOF>"
-        num = 6
-        self.assertTrue(TestLexer.checkLexeme(inp,out,num))
+        inp = """{ jkd }"""
+        out = """{,jkd,},<EOF>"""
+        self.assertTrue(TestLexer.checkLexeme(inp,out,6))
 
     def test_7(self):
-        inp = "If(x=/=3 && y>6)\n\tThen:\n\t\tx=3;\n\t\ty=6;\nEndIf."
-        out = "If,(,x,=/=,3,&&,y,>,6,),Then,:,x,=,3,;,y,=,6,;,EndIf,.,<EOF>"
-        num = 7
-        self.assertTrue(TestLexer.checkLexeme(inp,out,num))
+        inp = """If(x=/=3 && y>6) Then:
+            x=3;
+            y=6;
+        EndIf."""
+        out = """If,(,x,=/=,3,&&,y,>,6,),Then,:,x,=,3,;,y,=,6,;,EndIf,.,<EOF>"""
+        self.assertTrue(TestLexer.checkLexeme(inp,out,7))
 
     def test_8(self):
-        inp = "Aabc"
+        inp = """Aabc"""
         out = "Error Token A"
-        num = 8
-        self.assertTrue(TestLexer.checkLexeme(inp,out,num))
+        self.assertTrue(TestLexer.checkLexeme(inp,out,8))
 
     def test_9(self):
-        inp = "\"nguyen van"
-        out = "Illegal Escape In String: \"nguyen van"
-        num = 9
-        self.assertTrue(TestLexer.checkLexeme(inp,out,num))
+        inp = """ "nguyen van"""
+        out = """Unclosed String: "nguyen van"""
+        self.assertTrue(TestLexer.checkLexeme(inp,out,9))
 
     def test_10(self):
-        inp = "\"hello\nAdam;"
-        out = "Unclosed String: \"hello"
-        num = 10
-        self.assertTrue(TestLexer.checkLexeme(inp,out,num))
+        inp = """ "Nguyen \\t Van\\n Huu" """
+        out = """\"Nguyen \\t Van\\n Huu\",<EOF>"""
+        self.assertTrue(TestLexer.checkLexeme(inp,out,10))
 
     def test_11(self):
-        inp = ""
-        out = "<EOF>"
-        num = 11
-        self.assertTrue(TestLexer.checkLexeme(inp,out,num))
+        inp = """ """
+        out = """<EOF>"""
+        self.assertTrue(TestLexer.checkLexeme(inp,out,11))
 
     def test_12(self):
-        inp = "VAR..."
-        out = "Error Token V"
-        num = 12
-        self.assertTrue(TestLexer.checkLexeme(inp,out,num))
+        inp = """VAR..."""
+        out = """Error Token V"""
+        self.assertTrue(TestLexer.checkLexeme(inp,out,12))
 
     def test_13(self):
-        inp = "\"'Nguyen van\""
-        out = "\"'Nguyen van\",<EOF>"
-        num = 13
-        self.assertTrue(TestLexer.checkLexeme(inp,out,num))
+        inp = """ "'Nguyen van" """
+        out = """Illegal Escape In String: "'N"""
+        self.assertTrue(TestLexer.checkLexeme(inp,out,13))
 
     def test_14(self):
-        inp = "x = True;"
-        out = "x,=,True,;,<EOF>"
-        num = 14
-        self.assertTrue(TestLexer.checkLexeme(inp,out,num))
+        inp = """x = True;"""
+        out = """x,=,True,;,<EOF>"""
+        self.assertTrue(TestLexer.checkLexeme(inp,out,14))
 
     def test_15(self):
-        inp = "15e--12"
-        out = "15,e,-,-,12,<EOF>"
-        num = 15
-        self.assertTrue(TestLexer.checkLexeme(inp,out,num))
+        inp = """15e--12"""
+        out = """15,e,-,-,12,<EOF>"""
+        self.assertTrue(TestLexer.checkLexeme(inp,out,15))
 
     def test_16(self):
-        inp = "**thisiscomment**isTrue == True;"
-        out = "isTrue,==,True,;,<EOF>"
-        num = 16
-        self.assertTrue(TestLexer.checkLexeme(inp,out,num))
+        inp = """**This
+        is
+        comment
+        **isTrue == True;"""
+        out = """isTrue,==,True,;,<EOF>"""
+        self.assertTrue(TestLexer.checkLexeme(inp,out,16))
 
     def test_17(self):
-        inp = "17.2<=.48e1"
-        out = "17.2,<=.,48e1,<EOF>"
-        num = 17
-        self.assertTrue(TestLexer.checkLexeme(inp,out,num))
+        inp = """17.2<=.48E1"""
+        out = """17.2,<=.,48E1,<EOF>"""
+        self.assertTrue(TestLexer.checkLexeme(inp,out,17))
 
     def test_18(self):
-        inp = "0x12 + 0o45 - 23e0"
-        out = "0x12,+,0o45,-,23e0,<EOF>"
-        num = 18
-        self.assertTrue(TestLexer.checkLexeme(inp,out,num))
+        inp = """0x12 + 0o45 - 23e0"""
+        out = """0x12,+,0o45,-,23e0,<EOF>"""
+        self.assertTrue(TestLexer.checkLexeme(inp,out,18))
 
     def test_19(self):
-        inp = "If(x!=1)\nThen:y=y+1;"
-        out = "If,(,x,!=,1,),Then,:,y,=,y,+,1,;,<EOF>"
-        num = 19
-        self.assertTrue(TestLexer.checkLexeme(inp,out,num))
+        inp = """If(x!=1)\nThen:y=y+1;"""
+        out = """If,(,x,!=,1,),Then,:,y,=,y,+,1,;,<EOF>"""
+        self.assertTrue(TestLexer.checkLexeme(inp,out,19))
     
     def test_20(self):
-        inp = "**NguyenVan*"
-        out = "Unterminated Comment"
-        num = 20
-        self.assertTrue(TestLexer.checkLexeme(inp,out,num))
+        inp = """str = "bkit\\kproc" """
+        out = """str,=,Illegal Escape In String: "bkit\k"""
+        self.assertTrue(TestLexer.checkLexeme(inp,out,20))

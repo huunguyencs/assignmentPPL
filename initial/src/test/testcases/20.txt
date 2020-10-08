@@ -1,1 +1,1 @@
-**NguyenVan*
+str = "bkit\kproc" 

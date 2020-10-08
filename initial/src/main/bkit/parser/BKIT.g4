@@ -26,6 +26,9 @@ options{
 
 program  : . ;
 
+
+
+
 //KEYWORDS
 BODY:       'Body';
 BREAK:      'Break';
@@ -50,67 +53,60 @@ FALSE_:     'Fasle';
 END_DO:     'EndDo';
 
 //OPERATORS
-ASSIGN:     '=';
-PLUS:       '+';
-PLUS_FLOAT: '+.';
-SUB:        '-';
-SUB_FLOAT:  '-.';
-MUL:        '*';
-MUL_FLOAT:  '*.';
-DIV:        '\\';
-DIV_FLOAT:  '\\.';
-MOD:        '%';
-NOT:        '!';
-AND:        '&&';
-OR:         '||';
-EQUAL:      '==';
-NOT_EQUAl:  '!='|'=/=';
-LESS:       '<';
-GREATER:    '>';
-LESS_EQUAL: '<=';
+ASSIGN:         '=';
+ADD:            '+';
+ADD_FLOAT:      '+.';
+SUB:            '-';
+SUB_FLOAT:      '-.';
+MUL:            '*';
+MUL_FLOAT:      '*.';
+DIV:            '\\';
+DIV_FLOAT:      '\\.';
+MOD:            '%';
+NOT:            '!';
+AND:            '&&';
+OR:             '||';
+EQUAL:          '==';
+NOT_EQUAL:      '!='|'=/=';
+LESS:           '<';
+GREATER:        '>';
+LESS_EQUAL:     '<=';
 GREATER_EQUAL:  '>=';
-LESS_FLOAT: '<.';
+LESS_FLOAT:     '<.';
 GREATER_FLOAT:  '>.';
 LESS_EQUAL_FLOAT:   '<=.';
 GREATER_EQUAL_FLOAT:'>=.';
 
 //SEPARATORS
-LEFTPAREN:      '(';
-RIGHTPAREN:     ')';
-LEFTBRACKET:    '[';
-RIGHTBRACKET:   ']';
-COLON:          ':';
-DOT:            '.';
-COMMA:          ',';
-SEMI:           ';';
-LEFTBRACE:      '{';
-RIGHTBRACE:     '}';
+LP:     '(';
+RP:     ')';
+LR:     '[';
+RR:     ']';
+CL:     ':';
+DOT:    '.';
+CM:     ',';
+SM:     ';';
+LB:     '{';
+RB:     '}';
 
 //LITERALS
-LITERAL:
-    INTEGER_LITERAL
-    | FLOATING_LITERAL
-    | BOOLEAN_LITERAL
-    | STRING_LITERAL
-    ;
 
-INTEGER_LITERAL:
+INTLIT:
     DECIMALDIGIT
     | ('0o'|'0O') [1-7] OCTALDIGIT*
     | ('0x'|'0X') [1-9a-fA-F] HEXADECIMALDIGIT*
     ;
-FLOATING_LITERAL:
-    DECIMALDIGIT '.'? (EXPONENT_FLOAT | DIGIT* )?
-    | DECIMALDIGIT '.' DIGIT* EXPONENT_FLOAT
+FLOATLIT:
+    DECIMALDIGIT '.'? EXPONENT
+    | DECIMALDIGIT '.' DIGIT+
+    | DECIMALDIGIT '.' DIGIT* EXPONENT
     ;
 
-BOOLEAN_LITERAL: TRUE_ | FALSE_;
-STRING_LITERAL: UNTERMINAL_STRING '"';
+BOOLLIT: TRUE_ | FALSE_;
+STRINGLIT: '"' SCHAR* '"';
 
 
-
-
-IDENTIFIERS: [a-z] [0-9a-zA-Z_]*;
+ID: [a-z][0-9a-zA-Z_]*;
 
 
 //FRAGMENT
@@ -124,32 +120,22 @@ fragment HEXADECIMALDIGIT: [0-9a-fA-F];
 fragment BINARYDIGIT: [01];
 
 fragment SIGN: [+-];
-fragment EXPONENT_FLOAT: [eE] SIGN? DIGIT+;
+fragment EXPONENT: [eE] SIGN? DIGIT+;
 
-fragment SIMPLE_ESCAPE_SEQUENCE: 
-    '\\b' 
-    | '\\f' 
-    | '\\r' 
-    | '\\n' 
-    | '\\t' 
-    | '\\\'' 
-    | '\\\\'
-    ;
+fragment ESC_SEQ: '\\' [btnfr'\\];
 fragment SCHAR: 
-    ~ ["\\\r\n]
-    | SIMPLE_ESCAPE_SEQUENCE
+    ~ ['"\\\r\n]
+    | ESC_SEQ
+    | '\'"'
     ;
-fragment UNTERMINAL_STRING: '"' (SCHAR | DOUBLE_QUOTE_IN_STRING)*;
-fragment DOUBLE_QUOTE_IN_STRING: '\'"' SCHAR* '\'"';
-
-
 
 //SKIP
 WS : [ \t\r\n]+ -> skip ; // skip spaces, tabs, newlines
 COMMENT: '**' .*? '**' -> skip;
 
 //ERROR
-UNCLOSE_STRING: UNTERMINAL_STRING;
+UNCLOSE_STRING: '"' SCHAR* ( [\r\n] | EOF);
 ERROR_CHAR: .;
-ILLEGAL_ESCAPE: UNTERMINAL_STRING (SIMPLE_ESCAPE_SEQUENCE| EOF);
-UNTERMINATED_COMMENT: '**' (.*? | EOF );
+ILLEGAL_ESCAPE:  '"' SCHAR* (('\\' ~[btnfr'\\]) | ('\'' ~'"'));
+UNTERMINATED_COMMENT: '**' (.*? | EOF) ;
+

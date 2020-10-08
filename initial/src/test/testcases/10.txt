@@ -1,2 +1,1 @@
-"hello
-Adam;
+ "Nguyen \t Van\n Huu" 

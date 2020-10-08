@@ -1,0 +1,82 @@
+program  -> dec
+
+dec -> var_dec 
+    | func_dec
+
+var_dec -> VAR CL id_list_init SM
+
+id_list_init -> id_init CM id_list_init
+                | id_init
+id_init -> id 
+        | id EQ exp 
+        | array_id
+        | array_id EQ arraylit
+
+array_id -> id (LR exp RR)+
+arraylit -> arrayint 
+            | arrayfloat 
+            | arraybool 
+            | arraystring
+
+func_dec -> func_name body
+            | func_name para_dec body
+
+func_name -> FUNCTION CL id
+
+para_dec -> PARAMETER CL para_list
+
+para_list -> para CM para_list
+            | para
+para -> id | array_id
+
+body -> BODY CL state_list ENDBODY DOT
+
+state_list -> assign_state
+            | func_call
+            | return_state
+            | if_state
+            | while_state
+            | for_state
+            | do_state
+            | var_dec
+            | empty
+
+
+### IF STATEMENT
+if_state -> IF exp THEN state_list elseif_block else_block ENDIF DOT
+
+elseif_block -> ELSEIF exp THEN state_list elseif_block
+                | ELSEIF exp THEN state_list
+                | empty
+
+else_block -> ELSE state_list
+            | empty
+
+
+### FOR STATEMENT
+for_state -> FOR LP init_scalar CM condition_exp CM update RP DO state_inloop ENDFOR DOT
+
+init_scalar -> id EQ exp
+
+update -> exp
+
+### WHILE STATEMENT
+while_state -> WHILE exp DO state_inloop ENDWHILE DOT
+
+### DO-WHILE STATEMENT
+do_state -> DO state_inloop WHILE exp ENDO DOT
+
+escape_state -> CONTINUE | BREAK
+
+state_inloop -> state_list state_inloop state_list
+                | state_list
+
+assign_state -> ...
+
+func_call -> ...
+
+return_state -> ...
+
+exp -> ...
+
+condition_exp -> ...

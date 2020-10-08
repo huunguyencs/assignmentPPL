@@ -1,1 +1,1 @@
-Unclosed String: "hello
+"Nguyen \t Van\n Huu",<EOF>
