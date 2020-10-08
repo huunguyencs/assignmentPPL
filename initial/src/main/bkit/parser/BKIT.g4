@@ -82,8 +82,41 @@ call: ID LP paralist? RP;
 
 ele_exp: exp index_op;
 index_op: LR exp RR (index_op)*;
-exp:;
 
+// expression
+exp: 
+    exp1 relational exp1
+    | exp1;
+exp1: exp1 (logical | adding | multiplying) exp2 | exp2;
+exp2: (NOT | SUB | SUBF) exp2 | exp3;
+exp3: exp3 LR exp RR | exp4;
+exp4: call | operands;
+operands: ID | LIT | LP exp RP;
+relational:
+        EQ 
+        | NEQ 
+        | LT 
+        | GT 
+        | LTE 
+        | GTE 
+        | LTF 
+        | GTF
+        | LTEF
+        | GTEF;
+logical:
+        AND
+        | OR;
+adding:
+        ADD
+        | ADDF
+        | SUB
+        | SUBF;
+multiplying:
+        MUL
+        | MULF
+        | DIV
+        | DIVF
+        | MOD;
 variable: ID | ele_exp;
 
 
@@ -111,29 +144,29 @@ FALSE:      'Fasle';
 ENDDO:      'EndDo';
 
 //OPERATORS
-ASSIGN:         '=';
-ADD:            '+';
-ADDF:      '+.';
-SUB:            '-';
-SUBF:      '-.';
-MUL:            '*';
-MULF:      '*.';
-DIV:            '\\';
-DIVF:      '\\.';
-MOD:            '%';
-NOT:            '!';
-AND:            '&&';
-OR:             '||';
-EQ:          '==';
-NEQ:      '!='|'=/=';
-LE:           '<';
-GT:        '>';
-LTE:     '<=';
-GTE:  '>=';
-LEF:     '<.';
-GTF:  '>.';
+AS:     '=';
+ADD:    '+';
+ADDF:   '+.';
+SUB:    '-';
+SUBF:   '-.';
+MUL:    '*';
+MULF:   '*.';
+DIV:    '\\';
+DIVF:   '\\.';
+MOD:    '%';
+NOT:    '!';
+AND:    '&&';
+OR:     '||';
+EQ:     '==';
+NEQ:    '!='|'=/=';
+LT:     '<';
+GT:     '>';
+LTE:    '<=';
+GTE:    '>=';
+LTF:    '<.';
+GTF:    '>.';
 LTEF:   '<=.';
-GTEF:'>=.';
+GTEF:   '>=.';
 
 //SEPARATORS
 LP:     '(';
@@ -148,6 +181,11 @@ LB:     '{';
 RB:     '}';
 
 //LITERALS
+LIT:
+    INTLIT
+    | FLOATLIT
+    | BOOLLIT
+    | STRINGLIT;
 
 INTLIT:
     DECIMALDIGIT
