@@ -25,14 +25,14 @@ options{
 }
 
 //Program 
-program  : declare* EOF;
+program  : declare+ EOF;
 
 declare: vardeclare | funcdeclare;
 
 //var declaration
 vardeclare: VAR CL idlistinit SM;
 idlistinit: idinit (CM idinit)*;
-idinit: variable (EQ exp)*;
+idinit: variable (AS exp)*;
 
 //function declaration
 funcdeclare: FUNCTION CL ID (PARAMETER CL paralist)? body;
@@ -55,28 +55,35 @@ stmt: stmt_assign
     | stmt_while
     | vardeclare;
 //assignment statement
-stmt_assign: variable EQ exp SM;
+stmt_assign: variable AS exp SM;
+
 //if statement
 stmt_if: IF exp THEN stmt (ELSEIF exp THEN stmt*)* (ELSE stmt*)? ENDIF DOT;
+
 //for statement
 stmt_for: FOR LP for_loop_con RP DO stmt* ENDFOR DOT;
+for_loop_con: ID AS exp CM exp CM exp;
 
-for_loop_con: ID EQ exp CM exp CM exp;
 //while statement
-stmt_while: WHILE exp DO stmt* ENDWHILE DOT;
+stmt_while: WHILE  exp  DO stmt* ENDWHILE DOT;
+
 //do-while statement
 stmt_do: DO stmt* WHILE exp ENDDO DOT;
+
 //break statement
 stmt_break: BREAK SM;
+
 //continue statement
 stmt_con: CONTINUE SM;
+
 //call_statement
 stmt_call: call SM;
+
 //return statement:;
-stmt_ret: RETURN exp;
+stmt_ret: RETURN exp SM;
 
 //call function
-call: ID LP paralist? RP;
+call: ID LP (exp (SM exp)*) RP;
 
 
 
