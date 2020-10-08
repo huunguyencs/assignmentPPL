@@ -24,9 +24,67 @@ options{
 	language=Python3;
 }
 
-program  : . ;
+//Program 
+program  : declare* EOF;
+
+declare: vardeclare | funcdeclare;
+
+//var declaration
+vardeclare: VAR CL idlistinit SM;
+idlistinit: idinit (CM idinit)*;
+idinit: variable (EQ exp)*;
+
+//function declaration
+funcdeclare: FUNCTION CL ID (PARAMETER CL paralist)? body;
+
+//paralist in function
+paralist: variable (CM variable)*;
+
+//body in function
+body: BODY CL stmt* ENDBODY DOT;
+
+//statement list
+stmt: stmt_assign
+    | stmt_break
+    | stmt_call
+    | stmt_con
+    | stmt_do
+    | stmt_for
+    | stmt_if
+    | stmt_ret
+    | stmt_while
+    | vardeclare;
+//assignment statement
+stmt_assign: variable EQ exp SM;
+//if statement
+stmt_if: IF exp THEN stmt (ELSEIF exp THEN stmt*)* (ELSE stmt*)? ENDIF DOT;
+//for statement
+stmt_for: FOR LP for_loop_con RP DO stmt* ENDFOR DOT;
+
+for_loop_con: ID EQ exp CM exp CM exp;
+//while statement
+stmt_while: WHILE exp DO stmt* ENDWHILE DOT;
+//do-while statement
+stmt_do: DO stmt* WHILE exp ENDDO DOT;
+//break statement
+stmt_break: BREAK SM;
+//continue statement
+stmt_con: CONTINUE SM;
+//call_statement
+stmt_call: call SM;
+//return statement:;
+stmt_ret: RETURN exp;
+
+//call function
+call: ID LP paralist? RP;
 
 
+
+ele_exp: exp index_op;
+index_op: LR exp RR (index_op)*;
+exp:;
+
+variable: ID | ele_exp;
 
 
 //KEYWORDS
@@ -35,11 +93,11 @@ BREAK:      'Break';
 CONTINUE:   'Continue';
 DO:         'Do';
 ELSE:       'Else';
-ELSE_IF:    'ElseIf';
-END_BODY:   'EndBody';
-END_IF:     'EndIf';
-END_FOR:    'EndFor';
-END_WHILE:  'EndWhile';
+ELSEIF:     'ElseIf';
+ENDBODY:    'EndBody';
+ENDIF:      'EndIf';
+ENDFOR:     'EndFor';
+ENDWHILE:   'EndWhile';
 FOR:        'For';
 FUNCTION:   'Function';
 IF:         'If';
@@ -48,34 +106,34 @@ RETURN:     'Return';
 THEN:       'Then';
 VAR:        'Var';
 WHILE:      'While';
-TRUE_:      'True';
-FALSE_:     'Fasle';
-END_DO:     'EndDo';
+TRUE:       'True';
+FALSE:      'Fasle';
+ENDDO:      'EndDo';
 
 //OPERATORS
 ASSIGN:         '=';
 ADD:            '+';
-ADD_FLOAT:      '+.';
+ADDF:      '+.';
 SUB:            '-';
-SUB_FLOAT:      '-.';
+SUBF:      '-.';
 MUL:            '*';
-MUL_FLOAT:      '*.';
+MULF:      '*.';
 DIV:            '\\';
-DIV_FLOAT:      '\\.';
+DIVF:      '\\.';
 MOD:            '%';
 NOT:            '!';
 AND:            '&&';
 OR:             '||';
-EQUAL:          '==';
-NOT_EQUAL:      '!='|'=/=';
-LESS:           '<';
-GREATER:        '>';
-LESS_EQUAL:     '<=';
-GREATER_EQUAL:  '>=';
-LESS_FLOAT:     '<.';
-GREATER_FLOAT:  '>.';
-LESS_EQUAL_FLOAT:   '<=.';
-GREATER_EQUAL_FLOAT:'>=.';
+EQ:          '==';
+NEQ:      '!='|'=/=';
+LE:           '<';
+GT:        '>';
+LTE:     '<=';
+GTE:  '>=';
+LEF:     '<.';
+GTF:  '>.';
+LTEF:   '<=.';
+GTEF:'>=.';
 
 //SEPARATORS
 LP:     '(';
@@ -102,7 +160,7 @@ FLOATLIT:
     | DECIMALDIGIT '.' DIGIT* EXPONENT
     ;
 
-BOOLLIT: TRUE_ | FALSE_;
+BOOLLIT: TRUE | FALSE;
 STRINGLIT: '"' SCHAR* '"';
 
 

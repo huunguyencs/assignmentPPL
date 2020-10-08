@@ -62,8 +62,8 @@ class LexerSuite(unittest.TestCase):
         self.assertTrue(TestLexer.checkLexeme(inp,out,11))
 
     def test_12(self):
-        inp = """VAR..."""
-        out = """Error Token V"""
+        inp = """Varr x;"""
+        out = """Var,r,x,;,<EOF>"""
         self.assertTrue(TestLexer.checkLexeme(inp,out,12))
 
     def test_13(self):

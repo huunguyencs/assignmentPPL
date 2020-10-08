@@ -71,7 +71,10 @@ escape_state -> CONTINUE | BREAK
 state_inloop -> state_list state_inloop state_list
                 | state_list
 
-assign_state -> ...
+assign_state -> scalar_assign
+                | array_assign
+
+scalar_assign -> 
 
 func_call -> ...
 

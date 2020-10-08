@@ -265,11 +265,11 @@ class BKITLexer(Lexer):
     CONTINUE = 3
     DO = 4
     ELSE = 5
-    ELSE_IF = 6
-    END_BODY = 7
-    END_IF = 8
-    END_FOR = 9
-    END_WHILE = 10
+    ELSEIF = 6
+    ENDBODY = 7
+    ENDIF = 8
+    ENDFOR = 9
+    ENDWHILE = 10
     FOR = 11
     FUNCTION = 12
     IF = 13
@@ -278,32 +278,32 @@ class BKITLexer(Lexer):
     THEN = 16
     VAR = 17
     WHILE = 18
-    TRUE_ = 19
-    FALSE_ = 20
-    END_DO = 21
+    TRUE = 19
+    FALSE = 20
+    ENDDO = 21
     ASSIGN = 22
     ADD = 23
-    ADD_FLOAT = 24
+    ADDF = 24
     SUB = 25
-    SUB_FLOAT = 26
+    SUBF = 26
     MUL = 27
-    MUL_FLOAT = 28
+    MULF = 28
     DIV = 29
-    DIV_FLOAT = 30
+    DIVF = 30
     MOD = 31
     NOT = 32
     AND = 33
     OR = 34
-    EQUAL = 35
-    NOT_EQUAL = 36
-    LESS = 37
-    GREATER = 38
-    LESS_EQUAL = 39
-    GREATER_EQUAL = 40
-    LESS_FLOAT = 41
-    GREATER_FLOAT = 42
-    LESS_EQUAL_FLOAT = 43
-    GREATER_EQUAL_FLOAT = 44
+    EQ = 35
+    NEQ = 36
+    LE = 37
+    GT = 38
+    LTE = 39
+    GTE = 40
+    LEF = 41
+    GTF = 42
+    LTEF = 43
+    GTEF = 44
     LP = 45
     RP = 46
     LR = 47
@@ -341,30 +341,27 @@ class BKITLexer(Lexer):
             "','", "';'", "'{'", "'}'" ]
 
     symbolicNames = [ "<INVALID>",
-            "BODY", "BREAK", "CONTINUE", "DO", "ELSE", "ELSE_IF", "END_BODY", 
-            "END_IF", "END_FOR", "END_WHILE", "FOR", "FUNCTION", "IF", "PARAMETER", 
-            "RETURN", "THEN", "VAR", "WHILE", "TRUE_", "FALSE_", "END_DO", 
-            "ASSIGN", "ADD", "ADD_FLOAT", "SUB", "SUB_FLOAT", "MUL", "MUL_FLOAT", 
-            "DIV", "DIV_FLOAT", "MOD", "NOT", "AND", "OR", "EQUAL", "NOT_EQUAL", 
-            "LESS", "GREATER", "LESS_EQUAL", "GREATER_EQUAL", "LESS_FLOAT", 
-            "GREATER_FLOAT", "LESS_EQUAL_FLOAT", "GREATER_EQUAL_FLOAT", 
-            "LP", "RP", "LR", "RR", "CL", "DOT", "CM", "SM", "LB", "RB", 
-            "INTLIT", "FLOATLIT", "BOOLLIT", "STRINGLIT", "ID", "WS", "COMMENT", 
-            "UNCLOSE_STRING", "ERROR_CHAR", "ILLEGAL_ESCAPE", "UNTERMINATED_COMMENT" ]
+            "BODY", "BREAK", "CONTINUE", "DO", "ELSE", "ELSEIF", "ENDBODY", 
+            "ENDIF", "ENDFOR", "ENDWHILE", "FOR", "FUNCTION", "IF", "PARAMETER", 
+            "RETURN", "THEN", "VAR", "WHILE", "TRUE", "FALSE", "ENDDO", 
+            "ASSIGN", "ADD", "ADDF", "SUB", "SUBF", "MUL", "MULF", "DIV", 
+            "DIVF", "MOD", "NOT", "AND", "OR", "EQ", "NEQ", "LE", "GT", 
+            "LTE", "GTE", "LEF", "GTF", "LTEF", "GTEF", "LP", "RP", "LR", 
+            "RR", "CL", "DOT", "CM", "SM", "LB", "RB", "INTLIT", "FLOATLIT", 
+            "BOOLLIT", "STRINGLIT", "ID", "WS", "COMMENT", "UNCLOSE_STRING", 
+            "ERROR_CHAR", "ILLEGAL_ESCAPE", "UNTERMINATED_COMMENT" ]
 
-    ruleNames = [ "BODY", "BREAK", "CONTINUE", "DO", "ELSE", "ELSE_IF", 
-                  "END_BODY", "END_IF", "END_FOR", "END_WHILE", "FOR", "FUNCTION", 
-                  "IF", "PARAMETER", "RETURN", "THEN", "VAR", "WHILE", "TRUE_", 
-                  "FALSE_", "END_DO", "ASSIGN", "ADD", "ADD_FLOAT", "SUB", 
-                  "SUB_FLOAT", "MUL", "MUL_FLOAT", "DIV", "DIV_FLOAT", "MOD", 
-                  "NOT", "AND", "OR", "EQUAL", "NOT_EQUAL", "LESS", "GREATER", 
-                  "LESS_EQUAL", "GREATER_EQUAL", "LESS_FLOAT", "GREATER_FLOAT", 
-                  "LESS_EQUAL_FLOAT", "GREATER_EQUAL_FLOAT", "LP", "RP", 
-                  "LR", "RR", "CL", "DOT", "CM", "SM", "LB", "RB", "INTLIT", 
-                  "FLOATLIT", "BOOLLIT", "STRINGLIT", "ID", "NONDIGIT", 
-                  "DIGIT", "NONZERODIGIT", "DECIMALDIGIT", "OCTALDIGIT", 
-                  "HEXADECIMALDIGIT", "BINARYDIGIT", "SIGN", "EXPONENT", 
-                  "ESC_SEQ", "SCHAR", "WS", "COMMENT", "UNCLOSE_STRING", 
+    ruleNames = [ "BODY", "BREAK", "CONTINUE", "DO", "ELSE", "ELSEIF", "ENDBODY", 
+                  "ENDIF", "ENDFOR", "ENDWHILE", "FOR", "FUNCTION", "IF", 
+                  "PARAMETER", "RETURN", "THEN", "VAR", "WHILE", "TRUE", 
+                  "FALSE", "ENDDO", "ASSIGN", "ADD", "ADDF", "SUB", "SUBF", 
+                  "MUL", "MULF", "DIV", "DIVF", "MOD", "NOT", "AND", "OR", 
+                  "EQ", "NEQ", "LE", "GT", "LTE", "GTE", "LEF", "GTF", "LTEF", 
+                  "GTEF", "LP", "RP", "LR", "RR", "CL", "DOT", "CM", "SM", 
+                  "LB", "RB", "INTLIT", "FLOATLIT", "BOOLLIT", "STRINGLIT", 
+                  "ID", "NONDIGIT", "DIGIT", "NONZERODIGIT", "DECIMALDIGIT", 
+                  "OCTALDIGIT", "HEXADECIMALDIGIT", "BINARYDIGIT", "SIGN", 
+                  "EXPONENT", "ESC_SEQ", "SCHAR", "WS", "COMMENT", "UNCLOSE_STRING", 
                   "ERROR_CHAR", "ILLEGAL_ESCAPE", "UNTERMINATED_COMMENT" ]
 
     grammarFileName = "BKIT.g4"
