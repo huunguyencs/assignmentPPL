@@ -47,9 +47,9 @@ Function: main
     Parameter: x
     Body:
         If x%2==0 Then
-            Return 1;
+            Return True;
         Else
-            Return 2;
+            Return False;
         EndIf.
     EndBody."""
         expect = "successful"
@@ -68,7 +68,7 @@ Function: main
         ElseIf x > 0 Then
             x = 0;
             Return 0;
-        Else Return 1;
+        Else Return False;
         EndIf.
     EndBody."""
         expect = "successful"

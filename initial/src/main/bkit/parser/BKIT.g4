@@ -27,7 +27,10 @@ options{
 //Program 
 program  : declare+ EOF;
 
-declare: vardeclare | funcdeclare;
+declare
+    : vardeclare 
+    | funcdeclare
+    ;
 
 //var declaration
 vardeclare: VAR CL idlistinit SM;
@@ -44,7 +47,8 @@ paralist: variable (CM variable)*;
 body: BODY CL stmt* ENDBODY DOT;
 
 //statement list
-stmt: stmt_assign
+stmt
+    : stmt_assign
     | stmt_break
     | stmt_call
     | stmt_con
@@ -53,7 +57,8 @@ stmt: stmt_assign
     | stmt_if
     | stmt_ret
     | stmt_while
-    | vardeclare;
+    | vardeclare
+    ;
 //assignment statement
 stmt_assign: variable AS exp SM;
 
@@ -92,54 +97,79 @@ index_op: LR exp RR (index_op)*;
 
 // expression
 
-exp: 
-    exp1 relational exp1
-    | exp1;
-exp1:
-    exp1 logical exp2
+exp
+    : exp1 relational exp1
+    | exp1
+    ;
+exp1
+    : exp1 logical exp2
     | exp1 adding exp2
     | exp1 multiplying exp2
-    | exp2;
-exp2:
-    NOT exp2
+    | exp2
+    ;
+exp2
+    : NOT exp2
     | (SUB | SUBF) exp2 
-    | exp3;
+    | exp3
+    ;
 exp3: exp3 LR exp RR | exp4;
-exp4: call | operands;
-operands: 
-    LIT 
+exp4
+    : call 
+    | operands
+    ;
+operands
+    : lit 
     | LP exp RP 
     | arraylit 
-    | ID;
-relational:
-        EQ 
-        | NEQ 
-        | LT 
-        | GT 
-        | LTE 
-        | GTE 
-        | LTF 
-        | GTF
-        | LTEF
-        | GTEF;
-logical:
-        AND
-        | OR;
-adding:
-        ADD
-        | ADDF
-        | SUB
-        | SUBF;
-multiplying:
-        MUL
-        | MULF
-        | DIV
-        | DIVF
-        | MOD;
-variable: ID | ele_exp;
-arraylit: LB arraylit (CM arraylit)* RB
-        | LB LIT (CM LIT)* RB;
+    | ID
+    ;
+relational
+    : EQ 
+    | NEQ 
+    | LT 
+    | GT 
+    | LTE 
+    | GTE 
+    | LTF 
+    | GTF
+    | LTEF
+    | GTEF
+    ;
+logical
+    :
+    AND
+    | OR
+    ;
+adding
+    : ADD
+    | ADDF
+    | SUB
+    | SUBF
+    ;
+multiplying
+    : MUL
+    | MULF
+    | DIV
+    | DIVF
+    | MOD
+    ;
+variable
+    : ID 
+    | ele_exp
+    ;
+arraylit
+    : LB arraylit (CM arraylit)* RB
+    | LB lit (CM lit)* RB
+    ;
 
+lit
+    : INTLIT
+    | FLOATLIT
+    | boollit
+    | STRINGLIT
+    ;
+
+boollit: TRUE | FALSE;
 
 //KEYWORDS
 BODY:       'Body';
@@ -204,24 +234,19 @@ RB:     '}';
 
 
 //LITERALS
-LIT:
-    INTLIT
-    | FLOATLIT
-    | BOOLLIT
-    | STRINGLIT;
 
-INTLIT:
-    DECIMALDIGIT
+INTLIT
+    : DECIMALDIGIT
     | ('0o'|'0O') [1-7] OCTALDIGIT*
     | ('0x'|'0X') [1-9a-fA-F] HEXADECIMALDIGIT*
     ;
-FLOATLIT:
-    DECIMALDIGIT '.'? EXPONENT
+FLOATLIT
+    : DECIMALDIGIT '.'? EXPONENT
     | DECIMALDIGIT '.' DIGIT+
     | DECIMALDIGIT '.' DIGIT* EXPONENT
     ;
 
-BOOLLIT: TRUE | FALSE;
+
 STRINGLIT: '"' SCHAR* '"';
 
 
@@ -242,8 +267,8 @@ fragment SIGN: [+-];
 fragment EXPONENT: [eE] SIGN? DIGIT+;
 
 fragment ESC_SEQ: '\\' [btnfr'\\];
-fragment SCHAR: 
-    ~ ['"\\\r\n]
+fragment SCHAR
+    : ~ ['"\\\r\n]
     | ESC_SEQ
     | '\'"'
     ;
