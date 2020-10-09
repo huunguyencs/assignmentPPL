@@ -58,7 +58,7 @@ stmt: stmt_assign
 stmt_assign: variable AS exp SM;
 
 //if statement
-stmt_if: IF exp THEN stmt (ELSEIF exp THEN stmt*)* (ELSE stmt*)? ENDIF DOT;
+stmt_if: IF exp THEN stmt* (ELSEIF exp THEN stmt*)* (ELSE stmt*)? ENDIF DOT;
 
 //for statement
 stmt_for: FOR LP for_loop_con RP DO stmt* ENDFOR DOT;
@@ -87,18 +87,30 @@ call: ID LP (exp (SM exp)*) RP;
 
 
 
-ele_exp: exp index_op;
+ele_exp: ID index_op;
 index_op: LR exp RR (index_op)*;
 
 // expression
+
 exp: 
     exp1 relational exp1
     | exp1;
-exp1: exp1 (logical | adding | multiplying) exp2 | exp2;
-exp2: (NOT | SUB | SUBF) exp2 | exp3;
+exp1:
+    exp1 logical exp2
+    | exp1 adding exp2
+    | exp1 multiplying exp2
+    | exp2;
+exp2:
+    NOT exp2
+    | (SUB | SUBF) exp2 
+    | exp3;
 exp3: exp3 LR exp RR | exp4;
 exp4: call | operands;
-operands: ID | LIT | LP exp RP;
+operands: 
+    LIT 
+    | LP exp RP 
+    | arraylit 
+    | ID;
 relational:
         EQ 
         | NEQ 
@@ -125,6 +137,8 @@ multiplying:
         | DIVF
         | MOD;
 variable: ID | ele_exp;
+arraylit: LB arraylit (CM arraylit)* RB
+        | LB LIT (CM LIT)* RB;
 
 
 //KEYWORDS
@@ -147,7 +161,7 @@ THEN:       'Then';
 VAR:        'Var';
 WHILE:      'While';
 TRUE:       'True';
-FALSE:      'Fasle';
+FALSE:      'False';
 ENDDO:      'EndDo';
 
 //OPERATORS
@@ -186,6 +200,8 @@ CM:     ',';
 SM:     ';';
 LB:     '{';
 RB:     '}';
+
+
 
 //LITERALS
 LIT:

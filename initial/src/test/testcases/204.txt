@@ -1,0 +1,9 @@
+Function: isEven
+    Parameter: x
+    Body:
+        If x%2==0 Then
+            Return 1;
+        Else
+            Return 2;
+        EndIf.
+    EndBody.

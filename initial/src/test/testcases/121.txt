@@ -1,4 +1,4 @@
-Var: x = true;
+Var: x = True;
 Function: fact
     Parameter: n
     Body:
@@ -13,4 +13,3 @@ Function: main
         x = 10;
         fact (x);
     EndBody.
-        

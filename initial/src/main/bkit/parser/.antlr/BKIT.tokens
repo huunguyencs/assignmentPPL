@@ -83,7 +83,7 @@ UNTERMINATED_COMMENT=66
 'Var'=17
 'While'=18
 'True'=19
-'Fasle'=20
+'False'=20
 'EndDo'=21
 '='=22
 '+'=23
