@@ -96,7 +96,7 @@ Function: main
         self.assertTrue(TestParser.checkParser(input,expect,208))
 
     def test_209(self):
-        input = """Var: x[2] = {1,2};"""
+        input = """Var: x[b[foo(2)][5]] = {1,2};"""
         expect = "successful"
         self.assertTrue(TestParser.checkParser(input,expect,209))
 
@@ -118,3 +118,66 @@ Function: main
         EndBody."""
         expect = "Error on line 1 col 9: foo"
         self.assertTrue(TestParser.checkParser(input,expect,212))
+
+    def test_213(self):
+        input = """ """
+        expect = "Error on line 1 col 1: <EOF>"
+        self.assertTrue(TestParser.checkParser(input,expect,213))
+
+    def test_214(self):
+        input = """**This is my
+*program**
+Var: x = "this is my string\\n";
+Function: check
+Parameter: y
+Body:
+    If x == y Then
+        Return True;
+    Else
+        Return 0;
+    EndIf.
+EndBody."""
+        expect = "successful"
+        self.assertTrue(TestParser.checkParser(input,expect,214))
+
+    def test_215(self):
+        input = """**No program**"""
+        expect = "Error on line 1 col 14: <EOF>"
+        self.assertTrue(TestParser.checkParser(input,expect,215))
+
+    def test_216(self):
+        input = """Var: x = 5"""
+        expect = "Error on line 1 col 10: <EOF>"
+        self.assertTrue(TestParser.checkParser(input,expect,216))
+
+    def test_217(self):
+        input = """Function: foo
+Parameter: x
+Body:
+    x = x + 1;
+    x + 1;
+EndBody."""
+        expect = "Error on line 5 col 6: +"
+        self.assertTrue(TestParser.checkParser(input,expect,217))
+
+    def test_218(self):
+        input = """Var: x == 5;
+Function: func
+Body:
+EndBody."""
+        expect = "Error on line 1 col 7: =="
+        self.assertTrue(TestParser.checkParser(input,expect,218))
+
+    def test_219(self):
+        input = """If x == 5 Then
+    x = x + 1;
+    EndIf."""
+        expect = "Error on line 1 col 0: If"
+        self.assertTrue(TestParser.checkParser(input,expect,219))
+
+    def test_220(self):
+        input = """Var: x = 5 == 6;"""
+        expect = "successful"
+        self.assertTrue(TestParser.checkParser(input,expect,220))
+
+    
