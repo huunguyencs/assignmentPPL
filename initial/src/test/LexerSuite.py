@@ -48,7 +48,7 @@ class LexerSuite(unittest.TestCase):
 
     def test_109(self):
         inp = """ "nguyen van"""
-        out = """Unclosed String: "nguyen van"""
+        out = """Unclosed String: nguyen van"""
         self.assertTrue(TestLexer.checkLexeme(inp,out,109))
 
     def test_110(self):
@@ -67,8 +67,8 @@ class LexerSuite(unittest.TestCase):
         self.assertTrue(TestLexer.checkLexeme(inp,out,112))
 
     def test_113(self):
-        inp = """ "'Nguyen van" """
-        out = """Illegal Escape In String: "'N"""
+        inp = """ "'Assignment" """
+        out = """Illegal Escape In String: 'A"""
         self.assertTrue(TestLexer.checkLexeme(inp,out,113))
 
     def test_114(self):
@@ -106,7 +106,7 @@ class LexerSuite(unittest.TestCase):
     
     def test_120(self):
         inp = """str = "bkit\kproc" """
-        out = """str,=,Illegal Escape In String: "bkit\k"""
+        out = """str,=,Illegal Escape In String: bkit\k"""
         self.assertTrue(TestLexer.checkLexeme(inp,out,120))
     
     def test_121(self):
@@ -131,7 +131,7 @@ Function: main
 
     def test_122(self):
         inp = """ "Escape\wrongstring """
-        out = """Illegal Escape In String: "Escape\w"""
+        out = """Illegal Escape In String: Escape\w"""
         self.assertTrue(TestLexer.checkLexeme(inp,out,122))
 
     def test_123(self):
@@ -196,12 +196,12 @@ Function: main
 
     def test_135(self):
         inp = """ "This is an error string\\g" """
-        out = """Illegal Escape In String: "This is an error string\\g"""
+        out = """Illegal Escape In String: This is an error string\\g"""
         self.assertTrue(TestLexer.checkLexeme(inp,out,135))
 
     def test_136(self):
         inp = """ "This is a unclose string\n" """
-        out = """Unclosed String: "This is a unclose string\n"""
+        out = """Unclosed String: This is a unclose string\n"""
         self.assertTrue(TestLexer.checkLexeme(inp,out,136))
 
     def test_137(self):
@@ -261,7 +261,7 @@ Function: main
 
     def test_148(self):
         inp = """ "\\Nguyen" """
-        out = """Illegal Escape In String: "\\N"""
+        out = """Illegal Escape In String: \\N"""
         self.assertTrue(TestLexer.checkLexeme(inp,out,148))
 
     def test_149(self):

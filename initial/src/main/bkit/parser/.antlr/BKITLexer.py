@@ -373,9 +373,15 @@ class BKITLexer(Lexer):
     def emit(self):
         tk = self.type
         result = super().emit()
-        if tk == self.UNCLOSE_STRING:       
+        if tk == self.UNCLOSE_STRING:
+            errorStr = result.text
+            if errorStr[0] == '"':
+                result.text = errorStr[1:]       
             raise UncloseString(result.text)
         elif tk == self.ILLEGAL_ESCAPE:
+            errorStr = result.text
+            if errorStr[0] == '"':
+                result.text = errorStr[1:]
             raise IllegalEscape(result.text)
         elif tk == self.ERROR_CHAR:
             raise ErrorToken(result.text)
