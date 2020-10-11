@@ -29,29 +29,40 @@ def emit(self):
 options{
 	language=Python3;
 }
-
-//Program 
+/*
+    Program
+*/
 program  : declare+ EOF;
 
+/*
+    Declaration
+*/
 declare
     : vardeclare 
     | funcdeclare
     ;
 
-//var declaration
+/*
+    Var declare
+*/
 vardeclare: VAR CL idlistinit SM;
 idlistinit: idinit (CM idinit)*;
 idinit: variable (AS exp)*;
 
-//function declaration
+/*
+    Function declare
+*/
 funcdeclare: FUNCTION CL ID (PARAMETER CL paralist)? body;
 
 //paralist in function
 paralist: variable (CM variable)*;
 
 //body in function
-body: BODY CL stmt* ENDBODY DOT;
+body: BODY CL vardeclare* stmt* ENDBODY DOT;
 
+/* 
+    Statement 
+*/
 //statement list
 stmt
     : stmt_assign
@@ -63,8 +74,8 @@ stmt
     | stmt_if
     | stmt_ret
     | stmt_while
-    | vardeclare
     ;
+
 //assignment statement
 stmt_assign: variable AS exp SM;
 
@@ -93,16 +104,10 @@ stmt_call: call SM;
 //return statement:;
 stmt_ret: RETURN exp SM;
 
-//call function
-call: ID LP (exp (CM exp)*)* RP;
 
-
-
-ele_exp: ID index_op;
-index_op: LR exp RR (index_op)*;
-
-// expression
-
+/*
+    Expression
+*/
 exp
     : exp1 relational exp1
     | exp1
@@ -123,6 +128,7 @@ exp4
     : call 
     | operands
     ;
+call: ID LP (exp (CM exp)*)* RP;
 operands
     : lit 
     | LP exp RP 
@@ -163,6 +169,13 @@ variable
     : ID 
     | ele_exp
     ;
+// array variable
+ele_exp: ID index_op;
+index_op: LR exp RR (index_op)*;
+
+/*
+    Literals
+*/
 arraylit
     : LB arraylit (CM arraylit)* RB
     | LB lit (CM lit)* RB

@@ -274,8 +274,9 @@ Function: main
         out = """Continue,;,<EOF>"""
         self.assertTrue(TestLexer.checkLexeme(inp,out,150))
 
-    
-
-    
+    def test_151(self):
+        inp ="""****Function: hello Parameter:x Body:EndBody.**"""
+        out = """Function,:,hello,Parameter,:,x,Body,:,EndBody,.,Unterminated Comment"""
+        self.assertTrue(TestLexer.checkLexeme(inp,out,151))
 
     
