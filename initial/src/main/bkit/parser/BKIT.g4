@@ -94,7 +94,7 @@ stmt_call: call SM;
 stmt_ret: RETURN exp SM;
 
 //call function
-call: ID LP (exp (SM exp)*) RP;
+call: ID LP (exp (CM exp)*)* RP;
 
 
 
@@ -127,7 +127,7 @@ operands
     : lit 
     | LP exp RP 
     | arraylit 
-    | ID
+    | variable
     ;
 relational
     : EQ 

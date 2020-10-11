@@ -180,4 +180,44 @@ EndBody."""
         expect = "successful"
         self.assertTrue(TestParser.checkParser(input,expect,220))
 
+    def test_221(self):
+        input = """Function: foo
+Body:
+    x = x+a[5][6];
+    y = -5.6e-1;
+    Return x - y;
+EndBody."""
+        expect = "successful"
+        self.assertTrue(TestParser.checkParser(input,expect,221))
+
+    def test_222(self):
+        input = """Function: helloWorld
+Parameter: x, e[2][2]
+Body:
+    a[3 + foo(2)] = a[b[2][3]] + 4;
+    writeln("Hello World\\n");
+    Return 0;
+EndBody."""
+        expect = "successful"
+        self.assertTrue(TestParser.checkParser(input,expect,222))
+
+    def test_223(self):
+        input = """Function: main
+Body:
+    **This is a comment
+    **
+    x = readln();
+    writeln(x);
+    Return -1;
+EndBody."""
+        expect = "successful"
+        self.assertTrue(TestParser.checkParser(input,expect,223))
+
+    def test_224(self):
+        input = """Var: x[a+foo(12,45)][0];"""
+        expect = "successful"
+        self.assertTrue(TestParser.checkParser(input,expect,224))
+
+    
+
     
