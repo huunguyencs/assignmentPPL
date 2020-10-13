@@ -378,10 +378,69 @@ Var: x = (True || False);"""
         expect = "successful"
         self.assertTrue(TestParser.checkParser(input,expect,252))
 
-    
+    def test_253(self):
+        input = """Var: str = "escape@@string'"";Function: length Parameter: str Body: If str =/= null Then Return len(str);EndIf.EndBody."""
+        expect = "successful"
+        self.assertTrue(TestParser.checkParser(input,expect,253))
 
-    
+    def test_254(self):
+        input = """var: t = 1;"""
+        expect = "Error on line 1 col 0: var"
+        self.assertTrue(TestParser.checkParser(input,expect,254))
 
-    
+    def test_255(self):
+        input = """Function: test Parameter: x0 Body:Return;EndBody."""
+        expect = "Error on line 1 col 40: ;"
+        self.assertTrue(TestParser.checkParser(input,expect,255))
+
+    def test_256(self):
+        input = """Function: frac Body: n = n + {1,2,3,5,6}*2;EndBody."""
+        expect = "successful"
+        self.assertTrue(TestParser.checkParser(input,expect,256))
+
+    def test_257(self):
+        input = """Function:testfor Body:For(i=0,i!=1,1) DoEndFor.EndBody."""
+        expect = "successful"
+        self.assertTrue(TestParser.checkParser(input,expect,257))
+
+    def test_258(self):
+        input = """Function: o_____o Body: Break;EndBody."""
+        expect = "successful"
+        self.assertTrue(TestParser.checkParser(input,expect,258))
+
+    def test_259(self):
+        input = """Function:a4_5 Body:DoWhilex==1EndDo.EndBody. """
+        expect = "successful"
+        self.assertTrue(TestParser.checkParser(input,expect,259))
+
+    def test_260(self):
+        input = """Function: test_exp Body: x = 0;Return foo(2+x,4.2\\.y)+goo();EndBody."""
+        expect = "successful"
+        self.assertTrue(TestParser.checkParser(input,expect,260))
+
+    def test_261(self):
+        input = """Function:Body:EndBody."""
+        expect = "Error on line 1 col 9: Body"
+        self.assertTrue(TestParser.checkParser(input,expect,261))
+
+    # def test_262(self):
+    #     input = """ """
+    #     expect = ""
+    #     self.assertTrue(TestParser.checkParser(input,expect,262))
+
+    # def test_263(self):
+    #     input = """ """
+    #     expect = ""
+    #     self.assertTrue(TestParser.checkParser(input,expect,263))
+
+    # def test_264(self):
+    #     input = """ """
+    #     expect = ""
+    #     self.assertTrue(TestParser.checkParser(input,expect,264))
+
+    # def test_265(self):
+    #     input = """ """
+    #     expect = ""
+    #     self.assertTrue(TestParser.checkParser(input,expect,265))
 
     

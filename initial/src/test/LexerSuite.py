@@ -279,4 +279,248 @@ Function: main
         out = """Function,:,hello,Parameter,:,x,Body,:,EndBody,.,Unterminated Comment"""
         self.assertTrue(TestLexer.checkLexeme(inp,out,151))
 
+    def test_152(self):
+        inp = """ "abcd'a" """
+        out = """Illegal Escape In String: abcd'a"""
+        self.assertTrue(TestLexer.checkLexeme(inp,out,152))
+    
+    def test_153(self):
+        inp = """{ ** Ambiguous ** }"""
+        out = """{,},<EOF>"""
+        self.assertTrue(TestLexer.checkLexeme(inp,out,153))
+    
+    def test_154(self):
+        inp = """Var**x=5**x=6;"""
+        out = """Var,x,=,6,;,<EOF>"""
+        self.assertTrue(TestLexer.checkLexeme(inp,out,154))
+    
+    def test_155(self):
+        inp = """If(x=5) Then ====="""
+        out = """If,(,x,=,5,),Then,==,==,=,<EOF>"""
+        self.assertTrue(TestLexer.checkLexeme(inp,out,155))
+    
+    def test_156(self):
+        inp = """ "\\\\\\" """
+        out = """Illegal Escape In String: \\\\\\\""""
+        self.assertTrue(TestLexer.checkLexeme(inp,out,156))
+    
+    def test_157(self):
+        inp = """{"abc",5,6.e-8};"""
+        out = """{,"abc",,,5,,,6.e-8,},;,<EOF>"""
+        self.assertTrue(TestLexer.checkLexeme(inp,out,157))
+    
+    def test_158(self):
+        inp = """vAR@ x = 7;"""
+        out = """vAR,Error Token @"""
+        self.assertTrue(TestLexer.checkLexeme(inp,out,158))
+    
+    def test_159(self):
+        inp = """_test"""
+        out = """Error Token _"""
+        self.assertTrue(TestLexer.checkLexeme(inp,out,159))
+    
+    def test_160(self):
+        inp = """ "escape@@string'"" """
+        out = """"escape@@string'"",<EOF>"""
+        self.assertTrue(TestLexer.checkLexeme(inp,out,160))
+    
+    def test_161(self):
+        inp = """ "helloWorld"hello"a\nThis is a string" """
+        out = """"helloWorld",hello,Unclosed String: a\n"""
+        self.assertTrue(TestLexer.checkLexeme(inp,out,161))
+    
+    def test_162(self):
+        inp = """Function: testfor Body: For(i = 0,i!=1,i=i+1) DoEndFor.EndBody."""
+        out = """Function,:,testfor,Body,:,For,(,i,=,0,,,i,!=,1,,,i,=,i,+,1,),Do,EndFor,.,EndBody,.,<EOF>"""
+        self.assertTrue(TestLexer.checkLexeme(inp,out,152))
+    
+    # def test_163(self):
+    #     inp = """ """
+    #     out = """ """
+    #     self.assertTrue(TestLexer.checkLexeme(inp,out,152))
+    
+    # def test_164(self):
+    #     inp = """ """
+    #     out = """ """
+    #     self.assertTrue(TestLexer.checkLexeme(inp,out,152))
+    
+    # def test_165(self):
+    #     inp = """ """
+    #     out = """ """
+    #     self.assertTrue(TestLexer.checkLexeme(inp,out,152))
+    
+    # def test_166(self):
+    #     inp = """ """
+    #     out = """ """
+    #     self.assertTrue(TestLexer.checkLexeme(inp,out,152))
+    
+    # def test_167(self):
+    #     inp = """ """
+    #     out = """ """
+    #     self.assertTrue(TestLexer.checkLexeme(inp,out,152))
+    
+    # def test_168(self):
+    #     inp = """ """
+    #     out = """ """
+    #     self.assertTrue(TestLexer.checkLexeme(inp,out,152))
+    
+    # def test_169(self):
+    #     inp = """ """
+    #     out = """ """
+    #     self.assertTrue(TestLexer.checkLexeme(inp,out,152))
+    
+    # def test_170(self):
+    #     inp = """ """
+    #     out = """ """
+    #     self.assertTrue(TestLexer.checkLexeme(inp,out,152))
+    
+    # def test_171(self):
+    #     inp = """ """
+    #     out = """ """
+    #     self.assertTrue(TestLexer.checkLexeme(inp,out,152))
+    
+    # def test_172(self):
+    #     inp = """ """
+    #     out = """ """
+    #     self.assertTrue(TestLexer.checkLexeme(inp,out,152))
+    
+    # def test_173(self):
+    #     inp = """ """
+    #     out = """ """
+    #     self.assertTrue(TestLexer.checkLexeme(inp,out,152))
+    
+    # def test_174(self):
+    #     inp = """ """
+    #     out = """ """
+    #     self.assertTrue(TestLexer.checkLexeme(inp,out,152))
+    
+    # def test_175(self):
+    #     inp = """ """
+    #     out = """ """
+    #     self.assertTrue(TestLexer.checkLexeme(inp,out,152))
+    
+    # def test_176(self):
+    #     inp = """ """
+    #     out = """ """
+    #     self.assertTrue(TestLexer.checkLexeme(inp,out,152))
+    
+    # def test_177(self):
+    #     inp = """ """
+    #     out = """ """
+    #     self.assertTrue(TestLexer.checkLexeme(inp,out,152))
+    
+    # def test_178(self):
+    #     inp = """ """
+    #     out = """ """
+    #     self.assertTrue(TestLexer.checkLexeme(inp,out,152))
+    
+    # def test_179(self):
+    #     inp = """ """
+    #     out = """ """
+    #     self.assertTrue(TestLexer.checkLexeme(inp,out,152))
+    
+    # def test_180(self):
+    #     inp = """ """
+    #     out = """ """
+    #     self.assertTrue(TestLexer.checkLexeme(inp,out,152))
+    
+    # def test_181(self):
+    #     inp = """ """
+    #     out = """ """
+    #     self.assertTrue(TestLexer.checkLexeme(inp,out,152))
+    
+    # def test_182(self):
+    #     inp = """ """
+    #     out = """ """
+    #     self.assertTrue(TestLexer.checkLexeme(inp,out,152))
+    
+    # def test_183(self):
+    #     inp = """ """
+    #     out = """ """
+    #     self.assertTrue(TestLexer.checkLexeme(inp,out,152))
+    
+    # def test_184(self):
+    #     inp = """ """
+    #     out = """ """
+    #     self.assertTrue(TestLexer.checkLexeme(inp,out,152))
+    
+    # def test_185(self):
+    #     inp = """ """
+    #     out = """ """
+    #     self.assertTrue(TestLexer.checkLexeme(inp,out,152))
+    
+    # def test_186(self):
+    #     inp = """ """
+    #     out = """ """
+    #     self.assertTrue(TestLexer.checkLexeme(inp,out,152))
+    
+    # def test_187(self):
+    #     inp = """ """
+    #     out = """ """
+    #     self.assertTrue(TestLexer.checkLexeme(inp,out,152))
+    
+    # def test_188(self):
+    #     inp = """ """
+    #     out = """ """
+    #     self.assertTrue(TestLexer.checkLexeme(inp,out,152))
+    
+    # def test_189(self):
+    #     inp = """ """
+    #     out = """ """
+    #     self.assertTrue(TestLexer.checkLexeme(inp,out,152))
+    
+    # def test_190(self):
+    #     inp = """ """
+    #     out = """ """
+    #     self.assertTrue(TestLexer.checkLexeme(inp,out,152))
+    
+    # def test_191(self):
+    #     inp = """ """
+    #     out = """ """
+    #     self.assertTrue(TestLexer.checkLexeme(inp,out,152))
+    
+    # def test_192(self):
+    #     inp = """ """
+    #     out = """ """
+    #     self.assertTrue(TestLexer.checkLexeme(inp,out,152))
+    
+    # def test_193(self):
+    #     inp = """ """
+    #     out = """ """
+    #     self.assertTrue(TestLexer.checkLexeme(inp,out,152))
+    
+    # def test_194(self):
+    #     inp = """ """
+    #     out = """ """
+    #     self.assertTrue(TestLexer.checkLexeme(inp,out,152))
+    
+    # def test_195(self):
+    #     inp = """ """
+    #     out = """ """
+    #     self.assertTrue(TestLexer.checkLexeme(inp,out,152))
+    
+    # def test_196(self):
+    #     inp = """ """
+    #     out = """ """
+    #     self.assertTrue(TestLexer.checkLexeme(inp,out,152))
+    
+    # def test_197(self):
+    #     inp = """ """
+    #     out = """ """
+    #     self.assertTrue(TestLexer.checkLexeme(inp,out,152))
+    
+    # def test_198(self):
+    #     inp = """ """
+    #     out = """ """
+    #     self.assertTrue(TestLexer.checkLexeme(inp,out,152))
+    
+    # def test_199(self):
+    #     inp = """ """
+    #     out = """ """
+    #     self.assertTrue(TestLexer.checkLexeme(inp,out,152))
+    
+    # def test_200(self):
+    #     inp = """ """
+    #     out = """ """
+    #     self.assertTrue(TestLexer.checkLexeme(inp,out,152))
     

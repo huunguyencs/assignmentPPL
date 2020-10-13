@@ -299,6 +299,6 @@ COMMENT: '**' .*? '**' -> skip;
 //ERROR
 UNCLOSE_STRING: '"' SCHAR* ( [\r\n] | EOF);
 ERROR_CHAR: .;
-ILLEGAL_ESCAPE:  '"' SCHAR* (('\\' ~[btnfr'\\]) | ('\'' ~'"'));
+ILLEGAL_ESCAPE:  '"' SCHAR* (('\\' ~[btnfr\\]) | ('\'' ~'"'));
 UNTERMINATED_COMMENT: '**' (.*? | EOF) ;
 
