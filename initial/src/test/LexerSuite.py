@@ -334,45 +334,45 @@ Function: main
         out = """Function,:,testfor,Body,:,For,(,i,=,0,,,i,!=,1,,,i,=,i,+,1,),Do,EndFor,.,EndBody,.,<EOF>"""
         self.assertTrue(TestLexer.checkLexeme(inp,out,152))
     
-    # def test_163(self):
-    #     inp = """ """
-    #     out = """ """
-    #     self.assertTrue(TestLexer.checkLexeme(inp,out,152))
+    def test_163(self):
+        inp = """Return True;"""
+        out = """Return,True,;,<EOF>"""
+        self.assertTrue(TestLexer.checkLexeme(inp,out,163))
     
-    # def test_164(self):
-    #     inp = """ """
-    #     out = """ """
-    #     self.assertTrue(TestLexer.checkLexeme(inp,out,152))
+    def test_164(self):
+        inp = """Var x=-5.e9;"""
+        out = """Var,x,=,-,5.e9,;,<EOF>"""
+        self.assertTrue(TestLexer.checkLexeme(inp,out,164))
     
-    # def test_165(self):
-    #     inp = """ """
-    #     out = """ """
-    #     self.assertTrue(TestLexer.checkLexeme(inp,out,152))
+    def test_165(self):
+        inp = """Function: area(){}"""
+        out = """Function,:,area,(,),{,},<EOF>"""
+        self.assertTrue(TestLexer.checkLexeme(inp,out,165))
     
-    # def test_166(self):
-    #     inp = """ """
-    #     out = """ """
-    #     self.assertTrue(TestLexer.checkLexeme(inp,out,152))
+    def test_166(self):
+        inp = """int foo(){}"""
+        out = """int,foo,(,),{,},<EOF>"""
+        self.assertTrue(TestLexer.checkLexeme(inp,out,166))
     
-    # def test_167(self):
-    #     inp = """ """
-    #     out = """ """
-    #     self.assertTrue(TestLexer.checkLexeme(inp,out,152))
+    def test_167(self):
+        inp = """Var: er___s<ert>"""
+        out = """Var,:,er___s,<,ert,>,<EOF>"""
+        self.assertTrue(TestLexer.checkLexeme(inp,out,167))
     
-    # def test_168(self):
-    #     inp = """ """
-    #     out = """ """
-    #     self.assertTrue(TestLexer.checkLexeme(inp,out,152))
+    def test_168(self):
+        inp = """<eof>**This is a comment**"""
+        out = """<,eof,>,<EOF>"""
+        self.assertTrue(TestLexer.checkLexeme(inp,out,168))
     
-    # def test_169(self):
-    #     inp = """ """
-    #     out = """ """
-    #     self.assertTrue(TestLexer.checkLexeme(inp,out,152))
+    def test_169(self):
+        inp = """If the is === -0X65e;"""
+        out = """If,the,is,==,=,-,0X65e,;,<EOF>"""
+        self.assertTrue(TestLexer.checkLexeme(inp,out,169))
     
-    # def test_170(self):
-    #     inp = """ """
-    #     out = """ """
-    #     self.assertTrue(TestLexer.checkLexeme(inp,out,152))
+    def test_170(self):
+        inp = """tt==========ttt"""
+        out = """tt,==,==,==,==,==,ttt,<EOF>"""
+        self.assertTrue(TestLexer.checkLexeme(inp,out,170))
     
     # def test_171(self):
     #     inp = """ """

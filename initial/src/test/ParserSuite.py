@@ -423,24 +423,200 @@ Var: x = (True || False);"""
         expect = "Error on line 1 col 9: Body"
         self.assertTrue(TestParser.checkParser(input,expect,261))
 
-    # def test_262(self):
+    def test_262(self):
+        input = """Function:func Body:Var: x = -0X55e;Return 0o12;EndBody."""
+        expect = "successful"
+        self.assertTrue(TestParser.checkParser(input,expect,262))
+
+    def test_263(self):
+        input = """Function: foo Body:x = -0.12;y = 1.5e-1;EndBody."""
+        expect = "successful"
+        self.assertTrue(TestParser.checkParser(input,expect,263))
+
+    def test_264(self):
+        input = """Function: val Body: n = 8; Var: n;EndBody."""
+        expect = "Error on line 1 col 27: Var"
+        self.assertTrue(TestParser.checkParser(input,expect,264))
+
+    def test_265(self):
+        input = """Function:n Body: Var: x,y = 6,z;\nstr = "tu'"asdas";EndBody."""
+        expect = "successful"
+        self.assertTrue(TestParser.checkParser(input,expect,265))
+
+    # def test_266(self):
     #     input = """ """
     #     expect = ""
-    #     self.assertTrue(TestParser.checkParser(input,expect,262))
+    #     self.assertTrue(TestParser.checkParser(input,expect,266))
 
-    # def test_263(self):
+    # def test_267(self):
     #     input = """ """
     #     expect = ""
-    #     self.assertTrue(TestParser.checkParser(input,expect,263))
+    #     self.assertTrue(TestParser.checkParser(input,expect,267))
 
-    # def test_264(self):
+    # def test_268(self):
     #     input = """ """
     #     expect = ""
-    #     self.assertTrue(TestParser.checkParser(input,expect,264))
+    #     self.assertTrue(TestParser.checkParser(input,expect,268))
 
-    # def test_265(self):
+    # def test_269(self):
     #     input = """ """
     #     expect = ""
-    #     self.assertTrue(TestParser.checkParser(input,expect,265))
+    #     self.assertTrue(TestParser.checkParser(input,expect,269))
 
+    # def test_270(self):
+    #     input = """ """
+    #     expect = ""
+    #     self.assertTrue(TestParser.checkParser(input,expect,270))
+
+    # def test_271(self):
+    #     input = """ """
+    #     expect = ""
+    #     self.assertTrue(TestParser.checkParser(input,expect,271))
+
+    # def test_272(self):
+    #     input = """ """
+    #     expect = ""
+    #     self.assertTrue(TestParser.checkParser(input,expect,272))
+
+    # def test_273(self):
+    #     input = """ """
+    #     expect = ""
+    #     self.assertTrue(TestParser.checkParser(input,expect,273))
+
+    # def test_274(self):
+    #     input = """ """
+    #     expect = ""
+    #     self.assertTrue(TestParser.checkParser(input,expect,274))
+
+    # def test_275(self):
+    #     input = """ """
+    #     expect = ""
+    #     self.assertTrue(TestParser.checkParser(input,expect,275))
+
+    # def test_276(self):
+    #     input = """ """
+    #     expect = ""
+    #     self.assertTrue(TestParser.checkParser(input,expect,276))
+
+    # def test_277(self):
+    #     input = """ """
+    #     expect = ""
+    #     self.assertTrue(TestParser.checkParser(input,expect,277))
+
+    # def test_278(self):
+    #     input = """ """
+    #     expect = ""
+    #     self.assertTrue(TestParser.checkParser(input,expect,278))
+
+    # def test_279(self):
+    #     input = """ """
+    #     expect = ""
+    #     self.assertTrue(TestParser.checkParser(input,expect,279))
+
+    # def test_280(self):
+    #     input = """ """
+    #     expect = ""
+    #     self.assertTrue(TestParser.checkParser(input,expect,280))
+
+    # def test_281(self):
+    #     input = """ """
+    #     expect = ""
+    #     self.assertTrue(TestParser.checkParser(input,expect,281))
+
+    # def test_282(self):
+    #     input = """ """
+    #     expect = ""
+    #     self.assertTrue(TestParser.checkParser(input,expect,282))
+
+    # def test_283(self):
+    #     input = """ """
+    #     expect = ""
+    #     self.assertTrue(TestParser.checkParser(input,expect,283))
+
+    # def test_284(self):
+    #     input = """ """
+    #     expect = ""
+    #     self.assertTrue(TestParser.checkParser(input,expect,284))
+
+    # def test_285(self):
+    #     input = """ """
+    #     expect = ""
+    #     self.assertTrue(TestParser.checkParser(input,expect,285))
+
+    # def test_286(self):
+    #     input = """ """
+    #     expect = ""
+    #     self.assertTrue(TestParser.checkParser(input,expect,286))
+
+    # def test_287(self):
+    #     input = """ """
+    #     expect = ""
+    #     self.assertTrue(TestParser.checkParser(input,expect,287))
+
+    # def test_288(self):
+    #     input = """ """
+    #     expect = ""
+    #     self.assertTrue(TestParser.checkParser(input,expect,288))
+
+    # def test_289(self):
+    #     input = """ """
+    #     expect = ""
+    #     self.assertTrue(TestParser.checkParser(input,expect,289))
+
+    # def test_290(self):
+    #     input = """ """
+    #     expect = ""
+    #     self.assertTrue(TestParser.checkParser(input,expect,290))
+
+    # def test_291(self):
+    #     input = """ """
+    #     expect = ""
+    #     self.assertTrue(TestParser.checkParser(input,expect,291))
+
+    # def test_292(self):
+    #     input = """ """
+    #     expect = ""
+    #     self.assertTrue(TestParser.checkParser(input,expect,292))
+
+    # def test_293(self):
+    #     input = """ """
+    #     expect = ""
+    #     self.assertTrue(TestParser.checkParser(input,expect,293))
+
+    # def test_294(self):
+    #     input = """ """
+    #     expect = ""
+    #     self.assertTrue(TestParser.checkParser(input,expect,294))
+
+    # def test_295(self):
+    #     input = """ """
+    #     expect = ""
+    #     self.assertTrue(TestParser.checkParser(input,expect,295))
+
+    # def test_296(self):
+    #     input = """ """
+    #     expect = ""
+    #     self.assertTrue(TestParser.checkParser(input,expect,296))
+
+    # def test_297(self):
+    #     input = """ """
+    #     expect = ""
+    #     self.assertTrue(TestParser.checkParser(input,expect,297))
+
+    # def test_298(self):
+    #     input = """ """
+    #     expect = ""
+    #     self.assertTrue(TestParser.checkParser(input,expect,298))
+
+    # def test_299(self):
+    #     input = """ """
+    #     expect = ""
+    #     self.assertTrue(TestParser.checkParser(input,expect,299))
+
+    # def test_300(self):
+    #     input = """ """
+    #     expect = ""
+    #     self.assertTrue(TestParser.checkParser(input,expect,300))
+
+    
     
