@@ -47,7 +47,7 @@ declare
 */
 vardeclare: VAR CL idlistinit SM;
 idlistinit: idinit (CM idinit)*;
-idinit: variable (AS exp)*;
+idinit: variable (AS exp)?;
 
 /*
     Function declare
@@ -87,7 +87,7 @@ stmt_for: FOR LP for_loop_con RP DO stmt* ENDFOR DOT;
 for_loop_con: ID AS exp CM exp CM exp;
 
 //while statement
-stmt_while: WHILE  exp  DO stmt* ENDWHILE DOT;
+stmt_while: WHILE exp DO stmt* ENDWHILE DOT;
 
 //do-while statement
 stmt_do: DO stmt* WHILE exp ENDDO DOT;
@@ -132,7 +132,6 @@ call: ID LP (exp (CM exp)*)* RP;
 operands
     : lit 
     | LP exp RP 
-    | arraylit 
     | variable
     ;
 relational
@@ -148,8 +147,7 @@ relational
     | GTEF
     ;
 logical
-    :
-    AND
+    : AND
     | OR
     ;
 adding
@@ -165,10 +163,7 @@ multiplying
     | DIVF
     | MOD
     ;
-variable
-    : ID 
-    | ele_exp
-    ;
+
 // array variable
 ele_exp: ID index_op;
 index_op: LR exp RR (index_op)*;
@@ -176,16 +171,19 @@ index_op: LR exp RR (index_op)*;
 /*
     Literals
 */
-arraylit
-    : LB arraylit (CM arraylit)* RB
-    | LB lit (CM lit)* RB
-    ;
+arraylit: LB lit (CM lit)* RB;
 
 lit
     : INTLIT
     | FLOATLIT
     | boollit
     | STRINGLIT
+    | arraylit
+    ;
+
+variable
+    : ID
+    | ele_exp
     ;
 
 boollit: TRUE | FALSE;
@@ -261,8 +259,7 @@ INTLIT
     ;
 FLOATLIT
     : DECIMALDIGIT '.'? EXPONENT
-    | DECIMALDIGIT '.' DIGIT+
-    | DECIMALDIGIT '.' DIGIT* EXPONENT
+    | DECIMALDIGIT '.' DIGIT* EXPONENT?
     ;
 
 
