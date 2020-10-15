@@ -47,7 +47,9 @@ declare
 */
 vardeclare: VAR CL idlistinit SM;
 idlistinit: idinit (CM idinit)*;
-idinit: variable (AS exp)?;
+idinit: ID dimension? (AS lit)?;
+
+dimension: LR INTLIT RR dimension*;
 
 /*
     Function declare
@@ -55,7 +57,7 @@ idinit: variable (AS exp)?;
 funcdeclare: FUNCTION CL ID (PARAMETER CL paralist)? body;
 
 //paralist in function
-paralist: variable (CM variable)*;
+paralist: ID dimension? (CM ID dimension?)*;
 
 //body in function
 body: BODY CL vardeclare* stmt* ENDBODY DOT;
@@ -166,7 +168,7 @@ multiplying
 
 // array variable
 ele_exp: ID index_op;
-index_op: LR exp RR (index_op)*;
+index_op: LR exp RR index_op?;
 
 /*
     Literals
@@ -262,12 +264,9 @@ FLOATLIT
     | DECIMALDIGIT '.' DIGIT* EXPONENT?
     ;
 
-
 STRINGLIT: '"' SCHAR* '"';
 
-
 ID: [a-z][0-9a-zA-Z_]*;
-
 
 //FRAGMENT
 fragment NONDIGIT: [a-zA-Z_];

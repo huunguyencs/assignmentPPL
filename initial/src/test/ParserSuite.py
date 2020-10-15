@@ -96,7 +96,7 @@ Function: main
         self.assertTrue(TestParser.checkParser(input,expect,208))
 
     def test_209(self):
-        input = """Var: x[b[foo(2)][5]] = {1,2};"""
+        input = """Var: x[6][7] = {1,2};"""
         expect = "successful"
         self.assertTrue(TestParser.checkParser(input,expect,209))
 
@@ -176,7 +176,7 @@ EndBody."""
         self.assertTrue(TestParser.checkParser(input,expect,219))
 
     def test_220(self):
-        input = """Var: x = 5 == 6;"""
+        input = """Var: x = 5;"""
         expect = "successful"
         self.assertTrue(TestParser.checkParser(input,expect,220))
 
@@ -214,7 +214,7 @@ EndBody."""
         self.assertTrue(TestParser.checkParser(input,expect,223))
 
     def test_224(self):
-        input = """Var: x[a+foo(12,45)][0];"""
+        input = """Var: x[9][1];"""
         expect = "successful"
         self.assertTrue(TestParser.checkParser(input,expect,224))
 
@@ -264,7 +264,7 @@ Body:
     sort(x[10]);
     Return True;
 EndBody.
-Var: x = (True || False);"""
+Var: x = 5;"""
         expect = "successful"
         self.assertTrue(TestParser.checkParser(input,expect,230))
 
@@ -289,7 +289,7 @@ Var: x = (True || False);"""
         self.assertTrue(TestParser.checkParser(input,expect,234))
 
     def test_235(self):
-        input = """Var: x = fibonaci(5);Function:fibonaci Parameter:x Body:Returnfibonaci(x-1)+fibonaci(x-2);EndBody."""
+        input = """Var: x = 1;Function:fibonaci Parameter:x Body:Returnfibonaci(x-1)+fibonaci(x-2);EndBody."""
         expect = "successful"
         self.assertTrue(TestParser.checkParser(input,expect,235))
 
@@ -364,8 +364,8 @@ Var: x = (True || False);"""
         self.assertTrue(TestParser.checkParser(input,expect,249))
 
     def test_250(self):
-        input = """Var: n[fooo(0,5)][{0,2,3}];"""
-        expect = "successful"
+        input = """Var: n[1][0.2];"""
+        expect = "Error on line 1 col 10: 0.2"
         self.assertTrue(TestParser.checkParser(input,expect,250))
 
     def test_251(self):

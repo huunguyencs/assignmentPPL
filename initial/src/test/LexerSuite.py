@@ -130,7 +130,7 @@ Function: main
         self.assertTrue(TestLexer.checkLexeme(inp,out,121))
 
     def test_122(self):
-        inp = """ "Escape\wrongstring """
+        inp = """ "Escape\wrongstring" """
         out = """Illegal Escape In String: Escape\w"""
         self.assertTrue(TestLexer.checkLexeme(inp,out,122))
 
@@ -374,15 +374,15 @@ Function: main
         out = """tt,==,==,==,==,==,ttt,<EOF>"""
         self.assertTrue(TestLexer.checkLexeme(inp,out,170))
     
-    # def test_171(self):
-    #     inp = """ """
-    #     out = """ """
-    #     self.assertTrue(TestLexer.checkLexeme(inp,out,152))
+    def test_171(self):
+        inp = """ "helloWorld'\""""
+        out = """Unclosed String: helloWorld'\""""
+        self.assertTrue(TestLexer.checkLexeme(inp,out,171))
     
-    # def test_172(self):
-    #     inp = """ """
-    #     out = """ """
-    #     self.assertTrue(TestLexer.checkLexeme(inp,out,152))
+    def test_172(self):
+        inp = """00001e0"""
+        out = """0,0,0,0,1e0,<EOF>"""
+        self.assertTrue(TestLexer.checkLexeme(inp,out,152))
     
     # def test_173(self):
     #     inp = """ """
