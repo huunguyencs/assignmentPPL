@@ -314,7 +314,7 @@ Var: x = 5;"""
         self.assertTrue(TestParser.checkParser(input,expect,239))
 
     def test_240(self):
-        input = """Var: n = -7.e1;Function: radius Parameter:r Body: If r > 0 Then Return pi*r;EndIf.EndBody."""
+        input = """Var: n = 7.e1;Function: radius Parameter:r Body: If r > 0 Then Return pi*r;EndIf.EndBody."""
         expect = "successful"
         self.assertTrue(TestParser.checkParser(input,expect,240))
 
@@ -424,7 +424,7 @@ Var: x = 5;"""
         self.assertTrue(TestParser.checkParser(input,expect,261))
 
     def test_262(self):
-        input = """Function:func Body:Var: x = -0X55e;Return 0o12;EndBody."""
+        input = """Function:func Body:Var: x = 0X55e;Return 0o12;EndBody."""
         expect = "successful"
         self.assertTrue(TestParser.checkParser(input,expect,262))
 

@@ -49,7 +49,7 @@ vardeclare: VAR CL idlistinit SM;
 idlistinit: idinit (CM idinit)*;
 idinit: ID dimension? (AS lit)?;
 
-dimension: LR INTLIT RR dimension*;
+dimension: LR INTLIT RR dimension?;
 
 /*
     Function declare
@@ -130,7 +130,7 @@ exp4
     : call 
     | operands
     ;
-call: ID LP (exp (CM exp)*)* RP;
+call: ID LP (exp (CM exp)*)? RP;
 operands
     : lit 
     | LP exp RP 
@@ -166,9 +166,7 @@ multiplying
     | MOD
     ;
 
-// array variable
-ele_exp: ID index_op;
-index_op: LR exp RR index_op?;
+
 
 /*
     Literals
@@ -183,10 +181,8 @@ lit
     | arraylit
     ;
 
-variable
-    : ID
-    | ele_exp
-    ;
+variable: ID index_op?;
+index_op: LR exp RR index_op?;
 
 boollit: TRUE | FALSE;
 
