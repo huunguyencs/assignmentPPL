@@ -114,10 +114,22 @@ exp
     : exp1 relational exp1
     | exp1
     ;
+// exp1
+//     : exp1 logical exp2
+//     | exp1 adding exp2
+//     | exp1 multiplying exp2
+//     | exp2
+//     ;
 exp1
-    : exp1 logical exp2
-    | exp1 adding exp2
-    | exp1 multiplying exp2
+    : exp1 logical exp11
+    | exp11
+    ;
+exp11
+    : exp11 adding exp12
+    | exp12
+    ;
+exp12
+    : exp12 multiplying exp2
     | exp2
     ;
 exp2
@@ -125,17 +137,23 @@ exp2
     | (SUB | SUBF) exp2 
     | exp3
     ;
-exp3: exp3 LR exp RR | exp4;
+exp3
+    : ID index_op
+    | exp4
+    ;
 exp4
     : call 
     | operands
     ;
 call: ID LP (exp (CM exp)*)? RP;
 operands
-    : lit 
+    : primitive 
     | LP exp RP 
     | variable
     ;
+    
+variable: ID index_op?;
+index_op: LR exp RR index_op?;
 relational
     : EQ 
     | NEQ 
@@ -173,16 +191,18 @@ multiplying
 */
 arraylit: LB lit (CM lit)* RB;
 
-lit
+primitive
     : INTLIT
     | FLOATLIT
     | boollit
     | STRINGLIT
+    ;
+lit
+    : primitive 
     | arraylit
     ;
 
-variable: ID index_op?;
-index_op: LR exp RR index_op?;
+
 
 boollit: TRUE | FALSE;
 

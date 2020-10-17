@@ -382,22 +382,22 @@ Function: main
     def test_172(self):
         inp = """00001e0"""
         out = """0,0,0,0,1e0,<EOF>"""
-        self.assertTrue(TestLexer.checkLexeme(inp,out,152))
+        self.assertTrue(TestLexer.checkLexeme(inp,out,172))
     
-    # def test_173(self):
-    #     inp = """ """
-    #     out = """ """
-    #     self.assertTrue(TestLexer.checkLexeme(inp,out,152))
+    def test_173(self):
+        inp = """0000xx45"""
+        out = """0,0,0,0,xx45,<EOF>"""
+        self.assertTrue(TestLexer.checkLexeme(inp,out,173))
     
-    # def test_174(self):
-    #     inp = """ """
-    #     out = """ """
-    #     self.assertTrue(TestLexer.checkLexeme(inp,out,152))
+    def test_174(self):
+        inp = """0x7e-5"""
+        out = """0x7e,-,5,<EOF>"""
+        self.assertTrue(TestLexer.checkLexeme(inp,out,174))
     
-    # def test_175(self):
-    #     inp = """ """
-    #     out = """ """
-    #     self.assertTrue(TestLexer.checkLexeme(inp,out,152))
+    def test_175(self):
+        inp = """**Comment**Var: x = "Nguyen\'" """
+        out = """Var,:,x,=,Unclosed String: Nguyen'" """
+        self.assertTrue(TestLexer.checkLexeme(inp,out,175))
     
     # def test_176(self):
     #     inp = """ """
