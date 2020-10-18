@@ -66,6 +66,9 @@ body: BODY CL vardeclare* stmt* ENDBODY DOT;
     Statement 
 */
 //statement list
+stmt_list: vardeclare* stmt*;
+
+//a statement
 stmt
     : stmt_assign
     | stmt_break
@@ -82,17 +85,17 @@ stmt
 stmt_assign: variable AS exp SM;
 
 //if statement
-stmt_if: IF exp THEN stmt* (ELSEIF exp THEN stmt*)* (ELSE stmt*)? ENDIF DOT;
+stmt_if: IF exp THEN stmt_list (ELSEIF exp THEN stmt_list)* (ELSE stmt_list)? ENDIF DOT;
 
 //for statement
-stmt_for: FOR LP for_loop_con RP DO stmt* ENDFOR DOT;
+stmt_for: FOR LP for_loop_con RP DO stmt_list ENDFOR DOT;
 for_loop_con: ID AS exp CM exp CM exp;
 
 //while statement
-stmt_while: WHILE exp DO stmt* ENDWHILE DOT;
+stmt_while: WHILE exp DO stmt_list ENDWHILE DOT;
 
 //do-while statement
-stmt_do: DO stmt* WHILE exp ENDDO DOT;
+stmt_do: DO stmt_list WHILE exp ENDDO DOT;
 
 //break statement
 stmt_break: BREAK SM;
@@ -183,8 +186,6 @@ multiplying
     | DIVF
     | MOD
     ;
-
-
 
 /*
     Literals

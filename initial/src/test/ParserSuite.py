@@ -493,30 +493,30 @@ Var: x = 5;"""
         expect = "successful"
         self.assertTrue(TestParser.checkParser(input,expect,275))
 
-    # def test_276(self):
-    #     input = """ """
-    #     expect = ""
-    #     self.assertTrue(TestParser.checkParser(input,expect,276))
+    def test_276(self):
+        input = """Function: main Body:While x == 5 Do Var: y = 6; x = x + y; EndWhile.EndBody."""
+        expect = "successful"
+        self.assertTrue(TestParser.checkParser(input,expect,276))
 
-    # def test_277(self):
-    #     input = """ """
-    #     expect = ""
-    #     self.assertTrue(TestParser.checkParser(input,expect,277))
+    def test_277(self):
+        input = """Var: n = 6; Var: x = 7;Function: main Body:foo();EndBody.Function: foo Body:Var: x = 6;Return x+1;EndBody."""
+        expect = "successful"
+        self.assertTrue(TestParser.checkParser(input,expect,277))
 
-    # def test_278(self):
-    #     input = """ """
-    #     expect = ""
-    #     self.assertTrue(TestParser.checkParser(input,expect,278))
+    def test_278(self):
+        input = """Var: x = 7;Function: nnn BodyEndBody."""
+        expect = "Error on line 1 col 29: EndBody"
+        self.assertTrue(TestParser.checkParser(input,expect,278))
 
-    # def test_279(self):
-    #     input = """ """
-    #     expect = ""
-    #     self.assertTrue(TestParser.checkParser(input,expect,279))
+    def test_279(self):
+        input = """Function: main Parameter:n Body:Return n*n;EndBody.Var m = 0;"""
+        expect = "Error on line 1 col 55: m"
+        self.assertTrue(TestParser.checkParser(input,expect,279))
 
-    # def test_280(self):
-    #     input = """ """
-    #     expect = ""
-    #     self.assertTrue(TestParser.checkParser(input,expect,280))
+    def test_280(self):
+        input = """Function: main Var: x = 7;"""
+        expect = "Error on line 1 col 15: Var"
+        self.assertTrue(TestParser.checkParser(input,expect,280))
 
     # def test_281(self):
     #     input = """ """
