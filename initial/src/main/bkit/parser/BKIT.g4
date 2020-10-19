@@ -1,3 +1,7 @@
+/*
+    ID: 1812516
+*/
+
 grammar BKIT;
 
 @lexer::header {
@@ -8,15 +12,9 @@ from lexererr import *
 def emit(self):
     tk = self.type
     result = super().emit()
-    if tk == self.UNCLOSE_STRING:
-        errorStr = result.text
-        if errorStr[0] == '"':
-            result.text = errorStr[1:]       
+    if tk == self.UNCLOSE_STRING:     
         raise UncloseString(result.text)
     elif tk == self.ILLEGAL_ESCAPE:
-        errorStr = result.text
-        if errorStr[0] == '"':
-            result.text = errorStr[1:]
         raise IllegalEscape(result.text)
     elif tk == self.ERROR_CHAR:
         raise ErrorToken(result.text)
@@ -274,7 +272,11 @@ FLOATLIT
     | DECIMALDIGIT '.' DIGIT* EXPONENT?
     ;
 
-STRINGLIT: '"' SCHAR* '"';
+STRINGLIT: '"' SCHAR* '"'
+    {
+        y = str(self.text)
+        self.text = y[1:-1]
+    };
 
 ID: [a-z][0-9a-zA-Z_]*;
 
@@ -303,8 +305,20 @@ WS : [ \t\r\n]+ -> skip ; // skip spaces, tabs, newlines
 COMMENT: '**' .*? '**' -> skip;
 
 //ERROR
-UNCLOSE_STRING: '"' SCHAR* ( [\r\n] | EOF);
+UNCLOSE_STRING: '"' SCHAR* ( [\r\n\b\f] | EOF)
+    {
+        y = str(self.text)
+        escape = ['\r','\n','\b','\f']
+        if y[-1] in escape:
+            self.text = y[1:-1]
+        else:
+            self.text = y[1:]
+    };
 ERROR_CHAR: .;
-ILLEGAL_ESCAPE:  '"' SCHAR* (('\\' ~[btnfr\\]) | ('\'' ~'"') | '\\');
+ILLEGAL_ESCAPE:  '"' SCHAR* (('\\' ~[btnfr\\]) | ('\'' ~'"'))
+    {
+        y = str(self.text)
+        self.text = y[1:]
+    };
 UNTERMINATED_COMMENT: '**' (.*? | EOF) ;
 

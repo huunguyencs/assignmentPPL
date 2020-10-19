@@ -10,7 +10,7 @@ class LexerSuite(unittest.TestCase):
 
     def test_102(self):
         inp = """nameOfStu = "This is a string: " """
-        out = """nameOfStu,=,"This is a string: ",<EOF>"""
+        out = """nameOfStu,=,This is a string: ,<EOF>"""
         self.assertTrue(TestLexer.checkLexeme(inp,out,102))
 
     def test_103(self):
@@ -20,7 +20,7 @@ class LexerSuite(unittest.TestCase):
 
     def test_104(self):
         inp = """ "Nguyen'"" """
-        out = """"Nguyen'"",<EOF>"""
+        out = """Nguyen'",<EOF>"""
         self.assertTrue(TestLexer.checkLexeme(inp,out,104))
 
     def test_105(self):
@@ -53,7 +53,7 @@ class LexerSuite(unittest.TestCase):
 
     def test_110(self):
         inp = """ "Nguyen \\t Van\\n Huu" """
-        out = """\"Nguyen \\t Van\\n Huu\",<EOF>"""
+        out = """Nguyen \\t Van\\n Huu,<EOF>"""
         self.assertTrue(TestLexer.checkLexeme(inp,out,110))
 
     def test_111(self):
@@ -136,7 +136,7 @@ Function: main
 
     def test_123(self):
         inp = """ "Backs\\\\"  """
-        out = """"Backs\\\\",<EOF>"""
+        out = """Backs\\\\,<EOF>"""
         self.assertTrue(TestLexer.checkLexeme(inp,out,123))
 
     def test_124(self):
@@ -186,12 +186,12 @@ Function: main
 
     def test_133(self):
         inp = """ "this is my string\\n" + 1.2e100 """
-        out = """"this is my string\\n",+,1.2e100,<EOF>"""
+        out = """this is my string\\n,+,1.2e100,<EOF>"""
         self.assertTrue(TestLexer.checkLexeme(inp,out,133))
 
     def test_134(self):
         inp = """ "\\n" + "\\f" + "\\r" + "\\t" + "\\'" + "\\\\" """
-        out = """"\\n",+,"\\f",+,"\\r",+,"\\t",+,"\\'",+,"\\\\",<EOF>"""
+        out = """\\n,+,\\f,+,\\r,+,\\t,+,\\',+,\\\\,<EOF>"""
         self.assertTrue(TestLexer.checkLexeme(inp,out,134))
 
     def test_135(self):
@@ -201,7 +201,7 @@ Function: main
 
     def test_136(self):
         inp = """ "This is a unclose string\n" """
-        out = """Unclosed String: This is a unclose string\n"""
+        out = """Unclosed String: This is a unclose string"""
         self.assertTrue(TestLexer.checkLexeme(inp,out,136))
 
     def test_137(self):
@@ -260,8 +260,8 @@ Function: main
         self.assertTrue(TestLexer.checkLexeme(inp,out,147))
 
     def test_148(self):
-        inp = """ "\\Nguyen" """
-        out = """Illegal Escape In String: \\N"""
+        inp = """ "\\BKIT" """
+        out = """Illegal Escape In String: \\B"""
         self.assertTrue(TestLexer.checkLexeme(inp,out,148))
 
     def test_149(self):
@@ -300,13 +300,13 @@ Function: main
         self.assertTrue(TestLexer.checkLexeme(inp,out,155))
     
     def test_156(self):
-        inp = """ "\\\\\\" """
-        out = """Illegal Escape In String: \\\\\\\""""
+        inp = """78e-1\\.52."""
+        out = """78e-1,\\.,52.,<EOF>"""
         self.assertTrue(TestLexer.checkLexeme(inp,out,156))
     
     def test_157(self):
         inp = """{"abc",5,6.e-8};"""
-        out = """{,"abc",,,5,,,6.e-8,},;,<EOF>"""
+        out = """{,abc,,,5,,,6.e-8,},;,<EOF>"""
         self.assertTrue(TestLexer.checkLexeme(inp,out,157))
     
     def test_158(self):
@@ -321,12 +321,12 @@ Function: main
     
     def test_160(self):
         inp = """ "escape@@string'"" """
-        out = """"escape@@string'"",<EOF>"""
+        out = """escape@@string'",<EOF>"""
         self.assertTrue(TestLexer.checkLexeme(inp,out,160))
     
     def test_161(self):
         inp = """ "helloWorld"hello"a\nThis is a string" """
-        out = """"helloWorld",hello,Unclosed String: a\n"""
+        out = """helloWorld,hello,Unclosed String: a"""
         self.assertTrue(TestLexer.checkLexeme(inp,out,161))
     
     def test_162(self):
@@ -380,8 +380,8 @@ Function: main
         self.assertTrue(TestLexer.checkLexeme(inp,out,171))
     
     def test_172(self):
-        inp = """00001e0"""
-        out = """0,0,0,0,1e0,<EOF>"""
+        inp = """0000e0"""
+        out = """0,0,0,0e0,<EOF>"""
         self.assertTrue(TestLexer.checkLexeme(inp,out,172))
     
     def test_173(self):
@@ -395,8 +395,8 @@ Function: main
         self.assertTrue(TestLexer.checkLexeme(inp,out,174))
     
     def test_175(self):
-        inp = """**Comment**Var: x = "Nguyen\'" """
-        out = """Var,:,x,=,Unclosed String: Nguyen'" """
+        inp = """**Comment**Var: x = "Hello'" """
+        out = """Var,:,x,=,Unclosed String: Hello'" """
         self.assertTrue(TestLexer.checkLexeme(inp,out,175))
     
     def test_176(self):
@@ -430,13 +430,13 @@ Function: main
         self.assertTrue(TestLexer.checkLexeme(inp,out,181))
     
     def test_182(self):
-        inp = """Var: x = "\tPPLBKIT\\\\\'"" """
-        out = """Var,:,x,=,"\tPPLBKIT\\\\\'"",<EOF>"""
+        inp = """Var: x = "\tPPLBKIT\\\\'"" """
+        out = """Var,:,x,=,\tPPLBKIT\\\\'",<EOF>"""
         self.assertTrue(TestLexer.checkLexeme(inp,out,182))
     
     def test_183(self):
         inp = """t = {{1,2},True,"   BKIT"}"""
-        out = """t,=,{,{,1,,,2,},,,True,,,"   BKIT",},<EOF>"""
+        out = """t,=,{,{,1,,,2,},,,True,,,   BKIT,},<EOF>"""
         self.assertTrue(TestLexer.checkLexeme(inp,out,183))
     
     def test_184(self):
@@ -450,13 +450,13 @@ Function: main
         self.assertTrue(TestLexer.checkLexeme(inp,out,185))
     
     def test_186(self):
-        inp = """str = "hello World\\" """
+        inp = """str = "hello World\\"" """
         out = """str,=,Illegal Escape In String: hello World\\\""""
         self.assertTrue(TestLexer.checkLexeme(inp,out,186))
     
     def test_187(self):
         inp = """If s = **This is smt**"Hello**str**\\n" """
-        out = """If,s,=,"Hello**str**\\n",<EOF>"""
+        out = """If,s,=,Hello**str**\\n,<EOF>"""
         self.assertTrue(TestLexer.checkLexeme(inp,out,187))
     
     def test_188(self):
@@ -475,7 +475,7 @@ Function: main
         self.assertTrue(TestLexer.checkLexeme(inp,out,190))
     
     def test_191(self):
-        inp = """ "This\\ \' is string" """
+        inp = """ "This\\ ' is string" """
         out = """Illegal Escape In String: This\\ """
         self.assertTrue(TestLexer.checkLexeme(inp,out,191))
     
@@ -510,8 +510,8 @@ Function: main
         self.assertTrue(TestLexer.checkLexeme(inp,out,197))
     
     def test_198(self):
-        inp = """str = " Hello,I am Mario'" """
-        out = """str,=,Unclosed String:  Hello,I am Mario'" """
+        inp = """str = " Hello,I am '"Mario'" """
+        out = """str,=,Unclosed String:  Hello,I am '"Mario'" """
         self.assertTrue(TestLexer.checkLexeme(inp,out,198))
     
     def test_199(self):
@@ -521,6 +521,6 @@ Function: main
     
     def test_200(self):
         inp = """ " \\t8 p $@"45a-*7e1 """
-        out = """" \\t8 p $@",45,a,-,*,7e1,<EOF>"""
+        out = """ \\t8 p $@,45,a,-,*,7e1,<EOF>"""
         self.assertTrue(TestLexer.checkLexeme(inp,out,200))
     
