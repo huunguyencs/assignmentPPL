@@ -32,15 +32,8 @@ options{
 /*
     Program
 */
-program  : declare+ EOF;
+program  : vardeclare* funcdeclare* EOF;
 
-/*
-    Declaration
-*/
-declare
-    : vardeclare 
-    | funcdeclare
-    ;
 
 /*
     Var declare
@@ -150,7 +143,7 @@ exp4
     ;
 call: ID LP (exp (CM exp)*)? RP;
 operands
-    : primitive 
+    : lit 
     | LP exp RP 
     | variable
     ;
@@ -312,6 +305,6 @@ COMMENT: '**' .*? '**' -> skip;
 //ERROR
 UNCLOSE_STRING: '"' SCHAR* ( [\r\n] | EOF);
 ERROR_CHAR: .;
-ILLEGAL_ESCAPE:  '"' SCHAR* (('\\' ~[btnfr\\]) | ('\'' ~'"'));
+ILLEGAL_ESCAPE:  '"' SCHAR* (('\\' ~[btnfr\\]) | ('\'' ~'"') | '\\');
 UNTERMINATED_COMMENT: '**' (.*? | EOF) ;
 

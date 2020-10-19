@@ -402,125 +402,125 @@ Function: main
     def test_176(self):
         inp = """45aRT-e+5.2e1"""
         out = """45,aRT,-,e,+,5.2e1,<EOF>"""
-        self.assertTrue(TestLexer.checkLexeme(inp,out,152))
+        self.assertTrue(TestLexer.checkLexeme(inp,out,176))
     
     def test_177(self):
         inp = """154.9+=/==5"""
         out = """154.9,+,=/=,=,5,<EOF>"""
-        self.assertTrue(TestLexer.checkLexeme(inp,out,152))
+        self.assertTrue(TestLexer.checkLexeme(inp,out,177))
     
     def test_178(self):
         inp = """uT578e-5"""
         out = """uT578e,-,5,<EOF>"""
-        self.assertTrue(TestLexer.checkLexeme(inp,out,152))
+        self.assertTrue(TestLexer.checkLexeme(inp,out,178))
     
     def test_179(self):
         inp = """19++2==0e-1"""
         out = """19,+,+,2,==,0e-1,<EOF>"""
-        self.assertTrue(TestLexer.checkLexeme(inp,out,152))
+        self.assertTrue(TestLexer.checkLexeme(inp,out,179))
     
     def test_180(self):
         inp = """While x !==/=5r Then\no"""
         out = """While,x,!=,=/=,5,r,Then,o,<EOF>"""
-        self.assertTrue(TestLexer.checkLexeme(inp,out,152))
+        self.assertTrue(TestLexer.checkLexeme(inp,out,180))
     
-    # def test_181(self):
-    #     inp = """ """
-    #     out = """ """
-    #     self.assertTrue(TestLexer.checkLexeme(inp,out,152))
+    def test_181(self):
+        inp = """Ifin n =+5;"""
+        out = """If,in,n,=,+,5,;,<EOF>"""
+        self.assertTrue(TestLexer.checkLexeme(inp,out,181))
     
-    # def test_182(self):
-    #     inp = """ """
-    #     out = """ """
-    #     self.assertTrue(TestLexer.checkLexeme(inp,out,152))
+    def test_182(self):
+        inp = """Var: x = "\tPPLBKIT\\\\\'"" """
+        out = """Var,:,x,=,"\tPPLBKIT\\\\\'"",<EOF>"""
+        self.assertTrue(TestLexer.checkLexeme(inp,out,182))
     
-    # def test_183(self):
-    #     inp = """ """
-    #     out = """ """
-    #     self.assertTrue(TestLexer.checkLexeme(inp,out,152))
+    def test_183(self):
+        inp = """t = {{1,2},True,"   BKIT"}"""
+        out = """t,=,{,{,1,,,2,},,,True,,,"   BKIT",},<EOF>"""
+        self.assertTrue(TestLexer.checkLexeme(inp,out,183))
     
-    # def test_184(self):
-    #     inp = """ """
-    #     out = """ """
-    #     self.assertTrue(TestLexer.checkLexeme(inp,out,152))
+    def test_184(self):
+        inp = """**This is a cmt***22area"""
+        out = """*,22,area,<EOF>"""
+        self.assertTrue(TestLexer.checkLexeme(inp,out,184))
     
-    # def test_185(self):
-    #     inp = """ """
-    #     out = """ """
-    #     self.assertTrue(TestLexer.checkLexeme(inp,out,152))
+    def test_185(self):
+        inp = """Var ??"""
+        out = """Var,Error Token ?"""
+        self.assertTrue(TestLexer.checkLexeme(inp,out,185))
     
-    # def test_186(self):
-    #     inp = """ """
-    #     out = """ """
-    #     self.assertTrue(TestLexer.checkLexeme(inp,out,152))
+    def test_186(self):
+        inp = """str = "hello World\\" """
+        out = """str,=,Illegal Escape In String: hello World\\\""""
+        self.assertTrue(TestLexer.checkLexeme(inp,out,186))
     
-    # def test_187(self):
-    #     inp = """ """
-    #     out = """ """
-    #     self.assertTrue(TestLexer.checkLexeme(inp,out,152))
+    def test_187(self):
+        inp = """If s = **This is smt**"Hello**str**\\n" """
+        out = """If,s,=,"Hello**str**\\n",<EOF>"""
+        self.assertTrue(TestLexer.checkLexeme(inp,out,187))
     
-    # def test_188(self):
-    #     inp = """ """
-    #     out = """ """
-    #     self.assertTrue(TestLexer.checkLexeme(inp,out,152))
+    def test_188(self):
+        inp = """WhileDoIfThenx"""
+        out = """While,Do,If,Then,x,<EOF>"""
+        self.assertTrue(TestLexer.checkLexeme(inp,out,188))
     
-    # def test_189(self):
-    #     inp = """ """
-    #     out = """ """
-    #     self.assertTrue(TestLexer.checkLexeme(inp,out,152))
+    def test_189(self):
+        inp = """****n = 7."""
+        out = """n,=,7.,<EOF>"""
+        self.assertTrue(TestLexer.checkLexeme(inp,out,189))
     
-    # def test_190(self):
-    #     inp = """ """
-    #     out = """ """
-    #     self.assertTrue(TestLexer.checkLexeme(inp,out,152))
+    def test_190(self):
+        inp = """7.8=7.9?"""
+        out = """7.8,=,7.9,Error Token ?"""
+        self.assertTrue(TestLexer.checkLexeme(inp,out,190))
     
-    # def test_191(self):
-    #     inp = """ """
-    #     out = """ """
-    #     self.assertTrue(TestLexer.checkLexeme(inp,out,152))
+    def test_191(self):
+        inp = """ "This\\ \' is string" """
+        out = """Illegal Escape In String: This\\ """
+        self.assertTrue(TestLexer.checkLexeme(inp,out,191))
     
-    # def test_192(self):
-    #     inp = """ """
-    #     out = """ """
-    #     self.assertTrue(TestLexer.checkLexeme(inp,out,152))
+    def test_192(self):
+        inp = """check{1,2,3}print"""
+        out = """check,{,1,,,2,,,3,},print,<EOF>"""
+        self.assertTrue(TestLexer.checkLexeme(inp,out,192))
     
-    # def test_193(self):
-    #     inp = """ """
-    #     out = """ """
-    #     self.assertTrue(TestLexer.checkLexeme(inp,out,152))
+    def test_193(self):
+        inp = """**cmt**While x== 8.12eae"""
+        out = """While,x,==,8.12,eae,<EOF>"""
+        self.assertTrue(TestLexer.checkLexeme(inp,out,193))
     
-    # def test_194(self):
-    #     inp = """ """
-    #     out = """ """
-    #     self.assertTrue(TestLexer.checkLexeme(inp,out,152))
+    def test_194(self):
+        inp = """-12.e5rtx2090"""
+        out = """-,12.e5,rtx2090,<EOF>"""
+        self.assertTrue(TestLexer.checkLexeme(inp,out,194))
     
-    # def test_195(self):
-    #     inp = """ """
-    #     out = """ """
-    #     self.assertTrue(TestLexer.checkLexeme(inp,out,152))
+    def test_195(self):
+        inp = """12.rya 0X7e"""
+        out = """12.,rya,0X7e,<EOF>"""
+        self.assertTrue(TestLexer.checkLexeme(inp,out,195))
     
-    # def test_196(self):
-    #     inp = """ """
-    #     out = """ """
-    #     self.assertTrue(TestLexer.checkLexeme(inp,out,152))
+    def test_196(self):
+        inp = """."""
+        out = """.,<EOF>"""
+        self.assertTrue(TestLexer.checkLexeme(inp,out,196))
     
-    # def test_197(self):
-    #     inp = """ """
-    #     out = """ """
-    #     self.assertTrue(TestLexer.checkLexeme(inp,out,152))
+    def test_197(self):
+        inp = """t=!"""
+        out = """t,=,!,<EOF>"""
+        self.assertTrue(TestLexer.checkLexeme(inp,out,197))
     
-    # def test_198(self):
-    #     inp = """ """
-    #     out = """ """
-    #     self.assertTrue(TestLexer.checkLexeme(inp,out,152))
+    def test_198(self):
+        inp = """str = " Hello,I am Mario'" """
+        out = """str,=,Unclosed String:  Hello,I am Mario'" """
+        self.assertTrue(TestLexer.checkLexeme(inp,out,198))
     
-    # def test_199(self):
-    #     inp = """ """
-    #     out = """ """
-    #     self.assertTrue(TestLexer.checkLexeme(inp,out,152))
+    def test_199(self):
+        inp = """**This a unterminal cmt*"""
+        out = """Unterminated Comment"""
+        self.assertTrue(TestLexer.checkLexeme(inp,out,199))
     
-    # def test_200(self):
-    #     inp = """ """
-    #     out = """ """
-    #     self.assertTrue(TestLexer.checkLexeme(inp,out,152))
+    def test_200(self):
+        inp = """ " \\t8 p $@"45a-*7e1 """
+        out = """" \\t8 p $@",45,a,-,*,7e1,<EOF>"""
+        self.assertTrue(TestLexer.checkLexeme(inp,out,200))
     
