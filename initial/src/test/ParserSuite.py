@@ -162,7 +162,7 @@ Body:
     x = x + 1;
     x + 1;
 EndBody."""
-        expect = "Error on line 5 col 6: +"
+        expect = "Error on line 5 col 9: ;"
         self.assertTrue(TestParser.checkParser(input,expect,217))
 
     def test_218(self):
@@ -429,7 +429,7 @@ Var: x = 5;"""
         self.assertTrue(TestParser.checkParser(input,expect,261))
 
     def test_262(self):
-        input = """Function:func Body:Var: x = 0X55e;Return 0o12;EndBody."""
+        input = """Function:func Body:Var: x = 0X55E;Return 0o12;EndBody."""
         expect = "successful"
         self.assertTrue(TestParser.checkParser(input,expect,262))
 

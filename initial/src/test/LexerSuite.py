@@ -171,12 +171,12 @@ Function: main
 
     def test_130(self):
         inp = """0123e-5"""
-        out = """0,123e-5,<EOF>"""
+        out = """0123e-5,<EOF>"""
         self.assertTrue(TestLexer.checkLexeme(inp,out,130))
 
     def test_131(self):
-        inp = """0X7f + 0O45 == 0"""
-        out = """0X7f,+,0O45,==,0,<EOF>"""
+        inp = """0X7F + 0O45 == 0"""
+        out = """0X7F,+,0O45,==,0,<EOF>"""
         self.assertTrue(TestLexer.checkLexeme(inp,out,131))
 
     def test_132(self):
@@ -185,8 +185,8 @@ Function: main
         self.assertTrue(TestLexer.checkLexeme(inp,out,132))
 
     def test_133(self):
-        inp = """ "this is my string\\n" + 1.2e100 """
-        out = """this is my string\\n,+,1.2e100,<EOF>"""
+        inp = """ "this is my string\\n" + 0.2e100 """
+        out = """this is my string\\n,+,0.2e100,<EOF>"""
         self.assertTrue(TestLexer.checkLexeme(inp,out,133))
 
     def test_134(self):
@@ -360,13 +360,13 @@ Function: main
         self.assertTrue(TestLexer.checkLexeme(inp,out,167))
     
     def test_168(self):
-        inp = """<eof>**This is a comment**"""
-        out = """<,eof,>,<EOF>"""
+        inp = """"Hello"""
+        out = """Unclosed String: Hello"""
         self.assertTrue(TestLexer.checkLexeme(inp,out,168))
     
     def test_169(self):
-        inp = """If the is === -0X65e;"""
-        out = """If,the,is,==,=,-,0X65e,;,<EOF>"""
+        inp = """If the is === -0X65E;"""
+        out = """If,the,is,==,=,-,0X65E,;,<EOF>"""
         self.assertTrue(TestLexer.checkLexeme(inp,out,169))
     
     def test_170(self):
@@ -375,13 +375,13 @@ Function: main
         self.assertTrue(TestLexer.checkLexeme(inp,out,170))
     
     def test_171(self):
-        inp = """ "helloWorld'\""""
-        out = """Unclosed String: helloWorld'\""""
+        inp = """ "String\\q" """
+        out = """Illegal Escape In String: String\\q"""
         self.assertTrue(TestLexer.checkLexeme(inp,out,171))
     
     def test_172(self):
         inp = """0000e0"""
-        out = """0,0,0,0e0,<EOF>"""
+        out = """0000e0,<EOF>"""
         self.assertTrue(TestLexer.checkLexeme(inp,out,172))
     
     def test_173(self):
@@ -390,8 +390,8 @@ Function: main
         self.assertTrue(TestLexer.checkLexeme(inp,out,173))
     
     def test_174(self):
-        inp = """0x7e-5"""
-        out = """0x7e,-,5,<EOF>"""
+        inp = """0x7E-5"""
+        out = """0x7E,-,5,<EOF>"""
         self.assertTrue(TestLexer.checkLexeme(inp,out,174))
     
     def test_175(self):
@@ -445,8 +445,8 @@ Function: main
         self.assertTrue(TestLexer.checkLexeme(inp,out,184))
     
     def test_185(self):
-        inp = """Var ??"""
-        out = """Var,Error Token ?"""
+        inp = """"Test\t tab" """
+        out = """Test\t tab,<EOF>"""
         self.assertTrue(TestLexer.checkLexeme(inp,out,185))
     
     def test_186(self):
@@ -495,18 +495,18 @@ Function: main
         self.assertTrue(TestLexer.checkLexeme(inp,out,194))
     
     def test_195(self):
-        inp = """12.rya 0X7e"""
-        out = """12.,rya,0X7e,<EOF>"""
+        inp = """12.rya 0X7E"""
+        out = """12.,rya,0X7E,<EOF>"""
         self.assertTrue(TestLexer.checkLexeme(inp,out,195))
     
     def test_196(self):
-        inp = """."""
-        out = """.,<EOF>"""
+        inp = """"String\\e" """
+        out = """Illegal Escape In String: String\\e"""
         self.assertTrue(TestLexer.checkLexeme(inp,out,196))
     
     def test_197(self):
-        inp = """t=!"""
-        out = """t,=,!,<EOF>"""
+        inp = """"string\b" """
+        out = """Unclosed String: string"""
         self.assertTrue(TestLexer.checkLexeme(inp,out,197))
     
     def test_198(self):

@@ -1,6 +1,4 @@
-/*
-    ID: 1812516
-*/
+// ID: 1812516
 
 grammar BKIT;
 
@@ -73,7 +71,7 @@ stmt
     ;
 
 //assignment statement
-stmt_assign: variable AS exp SM;
+stmt_assign: exp AS exp SM;
 
 //if statement
 stmt_if: IF exp THEN stmt_list (ELSEIF exp THEN stmt_list)* (ELSE stmt_list)? ENDIF DOT;
@@ -132,7 +130,7 @@ exp2
     | exp3
     ;
 exp3
-    : ID index_op
+    : exp3 index_op
     | exp4
     ;
 exp4
@@ -265,11 +263,11 @@ RB:     '}';
 INTLIT
     : DECIMALDIGIT
     | ('0o'|'0O') [1-7] OCTALDIGIT*
-    | ('0x'|'0X') [1-9a-fA-F] HEXADECIMALDIGIT*
+    | ('0x'|'0X') [1-9A-F] HEXADECIMALDIGIT*
     ;
 FLOATLIT
-    : DECIMALDIGIT '.'? EXPONENT
-    | DECIMALDIGIT '.' DIGIT* EXPONENT?
+    : DIGIT+ '.'? EXPONENT
+    | DIGIT+ '.' DIGIT* EXPONENT?
     ;
 
 STRINGLIT: '"' SCHAR* '"'
@@ -287,7 +285,7 @@ fragment NONZERODIGIT: [1-9];
 
 fragment DECIMALDIGIT: '0'| (NONZERODIGIT DIGIT*);
 fragment OCTALDIGIT: [0-7];
-fragment HEXADECIMALDIGIT: [0-9a-fA-F];
+fragment HEXADECIMALDIGIT: [0-9A-F];
 fragment BINARYDIGIT: [01];
 
 fragment SIGN: [+-];
@@ -295,7 +293,7 @@ fragment EXPONENT: [eE] SIGN? DIGIT+;
 
 fragment ESC_SEQ: '\\' [btnfr'\\];
 fragment SCHAR
-    : ~ ['"\\\r\n]
+    : ~ ['"\\\r\n\b\f]
     | ESC_SEQ
     | '\'"'
     ;
@@ -318,7 +316,10 @@ ERROR_CHAR: .;
 ILLEGAL_ESCAPE:  '"' SCHAR* (('\\' ~[btnfr\\]) | ('\'' ~'"'))
     {
         y = str(self.text)
-        self.text = y[1:]
+        if y[-1] == '"':
+            self.text = y[1:-1]
+        else:
+            self.text = y[1:]
     };
 UNTERMINATED_COMMENT: '**' (.*? | EOF) ;
 
