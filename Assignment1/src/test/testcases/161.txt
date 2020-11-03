@@ -1,0 +1,2 @@
+ "helloWorld"hello"a
+This is a string" 

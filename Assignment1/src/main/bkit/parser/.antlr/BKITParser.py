@@ -1,4 +1,4 @@
-# Generated from /home/huu/Documents/PPL/initial/assignmentPPL/initial/src/main/bkit/parser/BKIT.g4 by ANTLR 4.8
+# Generated from /home/huu/Documents/PPL/Assignment/assignmentPPL/Assignment1/src/main/bkit/parser/BKIT.g4 by ANTLR 4.8
 # encoding: utf-8
 from antlr4 import *
 from io import StringIO

@@ -1,0 +1,1 @@
+If s = **This is smt**"Hello**str**\n" 

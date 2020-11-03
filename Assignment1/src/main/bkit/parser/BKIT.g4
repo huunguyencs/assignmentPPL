@@ -325,5 +325,5 @@ ILLEGAL_ESCAPE:  '"' SCHAR* (('\\' ~[btnfr\\]) | ('\'' ~'"'))
         else:
             self.text = y[1:]
     };
-UNTERMINATED_COMMENT: '**' (.*? | EOF) ;
+UNTERMINATED_COMMENT: '**' (.*? | EOF);
 
