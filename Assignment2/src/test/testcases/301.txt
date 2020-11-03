@@ -1,7 +1,1 @@
-Var: x = 5;
-        Function: main
-        Body:
-            x = 10;
-            printLn(x);
-        EndBody.
-        
+Function: test_for Body: For (i = 0,i<10,2) Do write(i);Continue;EndFor.EndBody.

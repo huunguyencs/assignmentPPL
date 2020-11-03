@@ -13,14 +13,14 @@ class ASTGeneration(BKITVisitor):
 
         if ctx.vardeclare():
             var = ctx.vardeclare()
-            if isinstance(vardecl,list):
+            if isinstance(var,list):
                 for v in var:
                     vardecl += self.visit(v)
             else:
                 vardecl = self.visit(var)
         if ctx.funcdeclare():
             func = ctx.funcdeclare()
-            if isinstance(funcdecl,list):
+            if isinstance(func,list):
                 for f in func:
                     funcdecl += self.visit(f)
             else:
@@ -92,7 +92,7 @@ class ASTGeneration(BKITVisitor):
         param = []
         body = self.visit(ctx.body())
 
-        if ctx.getChildCount() == 7:
+        if ctx.getChildCount() > 5:
             param = self.visit(ctx.paralist())
 
         return [FuncDecl(name,param,body)]
@@ -124,11 +124,12 @@ class ASTGeneration(BKITVisitor):
         if ctx.getChildCount() <= 4:
             return vlist, slist
         if ctx.vardeclare():
-            vardecl = ctx.vardeclare()
-            if isinstance(vardecl,list):
-                vlist = [self.visit(v) for v in vardecl]
+            var = ctx.vardeclare()
+            if isinstance(var,list):
+                for v in var:
+                    vlist += self.visit(v)
             else:
-                vlist = [self.visit(vardecl)] 
+                vlist = self.visit(var)
         if ctx.stmt():
             stmt = ctx.stmt()
             if isinstance(stmt,list):
@@ -146,11 +147,12 @@ class ASTGeneration(BKITVisitor):
         vlist = []
         slist = []
         if ctx.vardeclare():
-            vardecl = ctx.vardeclare()
-            if isinstance(vardecl,list):
-                vlist = [self.visit(v) for v in vardecl]
+            var = ctx.vardeclare()
+            if isinstance(var,list):
+                for v in var:
+                    vlist += self.visit(v)
             else:
-                vlist = [self.visit(vardecl)]
+                vlist = self.visit(var)
         if ctx.stmt():
             stmt = ctx.stmt()
             if isinstance(stmt,list):
@@ -208,7 +210,8 @@ class ASTGeneration(BKITVisitor):
         Visit if statement
         if_stmt: IF exp THEN stmt_list (ELSEIF exp THEN stmt_list)* (ELSE stmt_list)? ENDIF DOT;
         """
-        return None
+        pass
+        
 
 
     def visitFor_stmt(self, ctx:BKITParser.For_stmtContext):
@@ -276,7 +279,11 @@ class ASTGeneration(BKITVisitor):
         Visit return statement
         return_stmt: RETURN exp? SM;
         """
-        return Return()
+        if ctx.exp():
+            exp = self.visit(ctx.exp())
+            return Return(exp)
+        else:
+            return Return()
 
     def visitExp(self, ctx:BKITParser.ExpContext):
         """
@@ -536,4 +543,7 @@ class ASTGeneration(BKITVisitor):
         Visit boolean literal
         boollit: TRUE | FALSE;
         """
-        return self.visitChildren(ctx)
+        if ctx.TRUE():
+            return BooleanLiteral(True)
+        else:
+            return BooleanLiteral(False)
