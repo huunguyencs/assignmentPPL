@@ -1,1 +1,0 @@
-Program([FuncDecl(Id(hello)[],([VarDecl(Id(n),IntLiteral(7))][Assign(Id(n),BinaryOp(+,Id(n),IntLiteral(1)))]))])

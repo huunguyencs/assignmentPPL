@@ -1,1 +1,0 @@
-Program([VarDecl(Id(n),[10]),VarDecl(Id(y),StringLiteral(string))])

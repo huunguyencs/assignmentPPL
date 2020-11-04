@@ -1,2 +1,0 @@
-Var: n = True;
-Var: t,x,z;

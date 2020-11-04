@@ -1,5 +1,0 @@
-Function: foo
-Parameter: x
-Body:
-    t = 0;
-EndBody.

@@ -45,8 +45,8 @@ Var: t,x,z;"""
         self.assertTrue(TestAST.checkASTGen(input,expect,308))
 
     def test_vardecl_9(self):
-        input = """Var: n[10][1] = {{1,2,3},{"string",True}};"""
-        expect = """Program([VarDecl(Id(n),[10,1],ArrayLiteral(ArrayLiteral(IntLiteral(1),IntLiteral(2),IntLiteral(3)),ArrayLiteral(StringLiteral(string),BooleanLiteral(true))))])"""
+        input = """Var: n[2][1] = {{True},{"string"}};"""
+        expect = """Program([VarDecl(Id(n),[2,1],ArrayLiteral(ArrayLiteral(BooleanLiteral(true)),ArrayLiteral(StringLiteral(string))))])"""
         self.assertTrue(TestAST.checkASTGen(input,expect,309))
 
     def test_vardecl_10(self):
@@ -67,20 +67,21 @@ Var: m,y = 7,z;"""
         expect = """Program([VarDecl(Id(t),[1]),VarDecl(Id(m)),VarDecl(Id(y),IntLiteral(7)),VarDecl(Id(z))])"""
         self.assertTrue(TestAST.checkASTGen(input,expect,312))
 
-    # def test_vardecl_13(self):
-    #     input = """Var: n[10];"""
-    #     expect = """"""
-    #     self.assertTrue(TestAST.checkASTGen(input,expect,313))
+    def test_vardecl_13(self):
+        input = """Var: n = 0x45;"""
+        expect = """Program([VarDecl(Id(n),IntLiteral(69))])"""
+        self.assertTrue(TestAST.checkASTGen(input,expect,313))
 
-    # def test_vardecl_14(self):
-    #     input = """Var: n[10];"""
-    #     expect = """"""
-    #     self.assertTrue(TestAST.checkASTGen(input,expect,314))
+    def test_vardecl_14(self):
+        input = """Var: t = 0o12, n = 0O11;"""
+        expect = """Program([VarDecl(Id(t),IntLiteral(10)),VarDecl(Id(n),IntLiteral(9))])"""
+        self.assertTrue(TestAST.checkASTGen(input,expect,314))
 
-    # def test_vardecl_15(self):
-    #     input = """Var: n[10];"""
-    #     expect = """"""
-    #     self.assertTrue(TestAST.checkASTGen(input,expect,315))
+    def test_vardecl_15(self):
+        input = r"""Var: n[3] = {0x14,0O78,5.e-1};
+Var: t = 0X7F;"""
+        expect = """Program([VarDecl(Id(n),[3],ArrayLiteral(IntLiteral(20),IntLiteral(7),FloatLiteral(0.5))),VarDecl(Id(t),IntLiteral(127))])"""
+        self.assertTrue(TestAST.checkASTGen(input,expect,315))
 
     
     def test_funcdecl_1(self):
@@ -108,15 +109,21 @@ EndBody."""
         expect = """Program([FuncDecl(Id(foo)[VarDecl(Id(x))],([][Assign(Id(t),IntLiteral(0))]))])"""
         self.assertTrue(TestAST.checkASTGen(input,expect,318))
 
-    # def test_funcdecl_4(self):
-    #     input = r""" """
-    #     expect = """"""
-    #     self.assertTrue(TestAST.checkASTGen(input,expect,319))
+    def test_funcdecl_4(self):
+        input = r"""Function: ppl
+Parameter: t[10], x
+Body:
+EndBody."""
+        expect = """Program([FuncDecl(Id(ppl)[VarDecl(Id(t),[10]),VarDecl(Id(x))],([][]))])"""
+        self.assertTrue(TestAST.checkASTGen(input,expect,319))
 
-    # def test_funcdecl_5(self):
-    #     input = r""" """
-    #     expect = """"""
-    #     self.assertTrue(TestAST.checkASTGen(input,expect,320))
+    def test_funcdecl_5(self):
+        input = r"""Function: test
+Body:
+    t = 4*5;
+EndBody."""
+        expect = """Program([FuncDecl(Id(test)[],([][Assign(Id(t),BinaryOp(*,IntLiteral(4),IntLiteral(5)))]))])"""
+        self.assertTrue(TestAST.checkASTGen(input,expect,320))
 
     
     

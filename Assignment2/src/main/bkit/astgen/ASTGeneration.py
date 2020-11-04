@@ -549,7 +549,7 @@ class ASTGeneration(BKITVisitor):
             ;
         """
         if ctx.INTLIT():
-            return IntLiteral(int(ctx.INTLIT().getText()))
+            return IntLiteral(int(ctx.INTLIT().getText(),0))
         if ctx.FLOATLIT():
             return FloatLiteral(float(ctx.FLOATLIT().getText()))
         if ctx.STRINGLIT():

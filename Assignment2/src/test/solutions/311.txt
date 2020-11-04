@@ -1,1 +1,0 @@
-Program([VarDecl(Id(n),IntLiteral(7)),VarDecl(Id(t),ArrayLiteral(IntLiteral(1),IntLiteral(2),IntLiteral(3)))])

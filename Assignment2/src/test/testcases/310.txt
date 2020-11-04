@@ -1,3 +1,0 @@
-Var: n[10];
-Var: t = "String";
-Var: m = 10;
