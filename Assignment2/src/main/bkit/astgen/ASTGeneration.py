@@ -447,15 +447,16 @@ class ASTGeneration(BKITVisitor):
             return Id(ctx.ID().getText())
         else:
             return self.visit(ctx.ele_exp())
-
+    # wait teacher fix AST
     def visitEle_exp(self, ctx:BKITParser.Ele_expContext):
         """
         Visit lement expression (index in array)
-        ele_exp : ID index_op;
+        ele_exp : (ID | call) index_op;
         """
-        id = ctx.ID().getText()
-        index_op = self.visit(ctx.index_op())
-        return ArrayCell(id,index_op)
+        if ctx.ID():
+            id = ctx.ID().getText()
+            index_op = self.visit(ctx.index_op())
+            return ArrayCell(id,index_op)
 
     def visitIndex_op(self, ctx:BKITParser.Index_opContext):
         """

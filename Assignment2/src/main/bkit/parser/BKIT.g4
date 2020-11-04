@@ -150,7 +150,7 @@ variable
     : ID
     | ele_exp
     ;
-ele_exp : ID index_op;
+ele_exp : (ID | call) index_op;
 index_op: LR exp RR index_op?;
 relational
     : EQ
