@@ -1,1 +1,1 @@
-Function: area Parameter: n,m Body: If (n > 0) && (m > 0) Then Return n*m;EndIf.EndBody.
+Var: x = 10;

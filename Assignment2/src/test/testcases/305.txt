@@ -1,1 +1,1 @@
-Function:ham Parameter:x,y,z Body:x=x+1;t[foo(a)+1][5]=10;Return0;EndBody.
+Var: n[10];

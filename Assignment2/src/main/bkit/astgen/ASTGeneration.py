@@ -453,10 +453,13 @@ class ASTGeneration(BKITVisitor):
         Visit lement expression (index in array)
         ele_exp : (ID | call) index_op;
         """
+        index_op = self.visit(ctx.index_op())
         if ctx.ID():
             id = ctx.ID().getText()
-            index_op = self.visit(ctx.index_op())
             return ArrayCell(id,index_op)
+        else:
+            call = self.visit(ctx.call())
+            return ArrayCell(call,index_op)
 
     def visitIndex_op(self, ctx:BKITParser.Index_opContext):
         """

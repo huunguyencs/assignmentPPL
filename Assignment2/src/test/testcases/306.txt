@@ -1,0 +1,1 @@
+Var: n[10], y = "string";

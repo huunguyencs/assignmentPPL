@@ -1,0 +1,5 @@
+Function: hello
+Body:
+    Var: n = 7;
+    n = n + 1;
+EndBody.
