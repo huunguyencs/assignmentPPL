@@ -210,7 +210,34 @@ class ASTGeneration(BKITVisitor):
         Visit if statement
         if_stmt: IF exp THEN stmt_list (ELSEIF exp THEN stmt_list)* (ELSE stmt_list)? ENDIF DOT;
         """
-        pass
+        # exp = self.visit(ctx.exp(0))
+        # stmtlist = self.visit(ctx.stmt_list(0))
+        # a = ((None,exp) + stmtlist)[1:]
+        # print(type(a[0]))
+        # print(type(a[1]))
+        # print(type(a[2]))
+        # return If([a],None)
+        exp = ctx.exp()
+        ifthenStmt = []
+        elseStmt = ()
+        i = 0
+        if isinstance(exp,list):
+            for e in exp:
+                ex = self.visit(e)
+                stmtlist = self.visit(ctx.stmt_list(i))
+                para = ((None,ex) + stmtlist)[1:]
+                ifthenStmt += [para]
+                i += 1
+        else:
+            ex = self.visit(self.visit(ctx.exp(0)))
+            stmtlist = self.visit(ctx.stmt_list(0))
+            para = ((None,ex) + stmtlist)[1:]
+            ifthenStmt += [para]
+            i = 1
+        if ctx.ELSE():
+            elseStmt = self.visit(ctx.stmt_list(i))
+        return If(ifthenStmt,elseStmt)
+
         
 
 

@@ -1,0 +1,1 @@
+Program([FuncDecl(Id(area)[VarDecl(Id(n)),VarDecl(Id(m))],([][If(BinaryOp(&&,BinaryOp(>,Id(n),IntLiteral(0)),BinaryOp(>,Id(m),IntLiteral(0))),[],[Return(BinaryOp(*,Id(n),Id(m)))])])])

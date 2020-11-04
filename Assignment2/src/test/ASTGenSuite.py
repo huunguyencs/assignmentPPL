@@ -28,6 +28,19 @@ class ASTGenSuite(unittest.TestCase):
         input = """Var: n = 0;Function:y Body:**This is a cmt**c=1;Return False + True;EndBody."""
         expect = """Program([VarDecl(Id(n),IntLiteral(0)),FuncDecl(Id(y)[],([][Assign(Id(c),IntLiteral(1)),Return(BinaryOp(+,BooleanLiteral(false),BooleanLiteral(true)))])])"""
         self.assertTrue(TestAST.checkASTGen(input,expect,302))
+
+    def test_simple_program_3(self):
+        """Simple program: int main() {} """
+        input = """Function: area Parameter: n,m Body: If (n > 0) && (m > 0) Then Return n*m;EndIf.EndBody."""
+        expect = """Program([FuncDecl(Id(area)[VarDecl(Id(n)),VarDecl(Id(m))],([][If(BinaryOp(&&,BinaryOp(>,Id(n),IntLiteral(0)),BinaryOp(>,Id(m),IntLiteral(0))),[],[Return(BinaryOp(*,Id(n),Id(m)))])])])"""
+        self.assertTrue(TestAST.checkASTGen(input,expect,303))
+    
+    def test_simple_program_4(self):
+        """Simple program: int main() {} """
+        input = """Var: t = {{"hello","myfen"},{1e-5,45}};"""
+        expect = """Program([VarDecl(Id(t),ArrayLiteral(ArrayLiteral(StringLiteral(hello),StringLiteral(myfen)),ArrayLiteral(FloatLiteral(1e-05),IntLiteral(45))))])"""
+        self.assertTrue(TestAST.checkASTGen(input,expect,304))
+    
     
 
     
