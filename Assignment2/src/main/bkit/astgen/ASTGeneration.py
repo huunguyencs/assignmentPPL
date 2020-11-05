@@ -333,7 +333,7 @@ class ASTGeneration(BKITVisitor):
             expr = self.visit(ctx.exp())
             return Return(expr)
         else:
-            return Return()
+            return Return(None)
 
     def visitExp(self, ctx:BKITParser.ExpContext):
         """
