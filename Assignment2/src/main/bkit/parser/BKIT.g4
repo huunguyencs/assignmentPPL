@@ -76,7 +76,11 @@ stmt_list: vardeclare* stmt*;
 assign_stmt: variable AS exp SM;
 
 //if statement
-if_stmt: IF exp THEN stmt_list (ELSEIF exp THEN stmt_list)* (ELSE stmt_list)? ENDIF DOT;
+if_stmt: if_part elseif_part* else_part? ENDIF DOT;
+
+if_part: IF exp THEN stmt_list;
+elseif_part: ELSEIF exp THEN stmt_list;
+else_part: ELSE stmt_list;
 
 //for statement
 for_stmt: FOR LP for_loop_con RP DO stmt_list ENDFOR DOT;

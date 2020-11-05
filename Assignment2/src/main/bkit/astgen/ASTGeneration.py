@@ -15,14 +15,14 @@ class ASTGeneration(BKITVisitor):
             var = ctx.vardeclare()
             if isinstance(var,list):
                 for v in var:
-                    vardecl += self.visit(v)
+                    vardecl.extend(self.visit(v))
             else:
                 vardecl = self.visit(var)
         if ctx.funcdeclare():
             func = ctx.funcdeclare()
             if isinstance(func,list):
                 for f in func:
-                    funcdecl += self.visit(f)
+                    funcdecl.extend(self.visit(f))
             else:
                 funcdecl = self.visit(func)
         return Program(vardecl + funcdecl)
@@ -35,7 +35,7 @@ class ASTGeneration(BKITVisitor):
         """
         return self.visit(ctx.idlistinit())
 
-    # ************************************
+
     def visitIdlistinit(self,ctx:BKITParser.IdlistinitContext):
         """
         Visit Id list
@@ -71,7 +71,6 @@ class ASTGeneration(BKITVisitor):
         return var, dim
 
 
-    # ***************************************
     def visitDimension(self,ctx:BKITParser.DimensionContext):
         """
         Visit dimension ([int])
@@ -127,7 +126,7 @@ class ASTGeneration(BKITVisitor):
             var = ctx.vardeclare()
             if isinstance(var,list):
                 for v in var:
-                    vlist += self.visit(v)
+                    vlist.extend(self.visit(v))
             else:
                 vlist = self.visit(var)
         if ctx.stmt():
@@ -150,7 +149,7 @@ class ASTGeneration(BKITVisitor):
             var = ctx.vardeclare()
             if isinstance(var,list):
                 for v in var:
-                    vlist += self.visit(v)
+                    vlist.extend(self.visit(v))
             else:
                 vlist = self.visit(var)
         if ctx.stmt():
@@ -193,7 +192,7 @@ class ASTGeneration(BKITVisitor):
             return self.visit(ctx.if_stmt())
         elif ctx.return_stmt():
             return self.visit(ctx.return_stmt())
-        else:
+        elif ctx.while_stmt():
             return self.visit(ctx.while_stmt())
 
     def visitAssign_stmt(self,ctx:BKITParser.Assign_stmtContext):
@@ -205,41 +204,60 @@ class ASTGeneration(BKITVisitor):
         rhs = self.visit(ctx.exp())
         return Assign(lhs,rhs)
 
+    
+    # fail ***********************
     def visitIf_stmt(self,ctx:BKITParser.If_stmtContext):
         """
         Visit if statement
-        if_stmt: IF exp THEN stmt_list (ELSEIF exp THEN stmt_list)* (ELSE stmt_list)? ENDIF DOT;
+        if_stmt: if_part elseif_part* else_part? ENDIF DOT;
         """
-        # exp = self.visit(ctx.exp(0))
-        # stmtlist = self.visit(ctx.stmt_list(0))
-        # a = ((None,exp) + stmtlist)[1:]
-        # print(type(a[0]))
-        # print(type(a[1]))
-        # print(type(a[2]))
-        # return If([a],None)
-        exp = ctx.exp()
         ifthenStmt = []
         elseStmt = ()
-        i = 0
-        if isinstance(exp,list):
-            for e in exp:
-                ex = self.visit(e)
-                stmtlist = self.visit(ctx.stmt_list(i))
-                para = ((None,ex) + stmtlist)[1:]
-                ifthenStmt += [para]
-                i += 1
-        else:
-            ex = self.visit(self.visit(ctx.exp(0)))
-            stmtlist = self.visit(ctx.stmt_list(0))
-            para = ((None,ex) + stmtlist)[1:]
-            ifthenStmt += [para]
-            i = 1
-        if ctx.ELSE():
-            elseStmt = self.visit(ctx.stmt_list(i))
+        ifthenStmt += [self.visit(ctx.if_part())]
+        if ctx.elseif_part():
+            elseif_part = ctx.elseif_part()
+            if isinstance(elseif_part,list):
+                ifthenStmt += [self.visit(e) for e in elseif_part]
+            else:
+                ifthenStmt += [self.visit(elseif_part)]
+        if ctx.else_part():
+            elseStmt = self.visit(ctx.else_part())
         return If(ifthenStmt,elseStmt)
-
         
 
+    def visitIf_part(self,ctx:BKITParser.If_partContext):
+        """
+        Visit If part in if statement
+        if_part: IF exp THEN stmt_list;
+        """
+        exp = self.visit(ctx.exp())
+        stmt_list = ([],[])
+        if ctx.stmt_list():
+            stmt_list = self.visit(ctx.stmt_list())
+        res = ((None, exp) + stmt_list)[1:]
+        return res
+
+    def visitElseif_part(self, ctx:BKITParser.Elseif_partContext):
+        """
+        Visit ElseIf part in if statement
+        elseif_part: ELSEIF exp THEN stmt_list;
+        """
+        exp = self.visit(ctx.exp())
+        stmt_list = ([],[])
+        if ctx.stmt_list():
+            stmt_list = self.visit(ctx.stmt_list())
+        res = ((None, exp) + stmt_list)[1:]
+        return res
+
+    def visitElse_part(self, ctx:BKITParser.Else_partContext):
+        """
+        Visit Else part in if statement
+        else_part: ELSE stmt_list;
+        """
+        stmt_list = ([],[])
+        if ctx.stmt_list():
+            stmt_list = self.visit(ctx.stmt_list())
+        return stmt_list
 
     def visitFor_stmt(self, ctx:BKITParser.For_stmtContext):
         """
@@ -268,7 +286,9 @@ class ASTGeneration(BKITVisitor):
         while_stmt: WHILE exp DO stmt_list ENDWHILE DOT;
         """
         exp = self.visit(ctx.exp())
-        stmtlist = self.visit(ctx.stmt_list())
+        stmtlist = ([],[])
+        if ctx.stmt_list():
+            stmtlist = self.visit(ctx.stmt_list())
         return While(exp,stmtlist)
     
     def visitDo_stmt(self,ctx:BKITParser.Do_stmtContext):
@@ -276,9 +296,11 @@ class ASTGeneration(BKITVisitor):
         Visit do statement
         do_stmt: DO stmt_list WHILE exp ENDDO DOT;
         """
-        stmt_list = self.visit(ctx.stmt_list())
+        stmtlist = ([],[])
+        if ctx.stmt_list():
+            stmtlist = self.visit(ctx.stmt_list())
         exp = self.visit(ctx.exp())
-        return Dowhile(stmt_list,exp)
+        return Dowhile(stmtlist,exp)
 
     def visitBreak_stmt(self, ctx:BKITParser.Break_stmtContext):
         """
@@ -301,14 +323,15 @@ class ASTGeneration(BKITVisitor):
         """
         return self.visit(ctx.call())
 
+    # fail*******************************
     def visitReturn_stmt(self,ctx:BKITParser.Return_stmtContext):
         """
         Visit return statement
         return_stmt: RETURN exp? SM;
         """
         if ctx.exp():
-            exp = self.visit(ctx.exp())
-            return Return(exp)
+            expr = self.visit(ctx.exp())
+            return Return(expr)
         else:
             return Return()
 
