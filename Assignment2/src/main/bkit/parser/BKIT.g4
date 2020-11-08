@@ -30,7 +30,10 @@ options{
 */
 program  : vardeclare* funcdeclare* EOF;
 
-
+// declare
+//     : vardeclare
+//     | funcdeclare
+//     ;
 /*
     Var declare
 */
