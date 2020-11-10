@@ -594,7 +594,7 @@ Body:
     Return;
 EndBody."""
         expect = """Program([VarDecl(Id(m),IntLiteral(0)),FuncDecl(Id(foo)[],([][Return()]))])"""
-        self.assertTrue(TestAST.checkASTGen(input,expect,359))
+        self.assertTrue(TestAST.checkASTGen(input,expect,360))
     
     def test_return_stmt_2(self):
         input = r"""Function: test_return
@@ -608,7 +608,7 @@ Body:
     EndIf.
 EndBody."""
         expect = """Program([FuncDecl(Id(test_return)[],([][If(BooleanLiteral(true),[],[Return(BooleanLiteral(true))])ElseIf(BinaryOp(&&,BinaryOp(==,Id(x),BooleanLiteral(false)),BinaryOp(==,Id(x),BooleanLiteral(true))),[],[Return(StringLiteral(Stupid))])Else([],[Return(BooleanLiteral(false))])]))])"""
-        self.assertTrue(TestAST.checkASTGen(input,expect,360))
+        self.assertTrue(TestAST.checkASTGen(input,expect,361))
     
     def test_return_stmt_3(self):
         input = r"""Function: test_ret
@@ -626,201 +626,270 @@ Body:
     EndWhile.
 EndBody."""
         expect = """Program([FuncDecl(Id(test_ret)[VarDecl(Id(ret)),VarDecl(Id(m))],([VarDecl(Id(x),IntLiteral(0))][While(BinaryOp(<,Id(x),Id(m)),[],[If(BinaryOp(==,Id(x),BinaryOp(-,Id(m),IntLiteral(1))),[],[Return(CallStmt(Id(call),[BinaryOp(*,Id(m),Id(m))]))])ElseIf(BinaryOp(<,Id(x),BinaryOp(\,Id(m),IntLiteral(2))),[],[Return(CallStmt(Id(call),[Id(m),Id(ret)]))])Else([],[Assign(Id(x),BinaryOp(+,Id(x),IntLiteral(1)))])])]))])"""
-        self.assertTrue(TestAST.checkASTGen(input,expect,361))
+        self.assertTrue(TestAST.checkASTGen(input,expect,362))
     
-    # def test_exp_stmt_1(self):
-    #     input = r""" """
-    #     expect = """ """
-    #     self.assertTrue(TestAST.checkASTGen(input,expect,362))
+    def test_exp_stmt_1(self):
+        input = r"""Function: foo
+Body:
+    x = x + 1;
+EndBody."""
+        expect = """Program([FuncDecl(Id(foo)[],([][Assign(Id(x),BinaryOp(+,Id(x),IntLiteral(1)))]))])"""
+        self.assertTrue(TestAST.checkASTGen(input,expect,363))
     
-    # def test_exp_stmt_2(self):
-    #     input = r""" """
-    #     expect = """ """
-    #     self.assertTrue(TestAST.checkASTGen(input,expect,363))
+    def test_exp_stmt_2(self):
+        input = r"""Function: func
+Body:
+    y = y * 2 \ 5 + t;
+    m = foo() + ( 7 + 2 )*8;
+    Return;
+EndBody."""
+        expect = """Program([FuncDecl(Id(func)[],([][Assign(Id(y),BinaryOp(+,BinaryOp(\,BinaryOp(*,Id(y),IntLiteral(2)),IntLiteral(5)),Id(t))),Assign(Id(m),BinaryOp(+,CallStmt(Id(foo),[]),BinaryOp(*,BinaryOp(+,IntLiteral(7),IntLiteral(2)),IntLiteral(8)))),Return()]))])"""
+        self.assertTrue(TestAST.checkASTGen(input,expect,364))
     
-    # def test_exp_stmt_3(self):
-    #     input = r""" """
-    #     expect = """ """
-    #     self.assertTrue(TestAST.checkASTGen(input,expect,364))
+    def test_exp_stmt_3(self):
+        input = r"""Function: ppl
+Body:
+    call(x+y,t*2+1);
+    foo()[1+2][t()] = 7 + x;
+EndBody."""
+        expect = """Program([FuncDecl(Id(ppl)[],([][CallStmt(Id(call),[BinaryOp(+,Id(x),Id(y)),BinaryOp(+,BinaryOp(*,Id(t),IntLiteral(2)),IntLiteral(1))]),Assign(ArrayCell(CallStmt(Id(foo),[]),[BinaryOp(+,IntLiteral(1),IntLiteral(2)),CallStmt(Id(t),[])]),BinaryOp(+,IntLiteral(7),Id(x)))]))])"""
+        self.assertTrue(TestAST.checkASTGen(input,expect,365))
     
-    # def test_exp_stmt_4(self):
-    #     input = r""" """
-    #     expect = """ """
-    #     self.assertTrue(TestAST.checkASTGen(input,expect,365))
+    def test_exp_stmt_4(self):
+        input = r"""Function: test_Exp
+Parameter: p, t[6]
+Body:
+    Var: t = 0, x[5] = {1,2,3,4,5};
+    x[4] = t() + 6+7\2;
+    y = x + 2 == 8;
+EndBody."""
+        expect = """Program([FuncDecl(Id(test_Exp)[VarDecl(Id(p)),VarDecl(Id(t),[6])],([VarDecl(Id(t),IntLiteral(0)),VarDecl(Id(x),[5],ArrayLiteral(IntLiteral(1),IntLiteral(2),IntLiteral(3),IntLiteral(4),IntLiteral(5)))][Assign(ArrayCell(x,[IntLiteral(4)]),BinaryOp(+,BinaryOp(+,CallStmt(Id(t),[]),IntLiteral(6)),BinaryOp(\,IntLiteral(7),IntLiteral(2)))),Assign(Id(y),BinaryOp(==,BinaryOp(+,Id(x),IntLiteral(2)),IntLiteral(8)))]))])"""
+        self.assertTrue(TestAST.checkASTGen(input,expect,366))
     
-    # def test_exp_stmt_5(self):
-    #     input = r""" """
-    #     expect = """ """
-    #     self.assertTrue(TestAST.checkASTGen(input,expect,366))
+    def test_exp_stmt_5(self):
+        input = r"""Function: t
+Body:
+    If x == 2 + foo()*1.5 Then
+        t = foo({1,2,3});
+    Else
+        sum = sum + 1;
+        n = y||8+2;
+    EndIf.
+EndBody."""
+        expect = """Program([FuncDecl(Id(t)[],([][If(BinaryOp(==,Id(x),BinaryOp(+,IntLiteral(2),BinaryOp(*,CallStmt(Id(foo),[]),FloatLiteral(1.5)))),[],[Assign(Id(t),CallStmt(Id(foo),[ArrayLiteral(IntLiteral(1),IntLiteral(2),IntLiteral(3))]))])Else([],[Assign(Id(sum),BinaryOp(+,Id(sum),IntLiteral(1))),Assign(Id(n),BinaryOp(||,Id(y),BinaryOp(+,IntLiteral(8),IntLiteral(2))))])]))])"""
+        self.assertTrue(TestAST.checkASTGen(input,expect,367))
     
-    # def test_exp_stmt_6(self):
-    #     input = r""" """
-    #     expect = """ """
-    #     self.assertTrue(TestAST.checkASTGen(input,expect,367))
+    def test_exp_stmt_6(self):
+        input = r"""Function: love
+Body:
+    m = m <= 2 + 7 || foo()* call();
+    Return m; 
+EndBody."""
+        expect = """Program([FuncDecl(Id(love)[],([][Assign(Id(m),BinaryOp(<=,Id(m),BinaryOp(||,BinaryOp(+,IntLiteral(2),IntLiteral(7)),BinaryOp(*,CallStmt(Id(foo),[]),CallStmt(Id(call),[]))))),Return(Id(m))]))])"""
+        self.assertTrue(TestAST.checkASTGen(input,expect,368))
     
-    # def test_exp_stmt_7(self):
-    #     input = r""" """
-    #     expect = """ """
-    #     self.assertTrue(TestAST.checkASTGen(input,expect,368))
+    def test_exp_stmt_7(self):
+        input = r"""Function: k
+Body:
+    i = 7.6e-1 \. 9 +. t();
+    m = {1,2,3} * 6;
+EndBody."""
+        expect = """Program([FuncDecl(Id(k)[],([][Assign(Id(i),BinaryOp(+.,BinaryOp(\.,FloatLiteral(0.76),IntLiteral(9)),CallStmt(Id(t),[]))),Assign(Id(m),BinaryOp(*,ArrayLiteral(IntLiteral(1),IntLiteral(2),IntLiteral(3)),IntLiteral(6)))]))])"""
+        self.assertTrue(TestAST.checkASTGen(input,expect,369))
     
-    # def test_exp_stmt_8(self):
-    #     input = r""" """
-    #     expect = """ """
-    #     self.assertTrue(TestAST.checkASTGen(input,expect,369))
+    def test_exp_stmt_8(self):
+        input = r"""Function: hi
+Body:
+    Var: b[2][3]={{1,2,3},{4,5,6}};
+    m = m *. 5 + t[7][foo() + 5];
+    Return b;
+EndBody."""
+        expect = """Program([FuncDecl(Id(hi)[],([VarDecl(Id(b),[2,3],ArrayLiteral(ArrayLiteral(IntLiteral(1),IntLiteral(2),IntLiteral(3)),ArrayLiteral(IntLiteral(4),IntLiteral(5),IntLiteral(6))))][Assign(Id(m),BinaryOp(+,BinaryOp(*.,Id(m),IntLiteral(5)),ArrayCell(t,[IntLiteral(7),BinaryOp(+,CallStmt(Id(foo),[]),IntLiteral(5))]))),Return(Id(b))]))])"""
+        self.assertTrue(TestAST.checkASTGen(input,expect,370))
     
-    # def test_exp_stmt_9(self):
-    #     input = r""" """
-    #     expect = """ """
-    #     self.assertTrue(TestAST.checkASTGen(input,expect,370))
+    def test_exp_stmt_9(self):
+        input = r"""Function: zero
+Body:
+    b = b + 1;
+    b = b + 2 -. 6 +. 2.;
+    While m == 0 || i && 7 Do
+        Break;
+    EndWhile.
+EndBody."""
+        expect = """Program([FuncDecl(Id(zero)[],([][Assign(Id(b),BinaryOp(+,Id(b),IntLiteral(1))),Assign(Id(b),BinaryOp(+.,BinaryOp(-.,BinaryOp(+,Id(b),IntLiteral(2)),IntLiteral(6)),FloatLiteral(2.0))),While(BinaryOp(==,Id(m),BinaryOp(&&,BinaryOp(||,IntLiteral(0),Id(i)),IntLiteral(7))),[],[Break()])]))])"""
+        self.assertTrue(TestAST.checkASTGen(input,expect,371))
     
-    # def test_exp_stmt_10(self):
-    #     input = r""" """
-    #     expect = """ """
-    #     self.assertTrue(TestAST.checkASTGen(input,expect,371))
+    def test_exp_stmt_10(self):
+        input = r"""Function: m
+Parameter: b[6]
+Body:
+    a[3 + foo(2)] = a[b[2][3]] + 4;
+    o = n + 4*.foo(2,"string") - 8%(t);
+EndBody."""
+        expect = """Program([FuncDecl(Id(m)[VarDecl(Id(b),[6])],([][Assign(ArrayCell(a,[BinaryOp(+,IntLiteral(3),CallStmt(Id(foo),[IntLiteral(2)]))]),BinaryOp(+,ArrayCell(a,[ArrayCell(b,[IntLiteral(2),IntLiteral(3)])]),IntLiteral(4))),Assign(Id(o),BinaryOp(-,BinaryOp(+,Id(n),BinaryOp(*.,IntLiteral(4),CallStmt(Id(foo),[IntLiteral(2),StringLiteral(string)]))),BinaryOp(%,IntLiteral(8),Id(t))))]))])"""
+        self.assertTrue(TestAST.checkASTGen(input,expect,372))
     
-    # def test_exp_stmt_11(self):
-    #     input = r""" """
-    #     expect = """ """
-    #     self.assertTrue(TestAST.checkASTGen(input,expect,372))
+    def test_free_1(self):
+        input = r"""Function: foo
+Parameter: a[5], b
+Body:
+    Var: i = 0;
+    While (i < 5) Do
+        a[i] = b +. 1.0;
+        i = i + 1;
+    EndWhile.
+EndBody."""
+        expect = """Program([FuncDecl(Id(foo)[VarDecl(Id(a),[5]),VarDecl(Id(b))],([VarDecl(Id(i),IntLiteral(0))][While(BinaryOp(<,Id(i),IntLiteral(5)),[],[Assign(ArrayCell(a,[Id(i)]),BinaryOp(+.,Id(b),FloatLiteral(1.0))),Assign(Id(i),BinaryOp(+,Id(i),IntLiteral(1)))])]))])"""
+        self.assertTrue(TestAST.checkASTGen(input,expect,373))
     
-    # def test_exp_stmt_12(self):
-    #     input = r""" """
-    #     expect = """ """
-    #     self.assertTrue(TestAST.checkASTGen(input,expect,373))
+    def test_free_2(self):
+        input = r"""Var: x;
+Function: fact
+Parameter: n
+Body:
+    If n == 0 Then
+        Return 1;
+    Else
+        Return n * fact (n - 1);
+    EndIf.
+EndBody.
+Function: main
+Body:
+    x = 10;
+    fact (x);
+EndBody."""
+        expect = """Program([VarDecl(Id(x)),FuncDecl(Id(fact)[VarDecl(Id(n))],([][If(BinaryOp(==,Id(n),IntLiteral(0)),[],[Return(IntLiteral(1))])Else([],[Return(BinaryOp(*,Id(n),CallStmt(Id(fact),[BinaryOp(-,Id(n),IntLiteral(1))])))])])),FuncDecl(Id(main)[],([][Assign(Id(x),IntLiteral(10)),CallStmt(Id(fact),[Id(x)])]))])"""
+        self.assertTrue(TestAST.checkASTGen(input,expect,374))
     
-    # def test_exp_stmt_13(self):
-    #     input = r""" """
-    #     expect = """ """
-    #     self.assertTrue(TestAST.checkASTGen(input,expect,374))
-    
-    # def test_exp_stmt_14(self):
+    # def test_free_3(self):
     #     input = r""" """
     #     expect = """ """
     #     self.assertTrue(TestAST.checkASTGen(input,expect,375))
     
-    # def test_exp_stmt_15(self):
+    # def test_free_4(self):
     #     input = r""" """
     #     expect = """ """
     #     self.assertTrue(TestAST.checkASTGen(input,expect,376))
     
-    # def test_exp_stmt_16(self):
+    # def test_free_5(self):
     #     input = r""" """
     #     expect = """ """
     #     self.assertTrue(TestAST.checkASTGen(input,expect,377))
     
-    # def test_exp_stmt_17(self):
+    # def test_free_6(self):
     #     input = r""" """
     #     expect = """ """
     #     self.assertTrue(TestAST.checkASTGen(input,expect,378))
     
-    # def test_exp_stmt_18(self):
+    # def test_free_7(self):
     #     input = r""" """
     #     expect = """ """
     #     self.assertTrue(TestAST.checkASTGen(input,expect,379))
     
-    # def test_exp_stmt_19(self):
+    # def test_free_8(self):
     #     input = r""" """
     #     expect = """ """
     #     self.assertTrue(TestAST.checkASTGen(input,expect,380))
     
-    # def test_exp_stmt_20(self):
+    # def test_free_9(self):
     #     input = r""" """
     #     expect = """ """
     #     self.assertTrue(TestAST.checkASTGen(input,expect,381))
     
-    # def test_free_1(self):
+    # def test_free_10(self):
     #     input = r""" """
     #     expect = """ """
     #     self.assertTrue(TestAST.checkASTGen(input,expect,382))
-
-    # def test_free_2(self):
+    
+    # def test_free_11(self):
     #     input = r""" """
     #     expect = """ """
     #     self.assertTrue(TestAST.checkASTGen(input,expect,383))
 
-    # def test_free_3(self):
+    # def test_free_12(self):
     #     input = r""" """
     #     expect = """ """
     #     self.assertTrue(TestAST.checkASTGen(input,expect,384))
 
-    # def test_free_4(self):
+    # def test_free_13(self):
     #     input = r""" """
     #     expect = """ """
     #     self.assertTrue(TestAST.checkASTGen(input,expect,385))
 
-    # def test_free_5(self):
+    # def test_free_14(self):
     #     input = r""" """
     #     expect = """ """
     #     self.assertTrue(TestAST.checkASTGen(input,expect,386))
 
-    # def test_free_6(self):
+    # def test_free_15(self):
     #     input = r""" """
     #     expect = """ """
     #     self.assertTrue(TestAST.checkASTGen(input,expect,387))
 
-    # def test_free_7(self):
+    # def test_free_16(self):
     #     input = r""" """
     #     expect = """ """
     #     self.assertTrue(TestAST.checkASTGen(input,expect,388))
 
-    # def test_free_8(self):
+    # def test_free_17(self):
     #     input = r""" """
     #     expect = """ """
     #     self.assertTrue(TestAST.checkASTGen(input,expect,389))
 
-    # def test_free_9(self):
+    # def test_free_18(self):
     #     input = r""" """
     #     expect = """ """
     #     self.assertTrue(TestAST.checkASTGen(input,expect,390))
 
-    # def test_free_10(self):
+    # def test_free_19(self):
     #     input = r""" """
     #     expect = """ """
     #     self.assertTrue(TestAST.checkASTGen(input,expect,391))
 
-    # def test_free_11(self):
+    # def test_free_20(self):
     #     input = r""" """
     #     expect = """ """
     #     self.assertTrue(TestAST.checkASTGen(input,expect,392))
 
-    # def test_free_12(self):
+    # def test_free_21(self):
     #     input = r""" """
     #     expect = """ """
     #     self.assertTrue(TestAST.checkASTGen(input,expect,393))
 
-    # def test_free_13(self):
+    # def test_free_22(self):
     #     input = r""" """
     #     expect = """ """
     #     self.assertTrue(TestAST.checkASTGen(input,expect,394))
 
-    # def test_free_14(self):
+    # def test_free_23(self):
     #     input = r""" """
     #     expect = """ """
     #     self.assertTrue(TestAST.checkASTGen(input,expect,395))
 
-    # def test_free_15(self):
+    # def test_free_24(self):
     #     input = r""" """
     #     expect = """ """
     #     self.assertTrue(TestAST.checkASTGen(input,expect,396))
 
-    # def test_free_16(self):
+    # def test_free_25(self):
     #     input = r""" """
     #     expect = """ """
     #     self.assertTrue(TestAST.checkASTGen(input,expect,397))
 
-    # def test_free_17(self):
+    # def test_free_26(self):
     #     input = r""" """
     #     expect = """ """
     #     self.assertTrue(TestAST.checkASTGen(input,expect,398))
 
-    # def test_free_18(self):
+    # def test_free_27(self):
     #     input = r""" """
     #     expect = """ """
     #     self.assertTrue(TestAST.checkASTGen(input,expect,399))
 
-    # def test_free_19(self):
+    # def test_free_28(self):
     #     input = r""" """
     #     expect = """ """
     #     self.assertTrue(TestAST.checkASTGen(input,expect,400))
+
 
     
