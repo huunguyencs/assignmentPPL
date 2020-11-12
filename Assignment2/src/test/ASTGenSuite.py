@@ -914,25 +914,78 @@ EndBody."""
         expect = """Program([VarDecl(Id(x)),VarDecl(Id(x)),VarDecl(Id(x)),VarDecl(Id(x)),VarDecl(Id(x)),VarDecl(Id(x)),FuncDecl(Id(main)[],([VarDecl(Id(main)),VarDecl(Id(main)),VarDecl(Id(main)),VarDecl(Id(x)),VarDecl(Id(x)),VarDecl(Id(x)),VarDecl(Id(x)),VarDecl(Id(x))][]))])"""
         self.assertTrue(TestAST.checkASTGen(input,expect,386))
 
-    # def test_free_15(self):
-    #     input = r""" """
-    #     expect = """ """
-    #     self.assertTrue(TestAST.checkASTGen(input,expect,387))
+    def test_free_15(self):
+        input = r"""Function: test
+Body:
+    Var: a[5];
+    a[3 + foo(2)] = a[b[2][3]] + 4;
+    If bool_of_string ("True") Then
+        a = int_of_string (read ());
+        b = float_of_int (a) +. 2.0;
+    EndIf.
+EndBody."""
+        expect = """Program([FuncDecl(Id(test)[],([VarDecl(Id(a),[5])][Assign(ArrayCell(a,[BinaryOp(+,IntLiteral(3),CallStmt(Id(foo),[IntLiteral(2)]))]),BinaryOp(+,ArrayCell(a,[ArrayCell(b,[IntLiteral(2),IntLiteral(3)])]),IntLiteral(4))),If(CallStmt(Id(bool_of_string),[StringLiteral(True)]),[],[Assign(Id(a),CallStmt(Id(int_of_string),[CallStmt(Id(read),[])])),Assign(Id(b),BinaryOp(+.,CallStmt(Id(float_of_int),[Id(a)]),FloatLiteral(2.0)))])]))])"""
+        self.assertTrue(TestAST.checkASTGen(input,expect,387))
 
-    # def test_free_16(self):
-    #     input = r""" """
-    #     expect = """ """
-    #     self.assertTrue(TestAST.checkASTGen(input,expect,388))
+    def test_free_16(self):
+        input = r"""Var: m,n[2] = "string";
+Var: variablelist;
+Function: main
+Body:
+    Var: r = 10., v;
+    v = (4. \. 3.) *. 3.14 *. r *. r *. r;
+EndBody."""
+        expect = """Program([VarDecl(Id(m)),VarDecl(Id(n),[2],StringLiteral(string)),VarDecl(Id(variablelist)),FuncDecl(Id(main)[],([VarDecl(Id(r),FloatLiteral(10.0)),VarDecl(Id(v))][Assign(Id(v),BinaryOp(*.,BinaryOp(*.,BinaryOp(*.,BinaryOp(*.,BinaryOp(\.,FloatLiteral(4.0),FloatLiteral(3.0)),FloatLiteral(3.14)),Id(r)),Id(r)),Id(r)))]))])"""
+        self.assertTrue(TestAST.checkASTGen(input,expect,388))
 
-    # def test_free_17(self):
-    #     input = r""" """
-    #     expect = """ """
-    #     self.assertTrue(TestAST.checkASTGen(input,expect,389))
+    def test_free_17(self):
+        input = r"""Function: main
+Body:
+    For (i = 0, i < 10, 2) Do
+        writeln(i);
+        While n < 10 Do
+            While m == True Do
+                m = m + 1;
+                Return m;
+            EndWhile.
+            Do
+                foo (2 + x, 4. \. y);
+                goo ();
+            While i + 1 EndDo.
+        EndWhile.
+        If m && 5 Then
+            call();
+            Break;
+        EndIf.
+    EndFor.
+    **This is a comment
+    a = a + 1;
+    **
+    Return True + " string ";
+EndBody."""
+        expect = """Program([FuncDecl(Id(main)[],([][For(Id(i),IntLiteral(0),BinaryOp(<,Id(i),IntLiteral(10)),IntLiteral(2),[],[CallStmt(Id(writeln),[Id(i)]),While(BinaryOp(<,Id(n),IntLiteral(10)),[],[While(BinaryOp(==,Id(m),BooleanLiteral(true)),[],[Assign(Id(m),BinaryOp(+,Id(m),IntLiteral(1))),Return(Id(m))]),Dowhile([],[CallStmt(Id(foo),[BinaryOp(+,IntLiteral(2),Id(x)),BinaryOp(\.,FloatLiteral(4.0),Id(y))]),CallStmt(Id(goo),[])],BinaryOp(+,Id(i),IntLiteral(1)))]),If(BinaryOp(&&,Id(m),IntLiteral(5)),[],[CallStmt(Id(call),[]),Break()])]),Return(BinaryOp(+,BooleanLiteral(true),StringLiteral( string )))]))])"""
+        self.assertTrue(TestAST.checkASTGen(input,expect,389))
 
-    # def test_free_18(self):
-    #     input = r""" """
-    #     expect = """ """
-    #     self.assertTrue(TestAST.checkASTGen(input,expect,390))
+    def test_free_18(self):
+        input = r"""Function: m
+Parameter: x
+Body:
+    If x == 5 Then
+        x = 1;
+        Continue;
+    ElseIf x == 6 Then
+        x = 2;
+        Break;
+    ElseIf x == 4 Then
+        x = 3;
+        Return x;
+    Else
+        x = 0;
+    EndIf.
+    Return False;
+EndBody."""
+        expect = """Program([FuncDecl(Id(m)[VarDecl(Id(x))],([][If(BinaryOp(==,Id(x),IntLiteral(5)),[],[Assign(Id(x),IntLiteral(1)),Continue()])ElseIf(BinaryOp(==,Id(x),IntLiteral(6)),[],[Assign(Id(x),IntLiteral(2)),Break()])ElseIf(BinaryOp(==,Id(x),IntLiteral(4)),[],[Assign(Id(x),IntLiteral(3)),Return(Id(x))])Else([],[Assign(Id(x),IntLiteral(0))]),Return(BooleanLiteral(false))]))])"""
+        self.assertTrue(TestAST.checkASTGen(input,expect,390))
 
     # def test_free_19(self):
     #     input = r""" """
