@@ -10,7 +10,6 @@ class ASTGeneration(BKITVisitor):
         """
         vardecl = []
         funcdecl = []
-
         if ctx.vardeclare():
             var = ctx.vardeclare()
             if isinstance(var,list):
@@ -49,7 +48,7 @@ class ASTGeneration(BKITVisitor):
 
     def visitIdinit(self,ctx:BKITParser.IdinitContext):
         """
-        Visit Id with dimension and literal init
+        Visit var with dimension and literal init
         idinit: iddimen (AS lit)?;
         """
         var, dim = self.visit(ctx.iddimen())
@@ -61,7 +60,7 @@ class ASTGeneration(BKITVisitor):
 
     def visitIddimen(self, ctx:BKITParser.IddimenContext):
         """
-        Visit Id dimension
+        Visit var dimension
         iddimen: ID dimension?;
         """
         var = Id(ctx.ID().getText())
@@ -73,7 +72,7 @@ class ASTGeneration(BKITVisitor):
 
     def visitDimension(self,ctx:BKITParser.DimensionContext):
         """
-        Visit dimension ([int])
+        Visit dimension ([int]) 
         dimension: LR INTLIT RR dimension?;
         """
         if ctx.getChildCount() == 3:
@@ -91,7 +90,7 @@ class ASTGeneration(BKITVisitor):
         param = []
         body = self.visit(ctx.body())
 
-        if ctx.getChildCount() > 5:
+        if ctx.getChildCount() > 4:
             param = self.visit(ctx.paralist())
 
         return [FuncDecl(name,param,body)]
@@ -120,7 +119,7 @@ class ASTGeneration(BKITVisitor):
         """
         vlist = []
         slist = []
-        if ctx.getChildCount() <= 4:
+        if ctx.getChildCount() == 4:
             return vlist, slist
         if ctx.vardeclare():
             var = ctx.vardeclare()
@@ -176,24 +175,7 @@ class ASTGeneration(BKITVisitor):
             | while_stmt
             ;
         """
-        if ctx.assign_stmt():
-            return self.visit(ctx.assign_stmt())
-        elif ctx.break_stmt():
-            return self.visit(ctx.break_stmt())
-        elif ctx.call_stmt():
-            return self.visit(ctx.call_stmt())
-        elif ctx.continue_stmt():
-            return self.visit(ctx.continue_stmt())
-        elif ctx.do_stmt():
-            return self.visit(ctx.do_stmt())
-        elif ctx.for_stmt():
-            return self.visit(ctx.for_stmt())
-        elif ctx.if_stmt():
-            return self.visit(ctx.if_stmt())
-        elif ctx.return_stmt():
-            return self.visit(ctx.return_stmt())
-        elif ctx.while_stmt():
-            return self.visit(ctx.while_stmt())
+        return self.visitChildren(ctx)
 
     def visitAssign_stmt(self,ctx:BKITParser.Assign_stmtContext):
         """
@@ -489,7 +471,7 @@ class ASTGeneration(BKITVisitor):
         Visit index operator (index part)
         index_op: LR exp RR index_op?;
         """
-        if ctx.getChildCount() <= 3:
+        if ctx.getChildCount() == 3:
             return [self.visit(ctx.exp())]
         else:
             return [self.visit(ctx.exp())] + self.visit(ctx.index_op())
@@ -588,9 +570,7 @@ class ASTGeneration(BKITVisitor):
             | arraylit
             ;
         """
-        if ctx.primitive():
-            return self.visit(ctx.primitive())
-        return self.visit(ctx.arraylit())
+        return self.visitChildren(ctx)
 
     def visitBoollit(self,ctx:BKITParser.BoollitContext):
         """
