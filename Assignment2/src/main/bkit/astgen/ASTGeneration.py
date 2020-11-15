@@ -194,7 +194,7 @@ class ASTGeneration(BKITVisitor):
         if_stmt: if_part elseif_part* else_part? ENDIF DOT;
         """
         ifthenStmt = []
-        elseStmt = ()
+        elseStmt = ([],[])
         ifthenStmt += [self.visit(ctx.if_part())]
         if ctx.elseif_part():
             elseif_part = ctx.elseif_part()
@@ -460,7 +460,7 @@ class ASTGeneration(BKITVisitor):
         """
         index_op = self.visit(ctx.index_op())
         if ctx.ID():
-            id = ctx.ID().getText()
+            id = Id(ctx.ID().getText())
             return ArrayCell(id,index_op)
         else:
             call = self.visit(ctx.call())
