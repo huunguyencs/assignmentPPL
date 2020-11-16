@@ -1,1 +1,0 @@
-Program([FuncDecl(Id(ham)[VarDecl(Id(x)),VarDecl(Id(y)),VarDecl(Id(z))],([][Assign(Id(x),BinaryOp(+,Id(x),IntLiteral(1))),Assign(ArrayCell(t,[BinaryOp(+,CallStmt(Id(foo),[Id(a)]),IntLiteral(1)),IntLiteral(5)]),IntLiteral(10)),Return(IntLiteral(0))])])

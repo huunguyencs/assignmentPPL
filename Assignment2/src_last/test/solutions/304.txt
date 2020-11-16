@@ -1,1 +1,0 @@
-Program([VarDecl(Id(t),ArrayLiteral(ArrayLiteral(StringLiteral(hello),StringLiteral(myfen)),ArrayLiteral(FloatLiteral(1e-05),IntLiteral(45))))])

@@ -115,12 +115,7 @@ exp
     : exp1 relational exp1
     | exp1
     ;
-// exp1
-//     : exp1 logical exp2
-//     | exp1 adding exp2
-//     | exp1 multiplying exp2
-//     | exp2
-//     ;
+
 exp1
     : exp1 logical exp11
     | exp11
