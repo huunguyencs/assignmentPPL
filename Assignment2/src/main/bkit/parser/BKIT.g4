@@ -102,7 +102,7 @@ break_stmt: BREAK SM;
 continue_stmt: CONTINUE SM;
 
 //call_statement
-call_stmt: call SM;
+call_stmt: ID LP (exp (CM exp)*)? RP SM;
 
 //return statement:;
 return_stmt: RETURN exp? SM;
@@ -335,3 +335,4 @@ ILLEGAL_ESCAPE:  '"' SCHAR* (('\\' ~[btnfr\\]) | ('\'' ~'"'))
             self.text = y[1:]
     };
 UNTERMINATED_COMMENT: '**' (.*? | EOF) ;
+

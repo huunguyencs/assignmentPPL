@@ -76,9 +76,9 @@ class ASTGeneration(BKITVisitor):
         dimension: LR INTLIT RR dimension?;
         """
         if ctx.getChildCount() == 3:
-            return [int(ctx.INTLIT().getText())] 
+            return [int(ctx.INTLIT().getText(),0)] 
         else:
-            return [int(ctx.INTLIT().getText())] + self.visit(ctx.dimension())
+            return [int(ctx.INTLIT().getText(),0)] + self.visit(ctx.dimension())
 
 
     def visitFuncdeclare(self,ctx: BKITParser.FuncdeclareContext):
@@ -303,7 +303,15 @@ class ASTGeneration(BKITVisitor):
         Visit call statement
         call_stmt: call SM;
         """
-        return self.visit(ctx.call())
+        id = Id(ctx.ID().getText())
+        param = []
+        if ctx.exp():
+            exp = ctx.exp()
+            if isinstance(exp,list):
+                param = [self.visit(e) for e in exp]
+            else:
+                param = [self.visit(exp)]
+        return CallStmt(id,param)
 
     # fail*******************************
     def visitReturn_stmt(self,ctx:BKITParser.Return_stmtContext):
@@ -422,7 +430,7 @@ class ASTGeneration(BKITVisitor):
             else:
                 param = [self.visit(exp)]
 
-        return CallStmt(id,param)
+        return CallExpr(id,param)
 
     def visitOperands(self,ctx:BKITParser.OperandsContext):
         """
