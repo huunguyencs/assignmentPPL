@@ -139,7 +139,7 @@ exp2
     | exp3
     ;
 exp3
-    : ele_exp
+    : exp3 index_op
     | exp4
     ;
 exp4
@@ -155,9 +155,8 @@ operands
 
 variable
     : ID
-    | ele_exp
+    | (ID | call) index_op
     ;
-ele_exp : (ID | call) index_op;
 index_op: LR exp RR index_op?;
 relational
     : EQ

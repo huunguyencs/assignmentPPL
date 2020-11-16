@@ -396,15 +396,20 @@ class ASTGeneration(BKITVisitor):
         else:
             return self.visit(ctx.exp3())
 
+    # ****
     def visitExp3(self, ctx:BKITParser.Exp3Context):
         """
         Visit expression - element expression (index)
         exp3
-            : ele_exp
+            : exp3 index_op
             | exp4
             ;
         """
-        return self.visitChildren(ctx)
+        if ctx.getChildCount() == 2:
+            exp3 = self.visit(ctx.exp3())
+            index_op = self.visit(ctx.index_op())
+            return ArrayCell(exp3,index_op)
+        return self.visit(ctx.exp4())
 
     def visitExp4(self, ctx:BKITParser.Exp4Context):
         """
@@ -448,31 +453,25 @@ class ASTGeneration(BKITVisitor):
         else:
             return Id(ctx.ID().getText())
 
+    # *****
     def visitVariable(self, ctx:BKITParser.VariableContext):
         """
         Visit variable include id and index
         variable
             : ID
-            | ele_exp
+            | (ID | call) index_op
             ;
         """
-        if ctx.ID():
+        if ctx.getChildCount() == 1:
             return Id(ctx.ID().getText())
         else:
-            return self.visit(ctx.ele_exp())
-    # wait teacher fix AST
-    def visitEle_exp(self, ctx:BKITParser.Ele_expContext):
-        """
-        Visit lement expression (index in array)
-        ele_exp : (ID | call) index_op;
-        """
-        index_op = self.visit(ctx.index_op())
-        if ctx.ID():
-            id = Id(ctx.ID().getText())
-            return ArrayCell(id,index_op)
-        else:
-            call = self.visit(ctx.call())
-            return ArrayCell(call,index_op)
+            pre = None
+            if ctx.ID():
+                pre = Id(ctx.ID().getText())
+            else:
+                pre = self.visit(ctx.call())
+            index_op = self.visit(ctx.index_op())
+            return ArrayCell(pre,index_op)
 
     def visitIndex_op(self, ctx:BKITParser.Index_opContext):
         """
@@ -549,7 +548,7 @@ class ASTGeneration(BKITVisitor):
                 litlist = [self.visit(l) for l in lit]
             else:
                 litlist = [self.visit(lit)]
-        return ArrayLiteral(litlist) 
+        return ArrayLiteral(litlist)
 
     def visitPrimitive(self, ctx:BKITParser.PrimitiveContext):
         """
