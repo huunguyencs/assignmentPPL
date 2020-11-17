@@ -30,13 +30,6 @@ options{
 */
 program  : vardeclare* funcdeclare* EOF;
 
-// declare
-//     : vardeclare
-//     | funcdeclare
-//     ;
-/*
-    Var declare
-*/
 vardeclare: VAR CL idlistinit SM;
 idlistinit: idinit (CM idinit)*;
 idinit: iddimen (AS lit)?;

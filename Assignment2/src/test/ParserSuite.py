@@ -162,7 +162,7 @@ Body:
     x = x + 1;
     x + 1;
 EndBody."""
-        expect = "Error on line 5 col 9: ;"
+        expect = "Error on line 5 col 6: +"
         self.assertTrue(TestParser.checkParser(input,expect,217))
 
     def test_218(self):
