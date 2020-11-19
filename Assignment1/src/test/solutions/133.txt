@@ -1,1 +1,0 @@
-this is my string\n,+,0.2e100,<EOF>

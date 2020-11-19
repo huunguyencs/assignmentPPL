@@ -1,1 +1,0 @@
-While,x,!=,=/=,5,r,Then,o,<EOF>

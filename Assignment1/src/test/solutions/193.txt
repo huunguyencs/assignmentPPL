@@ -1,1 +1,0 @@
-While,x,==,8.12,eae,<EOF>

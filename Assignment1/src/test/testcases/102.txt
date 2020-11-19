@@ -1,1 +1,0 @@
-nameOfStu = "This is a string: " 
