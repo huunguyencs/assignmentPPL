@@ -7,7 +7,9 @@ class CheckSuite(unittest.TestCase):
 
     def test_undeclared_function(self):
         """Simple program: main"""
-        input = """Function: main
+        input = """
+                Var: x;
+                Function: main
                    Body: 
                         foo();
                    EndBody."""
