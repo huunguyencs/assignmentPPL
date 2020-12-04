@@ -62,10 +62,10 @@ class Symbol:
         else:
             return None
 
-    # @staticmethod
-    # def setTypeFromName(name,mtype,env):
-    #     sym = Symbol.getObjFromName(name,env[0] + env[1])
-    #     Symbol.setTypeFromObj(sym,mtype)
+    @staticmethod
+    def setArrayType(symbol,mType,funcInfo):
+        if type(symbol.mtype.eletype) is Unknown:
+            symbol.mtype.eletype = mType
     
     @staticmethod
     def setTypeFromObj(symbol,mType,funcInfo):
@@ -226,12 +226,16 @@ class StaticChecker(BaseVisitor):
         Checker.checkRedeclared(ast.variable.name,env,kind)
         if ast.varDimen:
             if ast.varInit:
-                pass
+                mType = self.visit(ast.varInit,None)
+                newSym = Symbol(ast.variable.name,mType,kind)
+                return [newSym] + env[0], env[1]
             else:
-                pass
+                mType = ArrayType(ast.varDimen,Unknown())
+                newSym = Symbol(ast.variable.name,mType,kind)
+                return [newSym] + env[0], env[1]
         else:
             if ast.varInit:
-                mType = self.visit(ast.varInit,c)
+                mType = self.visit(ast.varInit,None)
                 newSym = Symbol(ast.variable.name,mType,kind)
                 return ([newSym] + env[0], env[1])
             else:
@@ -251,12 +255,12 @@ class StaticChecker(BaseVisitor):
         param = reduce(lambda s, para: self.visit(para,(Parameter(), s)),ast.param,([],[]))[0]
         newEnv = (param, c[0]+c[1])
         newEnv = reduce(lambda s, ele: self.visit(ele, (Variable(), s)), ast.body[0], newEnv)
-        returnType = Unknown()
-        func = list(filter(lambda n: n.name == ast.name.name and type(n.mtype) is MType,c[0]+c[1]))[0]
+        # returnType = Unknown()
+        func = list(filter(lambda n: n.name == ast.name.name and type(n.kind) is Function,c[0]+c[1]))[0]
         funcInfo = (func, param)
         self.visitStmts(ast.body[1], (funcInfo, newEnv))
-        paraList = [Symbol.getType(p) for p in param]
-        Symbol.setFuncType(func,MType(paraList, returnType))
+        # paraList = [Symbol.getType(p) for p in param]
+        # Symbol.setFuncType(func,MType(paraList, returnType))
         return c
 
 
@@ -267,8 +271,27 @@ class StaticChecker(BaseVisitor):
         arr:Expr
         idx:List[Expr]
         """
-        pass
-        
+        funcInfo, kind, env = c
+        arr = self.visit(ast.arr,(funcInfo,None,env))
+        if len(arr.mtype.dimen) != len(ast.idx):
+            raise TypeMismatchInExpression(ast)
+        if type(Symbol.getType(arr)) is ArrayType:
+            arrType = arr.mtype.eletype
+            
+            for e in ast.idx:
+                ele = self.visit(e,(funcInfo,None,env))
+                eleType = Symbol.getType(ele)
+                if type(arrType) is Unknown and type(eleType) is Unknown:
+                    raise TypeCannotBeInferred(ast)
+                elif type(eleType) is Unknown:
+                    if not Symbol.setTypeFromObj(ele,arrType,funcInfo):
+                        raise TypeMismatchInExpression(ast)
+                elif type(arrType) is Unknown:
+                    arr.mtype.eletype = eleType
+                    
+            return arr
+                
+    
 
     def visitBinaryOp(self, ast, c):
         """
@@ -280,8 +303,8 @@ class StaticChecker(BaseVisitor):
         """
         funcInfo, kind, env = c
         op = ast.op
-        left = self.visit(ast.left,(funcInfo, None,env))
-        right = self.visit(ast.right,(funcInfo, None,env))
+        left = self.visit(ast.left,(funcInfo, None, env))
+        right = self.visit(ast.right,(funcInfo, None, env))
         typeLeft = Symbol.getType(left)
         typeRight = Symbol.getType(right)
 
@@ -344,7 +367,7 @@ class StaticChecker(BaseVisitor):
         method:Id
         param:List[Expr]
         """
-        funcInfo, env = c
+        funcInfo,kind, env = c
         func = Checker.checkUndeclared(ast.method.name,env,Function())
         if len(func.mtype.intype) != len(ast.param):
             raise TypeMismatchInExpression(ast)
@@ -390,7 +413,26 @@ class StaticChecker(BaseVisitor):
         """
         value:List[Literal]
         """
-        pass
+        dimen = []
+        eleType = Unknown()
+        isFisrt = True
+        tmp = Unknown()
+        for e in ast.value:
+            if isFisrt:
+                isFisrt = False
+                x = self.visit(e,None)
+                tmp = x
+                if type(Symbol.getType(x)) is ArrayType:
+                    dimen.append(x.dimen[0])
+                    eleType = x.eletype
+                else:
+                    eleType = x
+            else:
+                x = self.visit(e,None)
+                if type(Symbol.getType(x)) != type(Symbol.getType(tmp)):
+                    raise TypeMismatchInExpression(ast)
+
+        return ArrayType(dimen,eleType)
 
     def visitAssign(self, ast, c):
         """
@@ -400,24 +442,40 @@ class StaticChecker(BaseVisitor):
         rhs: Expr
         """
         funcInfo, env = c
+        isArrayType = isinstance(ast.lhs,ArrayCell)
         left = self.visit(ast.lhs,(funcInfo, None,env))
         right = self.visit(ast.rhs,(funcInfo, None,env))
+        leftType = Symbol.getType(left)
+        rightType = Symbol.getType(right)
+
         if type(right) is Symbol:
-            if type(left.mtype) is Unknown and type(right.mtype) is Unknown:
+            if type(leftType) is Unknown and type(rightType) is Unknown:
                 raise TypeCannotBeInferred(ast)
-            elif type(left.mtype) is Unknown:
-                if not Symbol.setTypeFromObj(left,right.mtype,funcInfo):
+            elif type(leftType) is Unknown:
+                pass
+            elif type(rightType) is Unknown:
+                pass
+            elif type(leftType) != type(rightType):
+                if type(leftType) is ArrayType:
+                    if (type(left.mtype.eletype) is type(rightType)):
+                        pass
+                    elif type(left.mtype.eletype) is Unknown:
+                        left.mtype.eletype = rightType
+                    else:
+                        raise TypeMismatchInStatement(ast)
+                else:
                     raise TypeMismatchInStatement(ast)
-            elif type(right.mtype) is Unknown:
-                if not Symbol.setTypeFromObj(right,left.mtype,funcInfo):
-                    raise TypeMismatchInStatement(ast)
-            elif type(left.mtype) != type(right.mtype):
-                raise TypeMismatchInStatement(ast)
         else:
-            if type(left.mtype) is Unknown:
-                if not Symbol.setTypeFromObj(left,right):
+            if type(leftType) is Unknown:
+                Symbol.setTypeFromObj(left,right,funcInfo)
+            elif type(leftType) is ArrayType:
+                if (type(left.mtype.eletype) is type(rightType)):
+                    pass
+                elif type(left.mtype.eletype) is Unknown:
+                    left.mtype.eletype = rightType
+                else:
                     raise TypeMismatchInStatement(ast)
-            elif type(left.mtype) != type(right):
+            elif type(leftType) != type(rightType):
                 raise TypeMismatchInStatement(ast)
 
     def visitIf(self, ast, c):
@@ -515,12 +573,15 @@ class StaticChecker(BaseVisitor):
         if ast.expr:
             reType = self.visit(ast.expr,(funcInfo, None, env))
             if type(returnType) is not Unknown:
-                if type(reType) is not Unknown:
-                    if type(returnType) != type(reType):
+                if type(Symbol.getType(reType)) is not Unknown:
+                    if type(returnType) != type(Symbol.getType(reType)):
                         raise TypeMismatchInStatement(ast)
                 else:
                     if not Symbol.setTypeFromObj(reType,returnType,funcInfo):
                         raise TypeMismatchInStatement(ast)
+            else:
+                if type(Symbol.getType(reType)) is Unknown:
+                    raise TypeCannotBeInferred(ast)
             funcInfo[0].mtype.restype = reType
         else:
             funcInfo[0].mtype.restype = VoidType()
