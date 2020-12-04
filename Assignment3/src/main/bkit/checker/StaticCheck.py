@@ -43,270 +43,324 @@ class MType:
 class Symbol:
     name: str
     mtype:Type
+    kind: Kind
 
     @staticmethod
-    def setPrimType(id, type, c, ast):
+    def getType(obj):
+        """
+        obj: Symbol
+        """
+        if isinstance(obj,Symbol):
+            return obj.mtype
+        return obj
+
+    @staticmethod
+    def getObjFromName(name, env):
+        sym = list(filter(lambda x: x.name==name, env))
+        if sym:
+            return sym[0]
+        else:
+            return None
+
+    # @staticmethod
+    # def setTypeFromName(name,mtype,env):
+    #     sym = Symbol.getObjFromName(name,env[0] + env[1])
+    #     Symbol.setTypeFromObj(sym,mtype)
+    
+    @staticmethod
+    def setTypeFromObj(symbol,mType,funcInfo):
+        """
+        symbol: Symbol
+        mType: Type
+        funcInfo = Tuple(Symbol, List[Symbol])
+        """
+        result = True
+        if type(symbol.mtype) is Unknown:
+            if type(symbol.kind) is Parameter:
+                result = Symbol.setParaType(symbol.name,mType,funcInfo)
+            symbol.mtype = mType
+        elif type(symbol.mtype) is MType:
+            symbol.mtype.restype = mType
+        return result
+
+    @staticmethod
+    def setParaType(namePara,mType,funcInfo):
+        """
+        namePara: str
+        mType: Type
+        funcInfo: Tuple(Symbol, List[Symbol])
+        """
+        func, params = funcInfo
+        index = 0
+        for p in params:
+            if p.name == namePara:
+                break
+            index += 1
+        if type(func.mtype.intype[index]) is Unknown:
+            func.mtype.intype[index] = mType
+        elif type(func.mtype.intype[index]) != type(mType):
+            return False
+        return True
+
+    @staticmethod
+    def setFuncType(method, mType):
+        """
+        method: Symbol
+        mType: Type
+        """
+        funcType = method.mtype
+        if type(funcType) is MType:
+            for i , (ele1,_) in enumerate(zip(funcType.intype,mType.intype)):
+                if type(ele1) is Unknown:
+                    funcType.intype[i] = mType.intype[i]
+            if type(mType.restype) is not Unknown:
+                funcType.restype = mType.restype
+            else:
+                funcType.restype = VoidType()
+    @staticmethod
+    def setVarTypeWithOp(id, op, env,funcInfo):
         """
         id: str
-        type: Type
+        op: str
         """
-        for var in c:
-            if var.name == id:
-                if type(var.mtype) != Unknown and type(var.mtype) != type(type):
-                    raise TypeMismatchInExpression(ast)
-                var.mtype = type
-
-    @staticmethod
-    def setArrayType(id,dimen,eType,c, ast):
-        """
-        id: str
-        dimen: List[int]
-        eType: Type
-        """
-        for var in c:
-            if var.name ==id:
-                if type(var.mtype) != Unknown and type(var.mtype) != type(type):
-                    raise TypeMismatchInExpression(ast)
-                var.mtype.dimen = dimen
-                var.mtype.eletype = eType
-
-    @staticmethod
-    def setFuncType(id, param, returnType, c, ast):
-        """
-        id: str
-        param: List[Type]
-        returnType: Type    # None for VoidType()
-        """
-        for f in c:
-            if f.name == id:
-                if returnType is None:
-                    returnType = Unknown()
-                if (mtype.intype and mtype.intype != param) or (type(returnType) is not Unknown and type(mtype.restype) != type(returnType)):
-                    if isinstance(ast,Expr):
-                        raise TypeMismatchInExpression(ast)
-                    else:
-                        raise TypeMismatchInStatement(ast)
-                f.mtype = MType(param,returnType)
-
-    @staticmethod
-    def setVarTypeWithOp(id, op, c):
-        """
-        """
+        sym = Symbol.getObjFromName(id,env[0] + env[1])
         if op in ['-','+','*','\\','%','==','!=','<','>','<=','>=']:
-            Symbol.setPrimType(id,IntType(),c)
+            if Symbol.setTypeFromObj(sym,IntType(),funcInfo):
+                return IntType()
+            else:
+                return False
         elif op in ['-.','+.','\\.','=/=','<.','>.','<=.','>=.']:
-            Symbol.setPrimType(id,FloatType(),c)
+            if Symbol.setTypeFromObj(sym,FloatType(),funcInfo):
+                return FloatType()
+            else:
+                return False
         elif op in ['&&','||','!']:
-            Symbol.setPrimType(id,BoolType(),c)
-
-    @staticmethod
-    def isExisten(listSymbols, symbol):
-        return len([x for x in listSymbols if x.name == symbol.name]) > 0
-
-    @staticmethod
-    def mergeScope(currentScope,comingScope):
-        return list(reduce(lambda lst, sym: lst if Symbol.isExisten(lst, sym) else lst+[sym], currentScope, comingScope))
-
+            if Symbol.setTypeFromObj(sym,BoolType(),funcInfo):
+                return BoolType()
+            else:
+                return False
+                
 
 class Checker:
     @staticmethod
-    def checkRedeclared(currentScope, symbol, typeVar):
+    def checkEntryPoint(funcList):
         """
-        currentScope: List[Symbol]
-        symbol: str
+        funcList: List[FuncDecl]
         """
-        for sym in currentScope:
-            if sym.name == symbol:
-                raise Redeclared(typeVar,symbol)
-            
-
-    @staticmethod
-    def checkEntryPoint(listDecl):
-        """
-        listDecl: List[decl]
-        """
-        for sym in listDecl:
-            if sym.name.name == "main":
-                return True
+        if ([*filter(lambda x: x.name.name == "main", funcList)]):
+            return True
         raise NoEntryPoint()
 
     @staticmethod
-    def checkUndeclared(currentScope,symbol):
+    def checkRedeclared(id, env, kind):
         """
-        currentScope: List[Symbol]
-        symbol: str
+        id: str
+        kind: Kind
         """
-        for sym in currentScope:
-            if sym.name == symbol:
-                return True
-        raise Undeclared(symbol)
+        checker = Symbol.getObjFromName(id,env[0])
+        if checker:
+            raise Redeclared(kind,id)
 
+    @staticmethod
+    def checkUndeclared(id, env, kind):
+        """
+        id: str
+        kind: Kind
+        """
+        checker = Symbol.getObjFromName(id,env[0] + env[1])
+        if not checker:
+            raise Undeclared(kind,id)
+        return checker
 
 
 class StaticChecker(BaseVisitor):
     def __init__(self,ast):
         self.ast = ast
         self.global_envi = [
-Symbol("int_of_float",MType([FloatType()],IntType())),
-Symbol("float_of_int",MType([IntType()],FloatType())),
-Symbol("int_of_string",MType([StringType()],IntType())),
-Symbol("string_of_int",MType([IntType()],StringType())),
-Symbol("float_of_string",MType([StringType()],FloatType())),
-Symbol("string_of_float",MType([FloatType()],StringType())),
-Symbol("bool_of_string",MType([StringType()],BoolType())),
-Symbol("string_of_bool",MType([BoolType()],StringType())),
-Symbol("read",MType([],StringType())),
-Symbol("printLn",MType([],VoidType())),
-Symbol("printStr",MType([StringType()],VoidType())),
-Symbol("printStrLn",MType([StringType()],VoidType()))]                           
+            Symbol("int_of_float",MType([FloatType()],IntType()),Function()),
+            Symbol("float_of_int",MType([IntType()],FloatType()),Function()),
+            Symbol("int_of_string",MType([StringType()],IntType()),Function()),
+            Symbol("string_of_int",MType([IntType()],StringType()),Function()),
+            Symbol("float_of_string",MType([StringType()],FloatType()),Function()),
+            Symbol("string_of_float",MType([FloatType()],StringType()),Function()),
+            Symbol("bool_of_string",MType([StringType()],BoolType()),Function()),
+            Symbol("string_of_bool",MType([BoolType()],StringType()),Function()),
+            Symbol("read",MType([],StringType()),Function()),
+            Symbol("printLn",MType([],VoidType()),Function()),
+            Symbol("printStr",MType([StringType()],VoidType()),Function()),
+            Symbol("printStrLn",MType([StringType()],VoidType()),Function())]                           
    
     def check(self):
         return self.visit(self.ast,self.global_envi)
 
-    def visitProgram(self,ast, c):
+    def visitProgram(self, ast, c):
         """
         decl : List[Decl]
         """
+        env = (c,[])
         funcDecl = []
         for decl in ast.decl:
             if type(decl) is FuncDecl:
                 funcDecl.append(decl)
                 name = decl.name.name
-                Checker.checkRedeclared(c,name,Function())
-                c.append(Symbol(name,MType(None,Unknown())))
+                para = decl.param
+                Checker.checkRedeclared(name,env,Function())
+                func = Symbol(name,MType([Unknown()]*len(para),Unknown()),Function())
+                env[0].append(func)
             else:
-                self.visit(decl,(Variable(),c))
-            
+                env = self.visit(decl,(Variable(),env))
+        
         Checker.checkEntryPoint(funcDecl)
-        [self.visit(decl,c) for decl in funcDecl]
-            
-
+        reduce(lambda s,func: self.visit(func,s),funcDecl,env)
+        
 
     def visitVarDecl(self, ast, c):
         """
+        Decl
+        c : (kind, env)
         variable : Id
         varDimen : List[int] # empty list for scalar variable
         varInit  : Literal # null if no initial
         """
-        typeVar, scope = c
-        Checker.checkRedeclared(scope,ast.variable.name,typeVar)
+        kind, env = c
+        Checker.checkRedeclared(ast.variable.name,env,kind)
         if ast.varDimen:
             if ast.varInit:
-                type = self.visit(ast.varInit,c)
-                if ast.varDimen != type.dimen:
-                    raise Exception()
-                scope.append(Symbol(ast.variable.name,ArrayType(ast.varDimen,type.eletype)))
+                pass
             else:
-                scope.append(Symbol(ast.variable.name,ArrayType(ast.varDimen,Unknown())))
+                pass
         else:
             if ast.varInit:
-                type = self.visit(ast.varInit,c)
-                scope.append(Symbol(ast.variable.name,type))
+                mType = self.visit(ast.varInit,c)
+                newSym = Symbol(ast.variable.name,mType,kind)
+                return ([newSym] + env[0], env[1])
             else:
-                scope.append(Symbol(ast.variable.name,Unknown()))
+                newSym = Symbol(ast.variable.name,Unknown(),kind)
+                return ([newSym] + env[0], env[1])
+
 
 
     def visitFuncDecl(self, ast, c):
         """
+        Decl
+        c : env
         name: Id
         param: List[VarDecl]
         body: Tuple[List[VarDecl],List[Stmt]]
         """
-        param = []
-        [self.visit(para,(Parameter(),param)) for para in ast.param]
-        localVar = param
-        [self.visit(var,(Variable(),localVar)) for var in ast.body[0]]
+        param = reduce(lambda s, para: self.visit(para,(Parameter(), s)),ast.param,([],[]))[0]
+        newEnv = (param, c[0]+c[1])
+        newEnv = reduce(lambda s, ele: self.visit(ele, (Variable(), s)), ast.body[0], newEnv)
+        returnType = Unknown()
+        func = list(filter(lambda n: n.name == ast.name.name and type(n.mtype) is MType,c[0]+c[1]))[0]
+        funcInfo = (func, param)
+        self.visitStmts(ast.body[1], (funcInfo, newEnv))
+        paraList = [Symbol.getType(p) for p in param]
+        Symbol.setFuncType(func,MType(paraList, returnType))
+        return c
 
-        newScope = Symbol.mergeScope(c,localVar)
-
-        returnType = None
-        self.visitStmts(ast.body[1], (returnType, newScope))
-                    
-        Symbol.setFuncType(ast.name.name,param,returnType,newScope)        
-        
 
     def visitArrayCell(self, ast, c):
         """
+        LHS
+        c: funcInfo, kind, env
         arr:Expr
         idx:List[Expr]
         """
         pass
+        
 
     def visitBinaryOp(self, ast, c):
         """
+        Expr
+        c: funcInfo, kind, env
         op:str
         left:Expr
         right:Expr
         """
-        varType, scope = c
+        funcInfo, kind, env = c
         op = ast.op
-        left = self.visit(ast.left,(None,scope))
-        right = self.visit(ast.right,(None,scope))
+        left = self.visit(ast.left,(funcInfo, None,env))
+        right = self.visit(ast.right,(funcInfo, None,env))
+        typeLeft = Symbol.getType(left)
+        typeRight = Symbol.getType(right)
 
-        if type(left) is Unknown:
-            Symbol.setVarTypeWithOp(ast.left.name,op,c)
+        if type(typeLeft) is Unknown:
+            typeLeft = Symbol.setVarTypeWithOp(ast.left.name,op,env,funcInfo)
+            if not typeLeft:
+                raise TypeMismatchInExpression(ast)
 
-        if type(right) is Unknown:
-            Symbol.setVarTypeWithOp(ast.right.name,op,c)
+        if type(typeRight) is Unknown:
+            typeRight = Symbol.setVarTypeWithOp(ast.right.name,op,env,funcInfo)
+            if not typeRight:
+                raise TypeMismatchInExpression(ast)
 
         if op in ['-','+','*','\\','%']:
-            if type(left) is IntType and type(right) is IntType:
+            if type(typeLeft) is IntType and type(typeRight) is IntType:
                 return IntType()
         elif op in ['-.','+.','\\.']:
-            if type(left) is FloatType and type(right) is FloatType:
+            if type(typeLeft) is FloatType and type(typeRight) is FloatType:
                 return FloatType()
         elif op in ['==','!=','<','>','<=','>=']:
-            if type(left) is IntType and type(right) is IntType:
+            if type(typeLeft) is IntType and type(typeRight) is IntType:
                 return BoolType()
         elif op in ['=/=','<.','>.','<=.','>=.']:
-            if type(left) is FloatType and type(right) is FloatType:
+            if type(typeLeft) is FloatType and type(typeRight) is FloatType:
                 return BoolType()
         elif op in ['&&','||']:
-            if type(left) is BoolType and type(right) is BoolType:
+            if type(typeLeft) is BoolType and type(typeRight) is BoolType:
                 return BoolType()
         raise TypeMismatchInExpression(ast)
 
     def visitUnaryOp(self, ast, c):
         """
+        Expr
+        c: funcInfo, kind, env
         op:str
         body:Expr
         """
-        varType, scope = c
+        funcInfo, kind, env = c
         op = ast.op
-        typeExp = self.visit(ast.body,(None,scope))
-        if type(typeExp) is Unknown:
-            Symbol.setVarTypeWithOp(ast.body.name,op,c)
+        exp = self.visit(ast.body,(funcInfo, None,env))
+        if type(Symbol.getType(exp)) is Unknown:
+            if not Symbol.setVarTypeWithOp(ast.body.name,op,env,funcInfo):
+                raise TypeMismatchInExpression(ast)
 
         if op == '-':
-            if type(typeExp) is IntType:
+            if type(Symbol.getType(exp)) is IntType:
                 return IntType()
         elif op == '-.':
-            if type(typeExp) is FloatType:
+            if type(Symbol.getType(exp)) is FloatType:
                 return FloatType()
         elif op == '!':
-            if type(typeExp) is BoolType:
+            if type(Symbol.getType(exp)) is BoolType:
                 return BoolType()
         raise TypeMismatchInExpression(ast)
 
     def visitCallExpr(self, ast, c):
         """
+        Expr
+        c: funcInfo, kind, env
         method:Id
         param:List[Expr]
         """
-        varType, scope = c
-        mtype = self.visit(ast.method,(Function(),scope))
-        paraReal = mtype.intype
-        para = [self.visit(p,(None,c)) for p in ast.param]
-
-        if paraReal is None:
-            Symbol.setFuncType(ast.method.name,para,mtype.restype,scope)
-        else:
-            if len(para) != len(paraReal):
+        funcInfo, env = c
+        func = Checker.checkUndeclared(ast.method.name,env,Function())
+        if len(func.mtype.intype) != len(ast.param):
+            raise TypeMismatchInExpression(ast)
+        for i, (arg, typePara) in enumerate(zip(ast.param,func.mtype.intype)):
+            a = self.visit(arg,(funcInfo, None,env))
+            if type(Symbol.getType(a)) is Unknown:
+                if type(typePara) is not Unknown:
+                    Symbol.setTypeFromObj(a,typePara,funcInfo)
+                else:
+                    raise TypeCannotBeInferred(ast)
+            elif type(typePara) is Unknown:
+                func.mtype.intype[i] = Symbol.getType(a)
+            elif type(typePara) != type(Symbol.getType(a)):
                 raise TypeMismatchInExpression(ast)
-            for i in range(len(para)):
-                if type(para[i]) != type(paraReal[i]):
-                    raise TypeMismatchInExpression(ast)
-        return mtype.restype
+
+        return func.mtype.restype
 
     def visitIntLiteral(self, ast, c):
         """
@@ -340,180 +394,225 @@ Symbol("printStrLn",MType([StringType()],VoidType()))]
 
     def visitAssign(self, ast, c):
         """
+        Stmt
+        c: funcInfo, env
         lhs: LHS
         rhs: Expr
         """
-        returnType, scope = c
-        if isinstance(ast.lhs,Id):
-            left = self.visit(ast.lhs,(None,scope))
+        funcInfo, env = c
+        left = self.visit(ast.lhs,(funcInfo, None,env))
+        right = self.visit(ast.rhs,(funcInfo, None,env))
+        if type(right) is Symbol:
+            if type(left.mtype) is Unknown and type(right.mtype) is Unknown:
+                raise TypeCannotBeInferred(ast)
+            elif type(left.mtype) is Unknown:
+                if not Symbol.setTypeFromObj(left,right.mtype,funcInfo):
+                    raise TypeMismatchInStatement(ast)
+            elif type(right.mtype) is Unknown:
+                if not Symbol.setTypeFromObj(right,left.mtype,funcInfo):
+                    raise TypeMismatchInStatement(ast)
+            elif type(left.mtype) != type(right.mtype):
+                raise TypeMismatchInStatement(ast)
         else:
-            left = self.visit(ast.lhs,scope)
-        if isinstance(ast.rhs,Id):
-            right = self.visit(ast.rhs,(Variable(),scope))
-        else:
-            right = self.visit(ast.rhs,scope)
-
-        if type(left) is Unknown and type(right) is Unknown:
-            raise TypeCannotBeInferred(ast)
-
-        if type(left) is Unknown:
-            Symbol.setPrimType(ast.lhs.name,right,scope)
-        
-        if type(right) is Unknown:
-            Symbol.setPrimType(ast.rhs.name,left,scope)
-        
-        if type(right) != type(left):
-            raise TypeMismatchInStatement(ast)
-
+            if type(left.mtype) is Unknown:
+                if not Symbol.setTypeFromObj(left,right):
+                    raise TypeMismatchInStatement(ast)
+            elif type(left.mtype) != type(right):
+                raise TypeMismatchInStatement(ast)
 
     def visitIf(self, ast, c):
         """
+        Stmt
+        c: funcInfo, env
         ifthenStmt:List[Tuple[Expr,List[VarDecl],List[Stmt]]]
         elseStmt:Tuple[List[VarDecl],List[Stmt]] # for Else branch, empty list if no Else
         """
-        returnType, scope = c
+        funcInfo, env = c
         for ifPart in ast.ifthenStmt:
-            localVar = []
-            self.visit(ifPart[0],(None, scope))
-            [self.visit(var,(Variable(),localVar)) for var in ifPart[1]]
-            newScope = Symbol.mergeScope(scope,localVar)
-            self.visitStmts(ifPart[2],(returnType, newScope))
+            cond = self.visit(ifPart[0],(funcInfo, None, env))
+            if type(Symbol.getType(cond)) is not BoolType:
+                if type(Symbol.getType(cond)) is Unknown:
+                    if not Symbol.setTypeFromObj(cond,BoolType(),funcInfo):
+                        raise TypeMismatchInStatement(ast)
+                else:
+                    raise TypeMismatchInStatement(ast)
+            newEnv = reduce(lambda s, ele: self.visit(ele,(Variable(),s)),ifPart[1],env)
+            self.visitStmts(ifPart[2],(funcInfo, newEnv))
         
         elsePart = ast.elseStmt
-        localVar = []
-        [self.visit(var,(Variable(), localVar)) for var in elsePart[0]]
-        newScope = Symbol.mergeScope(scope,localVar)
-        self.visitStmts(elsePart[1],(returnType, newScope))
-        
+        newEnv = reduce(lambda s, ele: self.visit(ele,(Variable(),s)),elsePart[0],env)
+        self.visitStmts(elsePart[1],(funcInfo, newEnv))
+
 
     def visitFor(self, ast, c):
         """
+        Stmt
+        c: funcInfo, env
         idx1: Id
         expr1:Expr
         expr2:Expr
         expr3:Expr
         loop: Tuple[List[VarDecl],List[Stmt]]
         """
-        returnType, scope = c
-        idx = Symbol(ast.idx1.name,IntType())
-        localVar = [idx]
-        exp1 = self.visit(ast.expr1,(None,scope))
-        if type(exp1) is not IntType:
-            raise TypeMismatchInStatement(ast)
-        exp2 = self.visit(ast.expr2,(None,scope))
-        if type(exp2) is not BoolType:
-            raise TypeMismatchInStatement(ast)
-        exp3 = self.visit(ast.expr3,(None,scope))
-        if type(exp3) is not IntType:
-            raise TypeMismatchInStatement(ast)
+        funcInfo, env = c
+        idx = Checker.checkUndeclared(ast.idx1.name,env,Variable())
+        if type(Symbol.getType(idx)) is not IntType:
+            if type(Symbol.getType(idx)) is Unknown:
+                if not Symbol.setTypeFromObj(idx,IntType(),funcInfo):
+                    raise TypeMismatchInStatement(ast)
+            else:
+                raise TypeMismatchInStatement(ast)
 
-        [self.visit(var,(Variable(),localVar)) for var in ast.loop[0]]
-        newScope = Symbol.mergeScope(scope,localVar)
-        self.visitStmts(ast.loop[1],(returnType,newScope))
+        exp1 = self.visit(ast.expr1,(funcInfo, None,env))
+        if type(Symbol.getType(exp1)) is not IntType:
+            if type(Symbol.getType(exp1)) is Unknown:
+                if not Symbol.setTypeFromObj(exp1,IntType(),funcInfo):
+                    raise TypeMismatchInStatement(ast)
+            else:
+                raise TypeMismatchInStatement(ast)
+
+        exp2 = self.visit(ast.expr2,(funcInfo, None,env))
+        if type(Symbol.getType(exp2)) is not BoolType:
+            if type(Symbol.getType(exp2)) is Unknown:
+                if not Symbol.setTypeFromObj(exp2,BoolType(),funcInfo):
+                    raise TypeMismatchInStatement(ast)
+            else:
+                raise TypeMismatchInStatement(ast)
+
+        exp3 = self.visit(ast.expr3,(None,env))
+        if type(Symbol.getType(exp3)) is not IntType:
+            if type(Symbol.getType(exp3)) is Unknown:
+                if not Symbol.setTypeFromObj(exp3,IntType(),funcInfo):
+                    raise TypeMismatchInStatement(ast)
+            else:
+                raise TypeMismatchInStatement(ast)
+
+        newEnv = reduce(lambda s, ele: self.visit(ele,(Variable(),s)),ast.loop[0],env)
+        self.visitStmts(ast.loop[1], (funcInfo, newEnv))
 
     def visitBreak(self, ast, c):
         """
+        Stmt
         break
         """
         return
 
     def visitContinue(self, ast, c):
         """
+        Stmt
         continue
         """
         return
 
     def visitReturn(self, ast, c):
         """
+        Stmt
+        c: funcInfo, env
         expr:Expr # None if no expression
         """
-        returnType, scope = c
+        funcInfo, env = c
+        returnType = funcInfo[0].mtype.restype
         if ast.expr:
-            reType = self.visit(ast.expr,(None,scope))
-            returnType = reType
-        returnType = VoidType()
+            reType = self.visit(ast.expr,(funcInfo, None, env))
+            if type(returnType) is not Unknown:
+                if type(reType) is not Unknown:
+                    if type(returnType) != type(reType):
+                        raise TypeMismatchInStatement(ast)
+                else:
+                    if not Symbol.setTypeFromObj(reType,returnType,funcInfo):
+                        raise TypeMismatchInStatement(ast)
+            funcInfo[0].mtype.restype = reType
+        else:
+            funcInfo[0].mtype.restype = VoidType()
+
 
     def visitDoWhile(self, ast, c):
         """
+        Stmt
+        c: funcInfo, env
         sl:Tuple[List[VarDecl],List[Stmt]]
         exp: Expr
         """
-        returnType, scope = c
-        localVar = []
-        [self.visit(var,(Variable(), localVar)) for var in ast.sl[0]]
-        newScope = Symbol.mergeScope(scope,localVar)
-        self.visitStmts(ast.sl[1],(returnType,newScope))
-        exp = self.visit(ast.exp,(None,scope))
-        if type(exp) is not BoolType:
-            raise TypeMismatchInStatement(ast)
+        funcInfo, env = c
+        newEnv = reduce(lambda s, ele: self.visit(ele,(Variable(),s)),ast.sl[0],env)
+        self.visitStmts(ast.loop[1], (funcInfo, newEnv))
+        exp = self.visit(ast.exp,(None,env))
+        if type(Symbol.getType(exp)) is not BoolType:
+            if type(Symbol.getType(exp)) is Unknown:
+                if not Symbol.setTypeFromObj(exp,BoolType(),funcInfo):
+                    raise TypeMismatchInStatement(ast)
+            else:
+                raise TypeMismatchInStatement(ast)
 
     def visitWhile(self, ast, c):
         """
+        Stmt
+        c: funcInfo, env
         exp: Expr
         sl:Tuple[List[VarDecl],List[Stmt]]
         """
-        returnType, scope = c
-        exp = self.visit(ast.exp,(None,scope))
-        if type(exp) is not BoolType:
-            raise TypeMismatchInStatement(ast)
-        localVar = []
-        [self.visit(var,(Variable(), localVar)) for var in ast.sl[0]]
-        newScope = Symbol.mergeScope(scope,localVar)
-        self.visitStmts(ast.sl[1],(returnType,newScope))
+        funcInfo, env = c
+        exp = self.visit(ast.exp,(None,env))
+        if type(Symbol.getType(exp)) is not BoolType:
+            if type(Symbol.getType(exp)) is Unknown:
+                if not Symbol.setTypeFromObj(exp,BoolType(),funcInfo):
+                    raise TypeMismatchInStatement(ast)
+            else:
+                raise TypeMismatchInStatement(ast)
+        newEnv = reduce(lambda s,ele: self.visit(ele,(Variable(),s)),ast.sl[0],env)
+        self.visitStmts(ast.sl[1],(funcInfo,newEnv))
+        
 
     def visitCallStmt(self, ast, c):
         """
+        Stmt
+        c: funcInfo, env
         method:Id
-        param: List[Expr]
+        param:List[Expr]
         """
-        returnType, scope = c
-        mtype = self.visit(ast.method,(Function(),scope))
-        
-        paraReal = mtype.intype
-        para = [self.visit(p,(None,scope)) for p in ast.param]
-
-        if paraReal is None:
-            Symbol.setFuncType(ast.method.name,para,mtype.restype,scope)
-        else:
-            if len(para) != len(paraReal):
+        funcInfo, env = c
+        func = Checker.checkUndeclared(ast.method.name,env,Function())
+        if len(func.mtype.intype) != len(ast.param):
+            raise TypeMismatchInStatement(ast)
+        for i, (arg, typePara) in enumerate(zip(ast.param,func.mtype.intype)):
+            a = self.visit(arg,(None,env))
+            if type(Symbol.getType(a)) is Unknown:
+                if type(typePara) is not Unknown:
+                    if not Symbol.setTypeFromObj(a,typePara,funcInfo):
+                        raise TypeMismatchInStatement(ast)
+                else:
+                    raise TypeCannotBeInferred(ast)
+            elif type(typePara) is Unknown:
+                func.mtype.intype[i] = Symbol.getType(a)
+            elif type(typePara) != type(Symbol.getType(a)):
                 raise TypeMismatchInStatement(ast)
-            for i in range(len(para)):
-                if type(para[i]) != type(paraReal[i]):
-                    raise TypeMismatchInStatement(ast)
+        
+        if type(func.mtype.restype) is Unknown:
+            func.mtype.restype = VoidType()
+
 
 
     def visitId(self, ast, c):
         """
+        LHS
+        c: funcInfo, kind, env
         name : str
         """
-        varType, scope = c
-        for i in scope:
-            if i.name == ast.name:
-                return i.mtype
-        if varType is None:
-            raise Undeclared(Variable(),ast.name)
-        else:
-            raise Undeclared(Function(),ast.name)
+        funcInfo, kind, env = c
+        if type(kind) is Function:
+            checker = Checker.checkUndeclared(ast.name,env,kind)
+            return checker
+        checker = Checker.checkUndeclared(ast.name,env,Identifier())
+        return checker
 
-    def visitStmts(self, body, c):
+    def visitStmts(self, stmts, c):
         """
-        body: List[Stmt]
+        stmts: List[Stmt]
+        c: funcInfo, env
         """
-        returnType, scope = c
-        for stmt in body:
-            ret = None
-            self.visit(stmt,(ret, scope))
-            if ret:
-                if returnType and type(ret) != type(returnType):
-                    raise TypeMismatchInStatement(stmt)
-                elif returnType is None:
-                    returnType = ret
-        
+        funcInfo, env = c
+        returnType = funcInfo[0].mtype.restype
+        for stmt in stmts:
+            self.visit(stmt,(funcInfo,env))
 
-
-
-
-
-
-
-        
+    
