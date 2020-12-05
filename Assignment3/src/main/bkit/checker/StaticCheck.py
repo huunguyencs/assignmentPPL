@@ -50,7 +50,9 @@ class Symbol:
         """
         obj: Symbol
         """
-        if isinstance(obj,Symbol):
+        if type(obj) is Symbol:
+            if type(obj.kind) is Function:
+                return obj.mtype.restype
             return obj.mtype
         return obj
 
@@ -75,7 +77,7 @@ class Symbol:
         funcInfo = Tuple(Symbol, List[Symbol])
         """
         result = True
-        if type(symbol.mtype) is Unknown:
+        if type(Symbol.getType(symbol.mtype)) is Unknown:
             if type(symbol.kind) is Parameter:
                 result = Symbol.setParaType(symbol.name,mType,funcInfo)
             symbol.mtype = mType
@@ -102,21 +104,21 @@ class Symbol:
             return False
         return True
 
-    @staticmethod
-    def setFuncType(method, mType):
-        """
-        method: Symbol
-        mType: Type
-        """
-        funcType = method.mtype
-        if type(funcType) is MType:
-            for i , (ele1,_) in enumerate(zip(funcType.intype,mType.intype)):
-                if type(ele1) is Unknown:
-                    funcType.intype[i] = mType.intype[i]
-            if type(mType.restype) is not Unknown:
-                funcType.restype = mType.restype
-            else:
-                funcType.restype = VoidType()
+    # @staticmethod
+    # def setFuncType(method, mType):
+    #     """
+    #     method: Symbol
+    #     mType: Type
+    #     """
+    #     funcType = method.mtype
+    #     if type(funcType) is MType:
+    #         for i , (ele1,_) in enumerate(zip(funcType.intype,mType.intype)):
+    #             if type(ele1) is Unknown:
+    #                 funcType.intype[i] = mType.intype[i]
+    #         if type(mType.restype) is not Unknown:
+    #             funcType.restype = mType.restype
+    #         else:
+    #             funcType.restype = VoidType()
     @staticmethod
     def setVarTypeWithOp(id, op, env,funcInfo):
         """
@@ -255,12 +257,9 @@ class StaticChecker(BaseVisitor):
         param = reduce(lambda s, para: self.visit(para,(Parameter(), s)),ast.param,([],[]))[0]
         newEnv = (param, c[0]+c[1])
         newEnv = reduce(lambda s, ele: self.visit(ele, (Variable(), s)), ast.body[0], newEnv)
-        # returnType = Unknown()
         func = list(filter(lambda n: n.name == ast.name.name and type(n.kind) is Function,c[0]+c[1]))[0]
         funcInfo = (func, param)
         self.visitStmts(ast.body[1], (funcInfo, newEnv))
-        # paraList = [Symbol.getType(p) for p in param]
-        # Symbol.setFuncType(func,MType(paraList, returnType))
         return c
 
 
@@ -367,7 +366,7 @@ class StaticChecker(BaseVisitor):
         method:Id
         param:List[Expr]
         """
-        funcInfo,kind, env = c
+        funcInfo, kind, env = c
         func = Checker.checkUndeclared(ast.method.name,env,Function())
         if len(func.mtype.intype) != len(ast.param):
             raise TypeMismatchInExpression(ast)
@@ -383,7 +382,7 @@ class StaticChecker(BaseVisitor):
             elif type(typePara) != type(Symbol.getType(a)):
                 raise TypeMismatchInExpression(ast)
 
-        return func.mtype.restype
+        return func
 
     def visitIntLiteral(self, ast, c):
         """
@@ -584,7 +583,10 @@ class StaticChecker(BaseVisitor):
                     raise TypeCannotBeInferred(ast)
             funcInfo[0].mtype.restype = reType
         else:
-            funcInfo[0].mtype.restype = VoidType()
+            if type(returnType) is Unknown: 
+                funcInfo[0].mtype.restype = VoidType()
+            else:
+                raise TypeMismatchInStatement(ast)
 
 
     def visitDoWhile(self, ast, c):
@@ -597,7 +599,7 @@ class StaticChecker(BaseVisitor):
         funcInfo, env = c
         newEnv = reduce(lambda s, ele: self.visit(ele,(Variable(),s)),ast.sl[0],env)
         self.visitStmts(ast.loop[1], (funcInfo, newEnv))
-        exp = self.visit(ast.exp,(None,env))
+        exp = self.visit(ast.exp,(FuncInfoo,None,env))
         if type(Symbol.getType(exp)) is not BoolType:
             if type(Symbol.getType(exp)) is Unknown:
                 if not Symbol.setTypeFromObj(exp,BoolType(),funcInfo):
@@ -613,7 +615,7 @@ class StaticChecker(BaseVisitor):
         sl:Tuple[List[VarDecl],List[Stmt]]
         """
         funcInfo, env = c
-        exp = self.visit(ast.exp,(None,env))
+        exp = self.visit(ast.exp,(funcInfo,None,env))
         if type(Symbol.getType(exp)) is not BoolType:
             if type(Symbol.getType(exp)) is Unknown:
                 if not Symbol.setTypeFromObj(exp,BoolType(),funcInfo):
@@ -636,7 +638,7 @@ class StaticChecker(BaseVisitor):
         if len(func.mtype.intype) != len(ast.param):
             raise TypeMismatchInStatement(ast)
         for i, (arg, typePara) in enumerate(zip(ast.param,func.mtype.intype)):
-            a = self.visit(arg,(None,env))
+            a = self.visit(arg,(funcInfo,None,env))
             if type(Symbol.getType(a)) is Unknown:
                 if type(typePara) is not Unknown:
                     if not Symbol.setTypeFromObj(a,typePara,funcInfo):

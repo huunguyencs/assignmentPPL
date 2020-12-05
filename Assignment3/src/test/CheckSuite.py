@@ -5,25 +5,6 @@ from AST import *
 
 class CheckSuite(unittest.TestCase):
 
-    # def test_undeclared_function(self):
-    #     """Simple program: main"""
-    #     input = """
-    #             Var: x;
-    #             Function: main
-    #                Body: 
-    #                     foo();
-    #                EndBody."""
-    #     expect = str(Undeclared(Function(),"foo"))
-    #     self.assertTrue(TestChecker.test(input,expect,400))
-
-
-    # def test_diff_numofparam_stmt_use_ast(self):
-    #     """Complex program"""
-    #     input = Program([
-    #             FuncDecl(Id("main"),[],([],[
-    #                 CallStmt(Id("printStrLn"),[])]))])
-    #     expect = str(TypeMismatchInStatement(CallStmt(Id("printStrLn"),[])))
-    #     self.assertTrue(TestChecker.test(input,expect,405))
 
     def test_400(self):
         input = r"""Var: x, y;
@@ -138,3 +119,58 @@ EndBody.
         """
         expect = str(TypeCannotBeInferred(Return(Id("m"))))
         self.assertTrue(TestChecker.test(input,expect,409))
+    
+    def test_410(self):
+        input = r"""Var: a,b;
+Function: foo
+Body:
+    main(5);
+EndBody.
+Function: main
+Parameter: x
+Body:
+    If x Then
+    EndIf.
+    Return;
+EndBody.
+        """
+        expect = str(TypeMismatchInStatement(If([(Id("x"),[],[])],([],[]))))
+        self.assertTrue(TestChecker.test(input,expect,410))
+
+    def test_411(self):
+        input = r"""Var: m;
+Function: main
+Body:
+    For(m = 1,main(),1) Do
+    EndFor.
+    Return;
+EndBody.
+        """
+        expect = str(TypeMismatchInStatement(Return(None)))
+        self.assertTrue(TestChecker.test(input,expect,411))
+
+    def test_412(self):
+        input = r"""Function: main
+Parameter: i
+Body:
+    While i Do
+        i = i + 1;
+    EndWhile.
+    Return 0;
+EndBody.
+        """
+        expect = str(TypeMismatchInExpression(BinaryOp("+",Id("i"),IntLiteral(1))))
+        self.assertTrue(TestChecker.test(input,expect,412))
+
+    def test_413(self):
+        input = r"""Function: main
+Body:
+    Var: m;
+    float_of_int(string_of_int(m));
+    Return 0;
+EndBody.
+        """
+        expect = str(TypeMismatchInStatement(CallStmt(Id("float_of_int"),[CallExpr(Id("string_of_int"),[Id("m")])])))
+        self.assertTrue(TestChecker.test(input,expect,413))
+
+        
