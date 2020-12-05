@@ -272,23 +272,25 @@ class StaticChecker(BaseVisitor):
         """
         funcInfo, kind, env = c
         arr = self.visit(ast.arr,(funcInfo,None,env))
-        if len(arr.mtype.dimen) != len(ast.idx):
+        aType = Symbol.getType(arr)
+        if len(aType.dimen) != len(ast.idx):
             raise TypeMismatchInExpression(ast)
         if type(Symbol.getType(arr)) is ArrayType:
-            arrType = arr.mtype.eletype
+            eType = aType.eletype
             
             for e in ast.idx:
                 ele = self.visit(e,(funcInfo,None,env))
                 eleType = Symbol.getType(ele)
-                if type(arrType) is Unknown and type(eleType) is Unknown:
+                if type(eType) is Unknown and type(eleType) is Unknown:
                     raise TypeCannotBeInferred(ast)
                 elif type(eleType) is Unknown:
-                    if not Symbol.setTypeFromObj(ele,arrType,funcInfo):
+                    if not Symbol.setTypeFromObj(ele,eType,funcInfo):
+                        
                         raise TypeMismatchInExpression(ast)
-                elif type(arrType) is Unknown:
+                elif type(eType) is Unknown:
                     arr.mtype.eletype = eleType
                     
-            return arr
+            return aType.eletype
                 
     
 
@@ -368,6 +370,8 @@ class StaticChecker(BaseVisitor):
         """
         funcInfo, kind, env = c
         func = Checker.checkUndeclared(ast.method.name,env,Function())
+        if type(func.kind) != Function:
+            raise TypeMismatchInStatement(ast)
         if len(func.mtype.intype) != len(ast.param):
             raise TypeMismatchInExpression(ast)
         for i, (arg, typePara) in enumerate(zip(ast.param,func.mtype.intype)):
@@ -412,7 +416,7 @@ class StaticChecker(BaseVisitor):
         """
         value:List[Literal]
         """
-        dimen = []
+        dimen = [len(ast.value)]
         eleType = Unknown()
         isFisrt = True
         tmp = Unknown()
@@ -446,20 +450,31 @@ class StaticChecker(BaseVisitor):
         right = self.visit(ast.rhs,(funcInfo, None,env))
         leftType = Symbol.getType(left)
         rightType = Symbol.getType(right)
+        if type(leftType) is VoidType or type(rightType) is VoidType:
+            raise TypeMismatchInStatement(ast)
 
         if type(right) is Symbol:
             if type(leftType) is Unknown and type(rightType) is Unknown:
                 raise TypeCannotBeInferred(ast)
             elif type(leftType) is Unknown:
-                pass
+                if not Symbol.setTypeFromObj(left,rightType,funcInfo):
+                    raise TypeMismatchInStatement(ast)
             elif type(rightType) is Unknown:
-                pass
+                if not Symbol.setTypeFromObj(right,leftType,funcInfo):
+                    raise TypeMismatchInStatement(ast)
             elif type(leftType) != type(rightType):
                 if type(leftType) is ArrayType:
                     if (type(left.mtype.eletype) is type(rightType)):
                         pass
                     elif type(left.mtype.eletype) is Unknown:
                         left.mtype.eletype = rightType
+                    else:
+                        raise TypeMismatchInStatement(ast)
+                elif type(rightType) is ArrayType:
+                    if type(right.mtype.eletype) is type(leftType):
+                        pass
+                    elif type(right.mtype.eletype) is Unknown:
+                        right.mtype.eletype = leftType
                     else:
                         raise TypeMismatchInStatement(ast)
                 else:
@@ -589,7 +604,7 @@ class StaticChecker(BaseVisitor):
                 raise TypeMismatchInStatement(ast)
 
 
-    def visitDoWhile(self, ast, c):
+    def visitDowhile(self, ast, c):
         """
         Stmt
         c: funcInfo, env
@@ -597,9 +612,9 @@ class StaticChecker(BaseVisitor):
         exp: Expr
         """
         funcInfo, env = c
-        newEnv = reduce(lambda s, ele: self.visit(ele,(Variable(),s)),ast.sl[0],env)
-        self.visitStmts(ast.loop[1], (funcInfo, newEnv))
-        exp = self.visit(ast.exp,(FuncInfoo,None,env))
+        newEnv = reduce(lambda s,ele: self.visit(ele,(Variable(),s)),ast.sl[0],env)
+        self.visitStmts(ast.sl[1],(funcInfo,newEnv))
+        exp = self.visit(ast.exp,(funcInfo,None,env))
         if type(Symbol.getType(exp)) is not BoolType:
             if type(Symbol.getType(exp)) is Unknown:
                 if not Symbol.setTypeFromObj(exp,BoolType(),funcInfo):
@@ -635,6 +650,8 @@ class StaticChecker(BaseVisitor):
         """
         funcInfo, env = c
         func = Checker.checkUndeclared(ast.method.name,env,Function())
+        if type(func.kind) != Function:
+            raise TypeMismatchInStatement(ast)
         if len(func.mtype.intype) != len(ast.param):
             raise TypeMismatchInStatement(ast)
         for i, (arg, typePara) in enumerate(zip(ast.param,func.mtype.intype)):
