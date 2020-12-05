@@ -426,7 +426,7 @@ class StaticChecker(BaseVisitor):
                 x = self.visit(e,None)
                 tmp = x
                 if type(Symbol.getType(x)) is ArrayType:
-                    dimen.append(x.dimen[0])
+                    dimen = dimen + x.dimen
                     eleType = x.eletype
                 else:
                     eleType = x
@@ -695,4 +695,3 @@ class StaticChecker(BaseVisitor):
         for stmt in stmts:
             self.visit(stmt,(funcInfo,env))
 
-    

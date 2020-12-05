@@ -314,15 +314,14 @@ EndBody.
         self.assertTrue(TestChecker.test(input,expect,424))
     
     def test_425(self):
-        input = r"""Var: x[2][2] = {{1,2},{3,4}};
+        input = r"""Var: x[2][2][2] = {{{1,2},{3,4}},{{5,6},{7,8}}};
 Function: main
 Body:
     Var: m;
-    m = x[1][1];
+    m = x[1][1][1];
     m = 5.1 +. m;
     Return 0;
 EndBody.
         """
         expect = str(TypeMismatchInExpression(BinaryOp("+.",FloatLiteral(5.1),Id("m"))))
         self.assertTrue(TestChecker.test(input,expect,425))
-       
