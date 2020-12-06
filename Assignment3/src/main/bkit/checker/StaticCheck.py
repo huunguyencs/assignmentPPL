@@ -215,7 +215,6 @@ class StaticChecker(BaseVisitor):
         
         Checker.checkEntryPoint(funcDecl)
         reduce(lambda s,func: self.visit(func,s),funcDecl,env)
-        
 
     def visitVarDecl(self, ast, c):
         """
@@ -245,8 +244,6 @@ class StaticChecker(BaseVisitor):
                 newSym = Symbol(ast.variable.name,Unknown(),kind)
                 return (env[0] + [newSym], env[1])
 
-
-
     def visitFuncDecl(self, ast, c):
         """
         Decl
@@ -262,7 +259,6 @@ class StaticChecker(BaseVisitor):
         funcInfo = (func, param)
         self.visitStmts(ast.body[1], (funcInfo, newEnv))
         return c
-
 
     def visitArrayCell(self, ast, c):
         """
@@ -285,8 +281,6 @@ class StaticChecker(BaseVisitor):
                     raise TypeMismatchInExpression(ast)
 
             return arr
-                
-    
 
     def visitBinaryOp(self, ast, c):
         """
@@ -380,7 +374,6 @@ class StaticChecker(BaseVisitor):
                 func.mtype.intype[i] = Symbol.getType(a)
             elif type(typePara) != type(Symbol.getType(a)):
                 raise TypeMismatchInExpression(ast)
-
         return func
 
     def visitIntLiteral(self, ast, c):
@@ -494,7 +487,6 @@ class StaticChecker(BaseVisitor):
             elif type(typeRight) != type(typeLeft):
                 raise TypeMismatchInStatement(ast)
 
-
     def visitIf(self, ast, c):
         """
         Stmt
@@ -517,7 +509,6 @@ class StaticChecker(BaseVisitor):
         elsePart = ast.elseStmt
         newEnv = reduce(lambda s, ele: self.visit(ele,(Variable(),s)),elsePart[0],env)
         self.visitStmts(elsePart[1],(funcInfo, newEnv))
-
 
     def visitFor(self, ast, c):
         """
@@ -606,7 +597,6 @@ class StaticChecker(BaseVisitor):
             else:
                 raise TypeMismatchInStatement(ast)
 
-
     def visitDowhile(self, ast, c):
         """
         Stmt
@@ -642,7 +632,6 @@ class StaticChecker(BaseVisitor):
                 raise TypeMismatchInStatement(ast)
         newEnv = reduce(lambda s,ele: self.visit(ele,(Variable(),s)),ast.sl[0],env)
         self.visitStmts(ast.sl[1],(funcInfo,newEnv))
-        
 
     def visitCallStmt(self, ast, c):
         """
@@ -672,8 +661,6 @@ class StaticChecker(BaseVisitor):
         
         if type(func.mtype.restype) is Unknown:
             func.mtype.restype = VoidType()
-
-
 
     def visitId(self, ast, c):
         """

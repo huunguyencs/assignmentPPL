@@ -461,3 +461,46 @@ EndBody.
         """
         expect = str(Undeclared(Identifier(),"x"))
         self.assertTrue(TestChecker.test(input,expect,436))
+
+    def test_437(self):
+        input = r"""Function: main
+Body:
+    foo(1,2);
+    Return;
+EndBody.
+Function: foo
+Parameter: n
+Body:
+    Return;
+EndBody.
+        """
+        expect = str(TypeMismatchInStatement(CallStmt(Id("foo"),[IntLiteral(1),IntLiteral(2)])))
+        self.assertTrue(TestChecker.test(input,expect,437))
+
+    def test_438(self):
+        input = r"""Var: a;
+Function: main
+Body:
+    a = foo();
+EndBody.
+Function: foo
+Body:
+    Return 5;
+EndBody.
+        """
+        expect = str(TypeCannotBeInferred(Assign(Id("a"),CallExpr(Id("foo"),[]))))
+        self.assertTrue(TestChecker.test(input,expect,438))
+
+    def test_439(self):
+        input = r"""Var: a;
+Function: main
+Body:
+    a = 1;
+    a = foo();
+EndBody.
+Function: foo
+Body:
+    Return 1.1;
+EndBody."""
+        expect = str(TypeMismatchInStatement(Return(FloatLiteral(1.1))))
+        self.assertTrue(TestChecker.test(input,expect,439))
