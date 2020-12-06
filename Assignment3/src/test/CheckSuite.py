@@ -425,3 +425,39 @@ EndBody.
         expect = str(TypeMismatchInStatement(CallStmt(Id("main"),[Id("x"),FloatLiteral(0.0)])))
         self.assertTrue(TestChecker.test(input,expect,433))
 
+    def test_434(self):
+        input = r"""Function: main
+Parameter: a,b,c
+Body:
+    Var: d, e;
+    e = main(main(d, c, a), b , a + d);
+    Return 3;
+EndBody.
+        """
+        expect = str(TypeCannotBeInferred(CallExpr(Id("main"),[Id("d"),Id("c"),Id("a")])))
+        self.assertTrue(TestChecker.test(input,expect,434))
+
+    def test_435(self):
+        input = r"""Function: main
+Parameter: x, y ,z
+Body:
+    y = x || (x>z);
+    Return;
+EndBody.
+        """
+        expect = str(TypeMismatchInExpression(BinaryOp("||",Id("x"),BinaryOp(">",Id("x"),Id("z")))))
+        self.assertTrue(TestChecker.test(input,expect,435))
+
+    def test_436(self):
+        input = r"""Var: m;
+Function: main
+Parameter: m
+Body:
+    For(x = 1,True,1) Do
+        main(1);
+    EndFor.
+    Return;
+EndBody.
+        """
+        expect = str(Undeclared(Identifier(),"x"))
+        self.assertTrue(TestChecker.test(input,expect,436))

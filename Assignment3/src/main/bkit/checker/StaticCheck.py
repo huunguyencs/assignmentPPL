@@ -530,7 +530,7 @@ class StaticChecker(BaseVisitor):
         loop: Tuple[List[VarDecl],List[Stmt]]
         """
         funcInfo, env = c
-        idx = Checker.checkUndeclared(ast.idx1.name,env,Variable())
+        idx = Checker.checkUndeclared(ast.idx1.name,env,Identifier())
         if type(Symbol.getType(idx)) is not IntType:
             if type(Symbol.getType(idx)) is Unknown:
                 if not Symbol.setTypeFromObj(idx,IntType(),funcInfo):
