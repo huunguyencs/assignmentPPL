@@ -120,21 +120,6 @@ class Symbol:
             return False
         return True
 
-    # @staticmethod
-    # def setFuncType(method, mType):
-    #     """
-    #     method: Symbol
-    #     mType: Type
-    #     """
-    #     funcType = method.mtype
-    #     if type(funcType) is MType:
-    #         for i , (ele1,_) in enumerate(zip(funcType.intype,mType.intype)):
-    #             if type(ele1) is Unknown:
-    #                 funcType.intype[i] = mType.intype[i]
-    #         if type(mType.restype) is not Unknown:
-    #             funcType.restype = mType.restype
-    #         else:
-    #             funcType.restype = VoidType()
     @staticmethod
     def setVarTypeWithOp(id, op, env,funcInfo):
         """
@@ -246,19 +231,19 @@ class StaticChecker(BaseVisitor):
             if ast.varInit:
                 mType = self.visit(ast.varInit,None)
                 newSym = Symbol(ast.variable.name,mType,kind)
-                return [newSym] + env[0], env[1]
+                return env[0] + [newSym], env[1]
             else:
                 mType = ArrayType(ast.varDimen,Unknown())
                 newSym = Symbol(ast.variable.name,mType,kind)
-                return [newSym] + env[0], env[1]
+                return env[0] + [newSym], env[1]
         else:
             if ast.varInit:
                 mType = self.visit(ast.varInit,None)
                 newSym = Symbol(ast.variable.name,mType,kind)
-                return ([newSym] + env[0], env[1])
+                return (env[0] + [newSym], env[1])
             else:
                 newSym = Symbol(ast.variable.name,Unknown(),kind)
-                return ([newSym] + env[0], env[1])
+                return (env[0] + [newSym], env[1])
 
 
 
@@ -288,14 +273,9 @@ class StaticChecker(BaseVisitor):
         """
         funcInfo, kind, env = c
         arr = self.visit(ast.arr,(funcInfo,None,env))
-        aType = Unknown()
-        if type(arr) is Symbol:
-            if type(arr.kind) is Function:
-                aType = arr.mtype.restype
-            else:
-                aType = arr.mtype
-        else:
-            aType = arr
+        aType = Symbol.getTypeExpectArray(arr)
+        if type(aType) is not ArrayType:
+            raise TypeMismatchInExpression(ast)
         if len(aType.dimen) != len(ast.idx):
             raise TypeMismatchInExpression(ast)
         if type(aType) is ArrayType:
@@ -392,7 +372,8 @@ class StaticChecker(BaseVisitor):
             a = self.visit(arg,(funcInfo, None,env))
             if type(Symbol.getType(a)) is Unknown:
                 if type(typePara) is not Unknown:
-                    Symbol.setTypeFromObj(a,typePara,funcInfo)
+                    if not Symbol.setTypeFromObj(a,typePara,funcInfo):
+                        raise TypeMismatchInStatement(ast)
                 else:
                     raise TypeCannotBeInferred(ast)
             elif type(typePara) is Unknown:

@@ -359,14 +359,69 @@ EndBody.
         """
         expect = str(TypeMismatchInStatement(Assign(ArrayCell(Id("x"),[IntLiteral(0)]),IntLiteral(1))))
         self.assertTrue(TestChecker.test(input,expect,428))
-    # def test_429(self):
-    #     input = r"""
-    #     """
-    #     expect = str()
-    #     self.assertTrue(TestChecker.test(input,expect,429))
-    # def test_430(self):
-    #     input = r"""
-    #     """
-    #     expect = str()
-    #     self.assertTrue(TestChecker.test(input,expect,430))
+    def test_429(self):
+        input = r"""Function: main
+Body:
+    Var: m = 7;
+    Var: is = False;
+    Do
+        m = m + 1;
+    While is EndDo.
+    Return True;
+EndBody.
+        """
+        expect = str()
+        self.assertTrue(TestChecker.test(input,expect,429))
+    def test_430(self):
+        input = r"""Var: x;
+Function: main
+Body:
+    Var: m;
+    m = float_of_int(int_of_float(m));
+    m = 7;
+    Return 0;
+EndBody.
+        """
+        expect = str(TypeMismatchInStatement(Assign(Id("m"),IntLiteral(7))))
+        self.assertTrue(TestChecker.test(input, expect, 430))
+
+    def test_431(self):
+        input = r"""Var: test;
+Function: main
+Parameter: x
+Body:
+    x = test[0];
+EndBody.
+        """
+        expect = str(TypeMismatchInExpression(ArrayCell(Id("test"),[IntLiteral(0)])))
+        self.assertTrue(TestChecker.test(input,expect,431))
+
+    def test_432(self):
+        input = r"""Var: x;
+Function: main
+Parameter: par
+Body:
+    Var: x = 2;
+    main(t);
+    Return;
+EndBody.
+        """
+        expect = str(Undeclared(Identifier(),"t"))
+        self.assertTrue(TestChecker.test(input,expect,432))
+
+    def test_433(self):
+        input = r"""Var: x;
+Function: main
+Parameter: y,z
+Body:
+    If True Then
+        z = 0.0;
+    EndIf.
+    main(3,x);
+    main(x,0.0);
+    Return;
+EndBody.
+        """
+        expect = str(TypeMismatchInStatement(CallStmt(Id("main"),[Id("x"),FloatLiteral(0.0)])))
+        self.assertTrue(TestChecker.test(input,expect,433))
 
