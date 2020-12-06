@@ -25,7 +25,7 @@ Body:
 EndBody."""
         expect = str(TypeMismatchInExpression(BinaryOp("+.",Id("z"),Id("m"))))
         self.assertTrue(TestChecker.test(input,expect,401))
-    
+
     def test_402(self):
         input = r"""Function: main
 Parameter: m
@@ -36,7 +36,7 @@ Body:
 EndBody."""
         expect = str(TypeMismatchInStatement(CallStmt(Id("main"),[StringLiteral("str")])))
         self.assertTrue(TestChecker.test(input,expect,402))
-    
+
     def test_403(self):
         input = r"""Function: foo
 Body:
@@ -63,7 +63,7 @@ EndBody.
         """
         expect = str(Redeclared(Variable(),"x"))
         self.assertTrue(TestChecker.test(input,expect,405))
-    
+
     def test_406(self):
         input = r"""Function: main
 Body:
@@ -107,7 +107,7 @@ EndBody.
         """
         expect = str(TypeMismatchInExpression(ArrayCell(Id("x"),[IntLiteral(1),IntLiteral(3)])))
         self.assertTrue(TestChecker.test(input,expect,408))
-    
+
     def test_409(self):
         input = r"""Function: main
 Parameter: x
@@ -118,7 +118,7 @@ EndBody.
         """
         expect = str(TypeCannotBeInferred(Return(Id("m"))))
         self.assertTrue(TestChecker.test(input,expect,409))
-    
+
     def test_410(self):
         input = r"""Var: a,b;
 Function: foo
@@ -182,7 +182,7 @@ EndBody.
         """
         expect = str(TypeMismatchInExpression(ArrayCell(Id("x"),[IntLiteral(6),IntLiteral(7)])))
         self.assertTrue(TestChecker.test(input,expect,414))
-    
+
     def test_415(self):
         input = r"""Function: foo
 Body:
@@ -312,7 +312,7 @@ EndBody.
         """
         expect = str(NoEntryPoint())
         self.assertTrue(TestChecker.test(input,expect,424))
-    
+
     def test_425(self):
         input = r"""Var: x[2][2][2] = {{{1,2},{3,4}},{{5,6},{7,8}}};
 Function: main
@@ -325,3 +325,48 @@ EndBody.
         """
         expect = str(TypeMismatchInExpression(BinaryOp("+.",FloatLiteral(5.1),Id("m"))))
         self.assertTrue(TestChecker.test(input,expect,425))
+
+    def test_426(self):
+        input = r"""Var: x;
+        Var: x;
+        """
+        expect = str(Redeclared(Variable(),"x"))
+        self.assertTrue(TestChecker.test(input,expect,426))
+    def test_427(self):
+        input = r"""Var: func;
+Function: func
+Body:
+    Return;
+EndBody.
+Function: main
+Body:
+    Return;
+EndBody.
+        """
+        expect = str(Redeclared(Function(),"func"))
+        self.assertTrue(TestChecker.test(input,expect,427))
+    def test_428(self):
+        input = r"""Var: x[2];
+Function: main
+Body:
+    If x[1] Then
+        Var: x = 1;
+        x = 5 + x;
+    EndIf.
+    x[0] = 1;
+    Return;
+EndBody.
+        """
+        expect = str(TypeMismatchInStatement(Assign(ArrayCell(Id("x"),[IntLiteral(0)]),IntLiteral(1))))
+        self.assertTrue(TestChecker.test(input,expect,428))
+    # def test_429(self):
+    #     input = r"""
+    #     """
+    #     expect = str()
+    #     self.assertTrue(TestChecker.test(input,expect,429))
+    # def test_430(self):
+    #     input = r"""
+    #     """
+    #     expect = str()
+    #     self.assertTrue(TestChecker.test(input,expect,430))
+

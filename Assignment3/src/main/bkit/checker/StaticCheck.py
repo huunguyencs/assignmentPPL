@@ -53,9 +53,22 @@ class Symbol:
         if type(obj) is Symbol:
             if type(obj.kind) is Function:
                 return obj.mtype.restype
+            else:
+                if type(obj.mtype) is ArrayType:
+                    return obj.mtype.eletype
+                return obj.mtype
+        else:
+            if type(obj) is ArrayType:
+                return obj.eletype
+            return obj
+
+    @staticmethod
+    def getTypeExpectArray(obj):
+        if type(obj) is Symbol:
+            if type(obj.kind) is Function:
+                return obj.mtype.restype
             return obj.mtype
         return obj
-
     @staticmethod
     def getObjFromName(name, env):
         sym = list(filter(lambda x: x.name==name, env))
@@ -80,7 +93,10 @@ class Symbol:
         if type(Symbol.getType(symbol.mtype)) is Unknown:
             if type(symbol.kind) is Parameter:
                 result = Symbol.setParaType(symbol.name,mType,funcInfo)
-            symbol.mtype = mType
+            if type(symbol.mtype) is ArrayType:
+                symbol.mtype.eletype = mType
+            else:
+                symbol.mtype = mType
         elif type(symbol.mtype) is MType:
             symbol.mtype.restype = mType
         return result
@@ -272,25 +288,23 @@ class StaticChecker(BaseVisitor):
         """
         funcInfo, kind, env = c
         arr = self.visit(ast.arr,(funcInfo,None,env))
-        aType = Symbol.getType(arr)
+        aType = Unknown()
+        if type(arr) is Symbol:
+            if type(arr.kind) is Function:
+                aType = arr.mtype.restype
+            else:
+                aType = arr.mtype
+        else:
+            aType = arr
         if len(aType.dimen) != len(ast.idx):
             raise TypeMismatchInExpression(ast)
-        if type(Symbol.getType(arr)) is ArrayType:
-            eType = aType.eletype
-            
+        if type(aType) is ArrayType:
             for e in ast.idx:
                 ele = self.visit(e,(funcInfo,None,env))
-                eleType = Symbol.getType(ele)
-                if type(eType) is Unknown and type(eleType) is Unknown:
-                    raise TypeCannotBeInferred(ast)
-                elif type(eleType) is Unknown:
-                    if not Symbol.setTypeFromObj(ele,eType,funcInfo):
-                        
-                        raise TypeMismatchInExpression(ast)
-                elif type(eType) is Unknown:
-                    arr.mtype.eletype = eleType
-                    
-            return aType.eletype
+                if type(Symbol.getType(ele)) is not IntType:
+                    raise TypeMismatchInExpression(ast)
+
+            return arr
                 
     
 
@@ -425,7 +439,7 @@ class StaticChecker(BaseVisitor):
                 isFisrt = False
                 x = self.visit(e,None)
                 tmp = x
-                if type(Symbol.getType(x)) is ArrayType:
+                if type(Symbol.getTypeExpectArray(x)) is ArrayType:
                     dimen = dimen + x.dimen
                     eleType = x.eletype
                 else:
@@ -445,52 +459,60 @@ class StaticChecker(BaseVisitor):
         rhs: Expr
         """
         funcInfo, env = c
-        isArrayType = isinstance(ast.lhs,ArrayCell)
         left = self.visit(ast.lhs,(funcInfo, None,env))
         right = self.visit(ast.rhs,(funcInfo, None,env))
-        leftType = Symbol.getType(left)
-        rightType = Symbol.getType(right)
-        if type(leftType) is VoidType or type(rightType) is VoidType:
+        typeLeft = Symbol.getTypeExpectArray(left)
+        typeRight = Symbol.getTypeExpectArray(right)
+        if type(typeLeft) is VoidType or type(typeRight) is VoidType:
             raise TypeMismatchInStatement(ast)
-
-        if type(right) is Symbol:
-            if type(leftType) is Unknown and type(rightType) is Unknown:
-                raise TypeCannotBeInferred(ast)
-            elif type(leftType) is Unknown:
-                if not Symbol.setTypeFromObj(left,rightType,funcInfo):
-                    raise TypeMismatchInStatement(ast)
-            elif type(rightType) is Unknown:
-                if not Symbol.setTypeFromObj(right,leftType,funcInfo):
-                    raise TypeMismatchInStatement(ast)
-            elif type(leftType) != type(rightType):
-                if type(leftType) is ArrayType:
-                    if (type(left.mtype.eletype) is type(rightType)):
-                        pass
-                    elif type(left.mtype.eletype) is Unknown:
-                        left.mtype.eletype = rightType
-                    else:
-                        raise TypeMismatchInStatement(ast)
-                elif type(rightType) is ArrayType:
-                    if type(right.mtype.eletype) is type(leftType):
-                        pass
-                    elif type(right.mtype.eletype) is Unknown:
-                        right.mtype.eletype = leftType
-                    else:
-                        raise TypeMismatchInStatement(ast)
+        if type(typeLeft) is Unknown and type(typeRight) is Unknown:
+            raise TypeCannotBeInferred(ast)
+        elif type(typeLeft) is Unknown:
+            if type(typeRight) is ArrayType:
+                if type(typeRight.eletype) is Unknown:
+                    raise TypeCannotBeInferred(ast)
                 else:
+                    if not Symbol.setTypeFromObj(left,typeRight.eletype,funcInfo):
+                        raise TypeMismatchInStatement(ast)
+            else:
+                if not Symbol.setTypeFromObj(left,typeRight,funcInfo):
+                    raise TypeMismatchInStatement(ast)
+        elif type(typeRight) is Unknown:
+            if type(typeLeft) is ArrayType:
+                if type(typeLeft.eletype) is Unknown:
+                    raise TypeCannotBeInferred(ast)
+                else:
+                    if not Symbol.setTypeFromObj((right,typeLeft.eletype,funcInfo)):
+                        raise TypeMismatchInStatement(ast)
+            else:
+                if not Symbol.setTypeFromObj(right,typeLeft,funcInfo):
+                    raise TypeMismatchInStatement(ast)
+        elif type(typeLeft) not in [Unknown,ArrayType] and type(typeRight) is ArrayType:
+            if type(typeRight.eletype) is Unknown:
+                right.mtype.eletype = typeLeft
+            else:
+                if type(typeLeft) != type(typeRight.eletype):
+                    raise TypeMismatchInStatement(ast)
+        elif type(typeRight) not in [Unknown,ArrayType] and type(typeLeft) is ArrayType:
+            if type(typeLeft.eletype) is Unknown:
+                left.mtype.eletype = typeRight
+            else:
+                if type(typeLeft.eletype) != type(typeRight):
                     raise TypeMismatchInStatement(ast)
         else:
-            if type(leftType) is Unknown:
-                Symbol.setTypeFromObj(left,right,funcInfo)
-            elif type(leftType) is ArrayType:
-                if (type(left.mtype.eletype) is type(rightType)):
-                    pass
-                elif type(left.mtype.eletype) is Unknown:
-                    left.mtype.eletype = rightType
+            if type(typeLeft) is ArrayType and type(typeRight) is ArrayType:
+                if type(typeLeft.eletype) is Unknown and type(typeRight) is Unknown:
+                    raise TypeCannotBeInferred(ast)
+                elif type(typeLeft.eletype) is Unknown:
+                    left.mtype.eletype = typeRight.eletype
+                elif type(typeRight.eletype) is Unknown:
+                    right.mtype.eletype = typeLeft.eletype
                 else:
-                    raise TypeMismatchInStatement(ast)
-            elif type(leftType) != type(rightType):
+                    if type(typeLeft.eletype) != type(typeRight.eletype):
+                        raise TypeMismatchInStatement(ast)
+            elif type(typeRight) != type(typeLeft):
                 raise TypeMismatchInStatement(ast)
+
 
     def visitIf(self, ast, c):
         """
