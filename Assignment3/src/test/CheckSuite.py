@@ -350,8 +350,8 @@ EndBody.
 Function: main
 Body:
     If x[1] Then
-        Var: x = 1;
-        x = 5 + x;
+        **Var: x = 1;
+        x = 5 + x;**
     EndIf.
     x[0] = 1;
     Return;
@@ -504,3 +504,77 @@ Body:
 EndBody."""
         expect = str(TypeMismatchInStatement(Return(FloatLiteral(1.1))))
         self.assertTrue(TestChecker.test(input,expect,439))
+
+    def test_440(self):
+        input = r"""Function: main
+Parameter: x[5]
+Body:
+    Var: m[5];
+    x = m;
+    Return;
+EndBody.
+        """
+        expect = str(TypeCannotBeInferred(Assign(Id("x"),Id("m"))))
+        self.assertTrue(TestChecker.test(input,expect,440))
+
+    def test_441(self):
+        input = r"""Function: main
+Parameter: x[5]
+Body:
+    Var: m[5];
+    If m[1] Then
+    EndIf.
+    x = m;
+    x[3] = 5;
+    Return;
+EndBody.
+        """
+        expect = str(TypeMismatchInStatement(Assign(ArrayCell(Id("x"),[IntLiteral(3)]),IntLiteral(5))))
+        self.assertTrue(TestChecker.test(input,expect,441))
+
+    def test_442(self):
+        input = r"""Var: x[2][3];
+Function: main
+Body:
+    While x[1][0] Do
+        Var: x[2][2];
+        x[1][1] = 5;
+    EndWhile.
+    x[0][0] = 7;
+    Return x;
+EndBody.
+        """
+        expect = str(TypeMismatchInStatement(Assign(ArrayCell(Id("x"),[IntLiteral(0),IntLiteral(0)]),IntLiteral(7))))
+        self.assertTrue(TestChecker.test(input,expect,442))
+    
+    def test_443(self):
+        input = r"""Function: foo
+Body:
+    Var: x[2] = {1,2};
+    Return x;
+EndBody.
+Function: main
+Body:
+    Var: m;
+    m = foo();
+    m[1] = 1;
+    Return;
+EndBody.
+        """
+        expect = str(TypeMismatchInStatement(Assign(Id("m"),CallExpr(Id("foo"),[]))))
+        self.assertTrue(TestChecker.test(input,expect,443))
+    
+    def test_444(self):
+        input = r"""Var: x[2] = {"my","string"};
+Function: main
+Body:
+    Var: x;
+    x = float_of_string(x[0]);
+    x = 5 + 10;
+    Return;
+EndBody.
+        """
+        expect = str(TypeMismatchInExpression(ArrayCell(Id("x"),[IntLiteral(0)])))
+        self.assertTrue(TestChecker.test(input,expect,444))
+
+
