@@ -577,4 +577,86 @@ EndBody.
         expect = str(TypeMismatchInExpression(ArrayCell(Id("x"),[IntLiteral(0)])))
         self.assertTrue(TestChecker.test(input,expect,444))
 
-
+    def test_445(self):
+        input = r"""Function: print
+Parameter: x
+Body:
+    Return;
+EndBody.
+Function: m
+Body:
+    Var: value = 12345;
+    Return value;
+EndBody.
+Function: main
+Parameter: x, y
+Body:
+    print(m);
+    Return 0;
+EndBody.
+        """
+        expect = str(TypeMismatchInStatement(CallStmt(Id("print"),[Id("m")])))
+        self.assertTrue(TestChecker.test(input,expect,445))
+    
+    def test_446(self):
+        input = r"""Function: main
+Body:
+    foo(1,2,3);
+    Return 0;
+EndBody.
+Function: foo
+Parameter: x, y
+Body:
+    Return;
+EndBody.
+        """
+        expect = str(TypeMismatchInStatement(CallStmt(Id("foo"),[IntLiteral(1),IntLiteral(2),IntLiteral(3)])))
+        self.assertTrue(TestChecker.test(input,expect,446))
+    
+    def test_447(self):
+        input = r"""Var: cond = 1;
+Function: main
+Body:
+    While cond Do
+    EndWhile.
+    Return 1;
+EndBody.
+        """
+        expect = str(TypeMismatchInStatement(While(Id("cond"),([],[]))))
+        self.assertTrue(TestChecker.test(input,expect,447))
+    
+    def test_448(self):
+        input = r"""Var: cond = False;
+Function: main
+Body:
+    While cond Do
+        Var: cond = 1;
+        cond = 7 + 3;
+        Return 1;
+    EndWhile.
+    Return 1.1;
+EndBody.
+        """
+        expect = str(TypeMismatchInStatement(Return(FloatLiteral(1.1))))
+        self.assertTrue(TestChecker.test(input,expect,448))
+    
+    def test_449(self):
+        input = r"""Function: foo
+Parameter: n,m
+Body:
+    Var: a, b;
+    b = 7;
+    a = b + 9;
+    foo(a,"string");
+    Return;
+EndBody.
+Function: main
+Body:
+    Var: x = 7, y = 5.1;
+    foo(x,y);
+EndBody.
+        """
+        expect = str(TypeMismatchInStatement(CallStmt(Id("foo"),[Id("x"),Id("y")])))
+        self.assertTrue(TestChecker.test(input,expect,449))
+    
+    

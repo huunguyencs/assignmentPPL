@@ -259,8 +259,10 @@ class StaticChecker(BaseVisitor):
         arr:Expr
         idx:List[Expr]
         """
-        funcInfo, kind, env = c
-        arr = self.visit(ast.arr,(funcInfo,None,env))
+        funcInfo, env = c
+        arr = self.visit(ast.arr,(funcInfo,env))
+        if not arr:
+            raise TypeMismatchInStatement(ast)
         aType = Symbol.getType(arr)
         if type(aType) is not ArrayType:
             raise TypeMismatchInExpression(ast)
@@ -268,7 +270,9 @@ class StaticChecker(BaseVisitor):
             if len(aType.dimen) != len(ast.idx):
                 raise TypeMismatchInExpression(ast)
             for e in ast.idx:
-                index = self.visit(e,(funcInfo,None,env))
+                index = self.visit(e,(funcInfo,env))
+                if not index:
+                    raise TypeMismatchInStatement(ast)
                 iType = Symbol.getType(index)
                 if type(e) is ArrayCell:
                     iType = iType.eletype
@@ -290,10 +294,14 @@ class StaticChecker(BaseVisitor):
         left:Expr
         right:Expr
         """
-        funcInfo, kind, env = c
+        funcInfo, env = c
         op = ast.op
-        left = self.visit(ast.left,(funcInfo, None, env))
-        right = self.visit(ast.right,(funcInfo, None, env))
+        left = self.visit(ast.left,(funcInfo, env))
+        if not left:
+            raise TypeMismatchInStatement(ast)
+        right = self.visit(ast.right,(funcInfo, env))
+        if not right:
+            raise TypeMismatchInStatement(ast)
         typeLeft = Symbol.getType(left)
         isArrayCellLeft = False
         isArrayCellRight = False
@@ -339,9 +347,11 @@ class StaticChecker(BaseVisitor):
         op:str
         body:Expr
         """
-        funcInfo, kind, env = c
+        funcInfo, env = c
         op = ast.op
-        exp = self.visit(ast.body,(funcInfo, None,env))
+        exp = self.visit(ast.body,(funcInfo, env))
+        if not exp:
+            raise TypeMismatchInStatement(ast)
         tExp = Symbol.getType(exp)
         isArrayCell = False
         if type(ast.body) is ArrayCell:
@@ -369,14 +379,16 @@ class StaticChecker(BaseVisitor):
         method:Id
         param:List[Expr]
         """
-        funcInfo, kind, env = c
+        funcInfo, env = c
         func = Checker.checkUndeclared(ast.method.name,env,Function())
         if type(func.kind) != Function:
             raise TypeMismatchInStatement(ast)
         if len(func.mtype.intype) != len(ast.param):
             raise TypeMismatchInExpression(ast)
         for i, (arg, typePara) in enumerate(zip(ast.param,func.mtype.intype)):
-            a = self.visit(arg,(funcInfo, None,env))
+            a = self.visit(arg,(funcInfo,env))
+            if not a:
+                raise TypeMismatchInStatement(ast)
             tArg = Symbol.getType(a)
             if type(arg) is ArrayCell:
                 tArg = tArg.eletype
@@ -449,8 +461,12 @@ class StaticChecker(BaseVisitor):
         rhs: Expr
         """
         funcInfo, env = c
-        left = self.visit(ast.lhs,(funcInfo, None,env))
-        right = self.visit(ast.rhs,(funcInfo, None,env))
+        left = self.visit(ast.lhs,(funcInfo,env))
+        if not left:
+            raise TypeMismatchInStatement(ast)
+        right = self.visit(ast.rhs,(funcInfo,env))
+        if not right:
+            raise TypeMismatchInStatement(ast)
         typeLeft = Symbol.getType(left)
         typeRight = Symbol.getType(right)
         isArrayCellLeft = False
@@ -513,7 +529,9 @@ class StaticChecker(BaseVisitor):
         """
         funcInfo, env = c
         for ifPart in ast.ifthenStmt:
-            cond = self.visit(ifPart[0],(funcInfo, None, env))
+            cond = self.visit(ifPart[0],(funcInfo, env))
+            if not cond:
+                raise TypeMismatchInStatement(ast)
             conType = Symbol.getType(cond)
             isArrayCell = False
             if type(ifPart[0]) is ArrayCell:
@@ -545,7 +563,9 @@ class StaticChecker(BaseVisitor):
         loop: Tuple[List[VarDecl],List[Stmt]]
         """
         funcInfo, env = c
-        idx = self.visit(ast.idx1,(funcInfo,None,env))
+        idx = self.visit(ast.idx1,(funcInfo,env))
+        if not idx:
+            raise TypeMismatchInStatement(ast)
         iType = Symbol.getType(idx)
         if type(ast.idx1) is ArrayCell:
             iType = iType.eletype
@@ -558,7 +578,9 @@ class StaticChecker(BaseVisitor):
             else:
                 raise TypeMismatchInStatement(ast)
 
-        exp1 = self.visit(ast.expr1,(funcInfo, None,env))
+        exp1 = self.visit(ast.expr1,(funcInfo,env))
+        if not exp1:
+            raise TypeMismatchInStatement(ast)
         tExp1 = Symbol.getType(exp1)
         if type(ast.expr1) is ArrayCell:
             tExp1 = tExp1.eletype
@@ -571,7 +593,9 @@ class StaticChecker(BaseVisitor):
             else:
                 raise TypeMismatchInStatement(ast)
 
-        exp2 = self.visit(ast.expr2,(funcInfo, None,env))
+        exp2 = self.visit(ast.expr2,(funcInfo,env))
+        if not exp2:
+            raise TypeMismatchInStatement(ast)
         tExp2 = Symbol.getType(exp2)
         if type(ast.expr2) is ArrayCell:
             tExp2 = tExp2.eletype
@@ -584,7 +608,9 @@ class StaticChecker(BaseVisitor):
             else:
                 raise TypeMismatchInStatement(ast)
 
-        exp3 = self.visit(ast.expr3,(None,env))
+        exp3 = self.visit(ast.expr3,(funcInfo,env))
+        if not exp3:
+            raise TypeMismatchInStatement(ast)
         tExp3 = Symbol.getType(exp3)
         if type(ast.expr3) is ArrayCell:
             tExp3 = tExp3.eletype
@@ -623,7 +649,9 @@ class StaticChecker(BaseVisitor):
         funcInfo, env = c
         returnType = funcInfo[0].mtype.restype
         if ast.expr:
-            reType = self.visit(ast.expr,(funcInfo, None, env))
+            reType = self.visit(ast.expr,(funcInfo, env))
+            if not reType:
+                raise TypeMismatchInStatement(ast)
             tRe = Symbol.getType(reType)
             if type(ast.expr) is ArrayCell:
                 tRe = tRe.eletype
@@ -643,7 +671,7 @@ class StaticChecker(BaseVisitor):
         else:
             if type(returnType) is Unknown: 
                 funcInfo[0].mtype.restype = VoidType()
-            else:
+            elif type(returnType) is not VoidType:
                 raise TypeMismatchInStatement(ast)
 
     def visitDowhile(self, ast, c):
@@ -656,7 +684,9 @@ class StaticChecker(BaseVisitor):
         funcInfo, env = c
         newEnv = reduce(lambda s,ele: self.visit(ele,(Variable(),s)),ast.sl[0],env)
         self.visitStmts(ast.sl[1],(funcInfo,newEnv))
-        exp = self.visit(ast.exp,(funcInfo,None,env))
+        exp = self.visit(ast.exp,(funcInfo,env))
+        if not exp:
+            raise TypeMismatchInStatement(ast)
         tExp = Symbol.getType(exp)
         if type(ast.exp) is ArrayCell:
             tExp = tExp.eletype
@@ -677,7 +707,9 @@ class StaticChecker(BaseVisitor):
         sl:Tuple[List[VarDecl],List[Stmt]]
         """
         funcInfo, env = c
-        exp = self.visit(ast.exp,(funcInfo,None,env))
+        exp = self.visit(ast.exp,(funcInfo,env))
+        if not exp:
+            raise TypeMismatchInStatement(ast)
         tExp = Symbol.getType(exp)
         if type(ast.exp) is ArrayCell:
             tExp = tExp.eletype
@@ -706,7 +738,9 @@ class StaticChecker(BaseVisitor):
         if len(func.mtype.intype) != len(ast.param):
             raise TypeMismatchInStatement(ast)
         for i, (arg, typePara) in enumerate(zip(ast.param,func.mtype.intype)):
-            a = self.visit(arg,(funcInfo,None,env))
+            a = self.visit(arg,(funcInfo,env))
+            if not a:
+                raise TypeMismatchInStatement(ast)
             tArg = Symbol.getType(a)
             if type(arg) is ArrayCell:
                 tArg = tArg.eletype
@@ -725,18 +759,19 @@ class StaticChecker(BaseVisitor):
         
         if type(func.mtype.restype) is Unknown:
             func.mtype.restype = VoidType()
-
+        elif type(func.mtype.restype) is not VoidType:
+            raise TypeMismatchInStatement(ast)
+       
     def visitId(self, ast, c):
         """
         LHS
         c: funcInfo, kind, env
         name : str
         """
-        funcInfo, kind, env = c
-        if type(kind) is Function:
-            checker = Checker.checkUndeclared(ast.name,env,kind)
-            return checker
+        funcInfo, env = c
         checker = Checker.checkUndeclared(ast.name,env,Identifier())
+        if type(checker.kind) is Function:
+            return False
         return checker
 
     def visitStmts(self, stmts, c):
