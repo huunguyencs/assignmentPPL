@@ -658,5 +658,93 @@ EndBody.
         """
         expect = str(TypeMismatchInStatement(CallStmt(Id("foo"),[Id("x"),Id("y")])))
         self.assertTrue(TestChecker.test(input,expect,449))
+
+    def test_450(self):
+        input = r"""Var: test;
+Function: main
+Body:
+    Var: x = 9;
+    x = test[0];
+EndBody.
+        """
+        expect = str(TypeMismatchInExpression(ArrayCell(Id("test"),[IntLiteral(0)])))
+        self.assertTrue(TestChecker.test(input,expect,450))
+
+    def test_451(self):
+        input = r"""Function: foo
+Body:
+    Var: x[2];
+    x[1] = 7;
+    Return x;
+EndBody.
+Function: main
+Body:
+    foo()[foo()[foo()[1]]] = 2;
+    Return;
+EndBody.
+        """
+        expect = str()
+        self.assertTrue(TestChecker.test(input,expect,451))
+
+    def test_452(self):
+        input = r"""Var: x, y;
+Function: main
+Parameter: x, y
+Body:
+    x = foo(2) +. 2.0;
+    y = foo(3);
+    Return;
+EndBody.
+Function: foo
+Parameter: m
+Body:
+    main(7.1,5.3);
+    Return 1;
+EndBody.
+        """
+        expect = str(TypeMismatchInStatement(Return(IntLiteral(1))))
+        self.assertTrue(TestChecker.test(input,expect,452))
+
+    def test_453(self):
+        input = r"""Function: main
+Body:   
+    Var: cond, i;
+    For(i = 1, cond, main()) Do
+        Var: cond;
+        If cond < 1 Then
+        ElseIf cond == 1 Then
+        Else
+        EndIf.
+    EndFor.
+    Return 1;
+EndBody.
+        """
+        expect = str()
+        self.assertTrue(TestChecker.test(input,expect,453))
+
+    def test_454(self):
+        input = r"""Function: main
+Body:
+    Var: i;
+    If i < 10 Then
+        Var: n = 7;
+    ElseIf i < 20 Then
+        n = 2;
+    EndIf.
+EndBody.
+        """
+        expect = str(Undeclared(Identifier(),"n"))
+        self.assertTrue(TestChecker.test(input,expect,454))
     
+    def test_455(self):
+        input = r"""
+        """
+        expect = str(NoEntryPoint())
+        self.assertTrue(TestChecker.test(input,expect,455))
+
+    def test_456(self):
+        input = r"""
+        """
+        expect = str()
+        self.assertTrue(TestChecker.test(input,expect,456))
     

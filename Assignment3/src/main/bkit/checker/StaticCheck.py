@@ -545,11 +545,13 @@ class StaticChecker(BaseVisitor):
                         raise TypeMismatchInStatement(ast)
                 else:
                     raise TypeMismatchInStatement(ast)
-            newEnv = reduce(lambda s, ele: self.visit(ele,(Variable(),s)),ifPart[1],env)
+            newEnv = ([],env[0]+env[1])
+            newEnv = reduce(lambda s, ele: self.visit(ele,(Variable(),s)),ifPart[1],newEnv)
             self.visitStmts(ifPart[2],(funcInfo, newEnv))
         
         elsePart = ast.elseStmt
-        newEnv = reduce(lambda s, ele: self.visit(ele,(Variable(),s)),elsePart[0],env)
+        newEnv = ([],env[0]+env[1])
+        newEnv = reduce(lambda s, ele: self.visit(ele,(Variable(),s)),elsePart[0],newEnv)
         self.visitStmts(elsePart[1],(funcInfo, newEnv))
 
     def visitFor(self, ast, c):
@@ -623,7 +625,8 @@ class StaticChecker(BaseVisitor):
             else:
                 raise TypeMismatchInStatement(ast)
 
-        newEnv = reduce(lambda s, ele: self.visit(ele,(Variable(),s)),ast.loop[0],env)
+        newEnv = ([],env[0]+env[1])
+        newEnv = reduce(lambda s, ele: self.visit(ele,(Variable(),s)),ast.loop[0],newEnv)
         self.visitStmts(ast.loop[1], (funcInfo, newEnv))
 
     def visitBreak(self, ast, c):
@@ -682,7 +685,8 @@ class StaticChecker(BaseVisitor):
         exp: Expr
         """
         funcInfo, env = c
-        newEnv = reduce(lambda s,ele: self.visit(ele,(Variable(),s)),ast.sl[0],env)
+        newEnv = ([],env[0]+env[1])
+        newEnv = reduce(lambda s,ele: self.visit(ele,(Variable(),s)),ast.sl[0],newEnv)
         self.visitStmts(ast.sl[1],(funcInfo,newEnv))
         exp = self.visit(ast.exp,(funcInfo,env))
         if not exp:
@@ -721,7 +725,8 @@ class StaticChecker(BaseVisitor):
                     raise TypeMismatchInStatement(ast)
             else:
                 raise TypeMismatchInStatement(ast)
-        newEnv = reduce(lambda s,ele: self.visit(ele,(Variable(),s)),ast.sl[0],env)
+        newEnv = ([],env[0]+env[1])
+        newEnv = reduce(lambda s,ele: self.visit(ele,(Variable(),s)),ast.sl[0],newEnv)
         self.visitStmts(ast.sl[1],(funcInfo,newEnv))
 
     def visitCallStmt(self, ast, c):
