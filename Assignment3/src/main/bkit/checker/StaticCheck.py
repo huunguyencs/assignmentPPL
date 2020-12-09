@@ -57,12 +57,19 @@ class Symbol:
         return obj
 
     @staticmethod
-    def getObjFromName(name, env):
-        sym = list(filter(lambda x: x.name==name, env))
-        if sym:
-            return sym[0]
-        else:
-            return None
+    def getObjFromName(name, env,kind):
+        # sym = list(filter(lambda x: x.name==name , env))
+        sym = None
+        for x in env:
+            if x.name == name:
+                if type(x.kind) is Function:
+                    if type(kind) is Function:
+                        sym = x
+                        break
+                else:
+                    sym = x
+                    break
+        return sym
 
     @staticmethod
     def setArrayType(symbol,mType,funcInfo):
@@ -152,7 +159,7 @@ class Checker:
         id: str
         kind: Kind
         """
-        checker = Symbol.getObjFromName(id,env[0])
+        checker = Symbol.getObjFromName(id,env[0],kind)
         if checker:
             raise Redeclared(kind,id)
 
@@ -162,7 +169,7 @@ class Checker:
         id: str
         kind: Kind
         """
-        checker = Symbol.getObjFromName(id,env[0] + env[1])
+        checker = Symbol.getObjFromName(id,env[0] + env[1], kind)
         if not checker:
             raise Undeclared(kind,id)
         return checker
@@ -218,23 +225,21 @@ class StaticChecker(BaseVisitor):
         """
         kind, env = c
         Checker.checkRedeclared(ast.variable.name,env,kind)
+        newSym = None
         if ast.varDimen:
             if ast.varInit:
                 mType = self.visit(ast.varInit,None)
                 newSym = Symbol(ast.variable.name,mType,kind)
-                return env[0] + [newSym], env[1]
             else:
                 mType = ArrayType(ast.varDimen,Unknown())
                 newSym = Symbol(ast.variable.name,mType,kind)
-                return env[0] + [newSym], env[1]
         else:
             if ast.varInit:
                 mType = self.visit(ast.varInit,None)
                 newSym = Symbol(ast.variable.name,mType,kind)
-                return env[0] + [newSym], env[1]
             else:
                 newSym = Symbol(ast.variable.name,Unknown(),kind)
-                return env[0] + [newSym], env[1]
+        return env[0] + [newSym], env[1]
 
     def visitFuncDecl(self, ast, c):
         """
@@ -784,8 +789,6 @@ class StaticChecker(BaseVisitor):
         stmts: List[Stmt]
         c: funcInfo, env
         """
-        funcInfo, env = c
-        returnType = funcInfo[0].mtype.restype
         for stmt in stmts:
-            self.visit(stmt,(funcInfo,env))
+            self.visit(stmt,c)
 
