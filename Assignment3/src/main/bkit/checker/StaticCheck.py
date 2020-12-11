@@ -1,4 +1,3 @@
-
 """
  * @author nhphung
 """
@@ -250,6 +249,11 @@ class StaticChecker(BaseVisitor):
         func = list(filter(lambda n: n.name == ast.name.name and type(n.kind) is Function,c[0]+c[1]))[0]
         funcInfo = (func, param)
         self.visitStmts(ast.body[1], (funcInfo, newEnv))
+        # func.mtype.intype = [p.mtype for p in param]
+        for i,(pa,p) in enumerate(zip(func.mtype.intype,param)):
+            if type(pa) is Unknown:
+                func.mtype.intype[i] = p.mtype
+
         return c
 
     def visitArrayCell(self, ast, c):
@@ -402,6 +406,16 @@ class StaticChecker(BaseVisitor):
                 func.mtype.intype[i] = tArg
             elif type(typePara) != type(tArg):
                 raise TypeMismatchInExpression(ast)
+            else:
+                if type(typePara) is ArrayType and type(tArg) is ArrayType:
+                    if typePara.dimen != tArg.dimen:
+                        raise TypeMismatchInExpression(ast)
+                    if type(tArg.eletype) is Unknown and type(typePara.eletype) is Unknown:
+                        raise TypeCannotBeInferred(ast)
+                    elif type(tArg.eletype) is Unknown:
+                        a.mtype.eletype = typePara.eletype
+                    elif type(typePara.eletype) is Unknown:
+                        typePara.eletype = a.mtype.eletype
         return func
 
     def visitIntLiteral(self, ast, c):
@@ -764,6 +778,16 @@ class StaticChecker(BaseVisitor):
                 func.mtype.intype[i] = tArg
             elif type(typePara) != type(tArg):
                 raise TypeMismatchInStatement(ast)
+            else:
+                if type(typePara) is ArrayType and type(tArg) is ArrayType:
+                    if typePara.dimen != tArg.dimen:
+                        raise TypeMismatchInStatement(ast)
+                    if type(tArg.eletype) is Unknown and type(typePara.eletype) is Unknown:
+                        raise TypeCannotBeInferred(ast)
+                    elif type(tArg.eletype) is Unknown:
+                        a.mtype.eletype = typePara.eletype
+                    elif type(typePara.eletype) is Unknown:
+                        typePara.eletype = a.mtype.eletype
         
         if type(func.mtype.restype) is Unknown:
             func.mtype.restype = VoidType()
@@ -789,4 +813,3 @@ class StaticChecker(BaseVisitor):
         """
         for stmt in stmts:
             self.visit(stmt,c)
-
