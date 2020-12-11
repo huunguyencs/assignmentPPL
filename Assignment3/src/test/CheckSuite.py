@@ -165,11 +165,11 @@ EndBody.
         input = r"""Function: main
 Body:
     Var: m;
-    float_of_int(string_of_int(m));
+    float_to_int(string_of_int(m));
     Return 0;
 EndBody.
         """
-        expect = str(TypeMismatchInStatement(CallStmt(Id("float_of_int"),[CallExpr(Id("string_of_int"),[Id("m")])])))
+        expect = str(TypeMismatchInStatement(CallStmt(Id("float_to_int"),[CallExpr(Id("string_of_int"),[Id("m")])])))
         self.assertTrue(TestChecker.test(input,expect,413))
 
     def test_414(self):
@@ -250,7 +250,7 @@ Body:
     main();
 EndBody.
         """
-        expect = str(TypeMismatchInStatement(CallStmt(Id("main"),[])))
+        expect = str(Undeclared(Function(),"main"))
         self.assertTrue(TestChecker.test(input,expect,419))
 
     def test_420(self):
@@ -377,7 +377,7 @@ EndBody.
 Function: main
 Body:
     Var: m;
-    m = float_of_int(int_of_float(m));
+    m = float_to_int(int_of_float(m));
     m = 7;
     Return 0;
 EndBody.
@@ -863,10 +863,104 @@ EndBody.
         expect = str(Redeclared(Function(),"foo"))
         self.assertTrue(TestChecker.test(input,expect,463))
 
-    # def test_464(self):
+    def test_464(self):
+        input = r"""
+Function: main
+Body:
+    Var: a;
+    foo();
+    a = foo();
+    Return;
+EndBody.
+Function: foo
+Body:
+    Return;
+EndBody.
+        """
+        expect = str(TypeMismatchInStatement(Assign(Id("a"),CallExpr(Id("foo"),[]))))
+        self.assertTrue(TestChecker.test(input,expect,464))
+
+    def test_465(self):
+        input = r"""Var: z[3] = {1,2,3};
+Function: main
+Parameter: x, y
+Body:
+    z[x] = 1;
+    y = 7.2;
+EndBody.
+Function: foo
+Body:
+    main(1.2,z[1]);
+EndBody.
+        """
+        expect = str(TypeMismatchInStatement(CallStmt(Id("main"),[FloatLiteral(1.2),ArrayCell(Id("z"),[IntLiteral(1)])])))
+        self.assertTrue(TestChecker.test(input,expect,465))
+
+    def test_466(self):
+        input = r"""Function: main
+Body:
+    foo(1);
+EndBody.
+Function: foo
+Parameter: x
+Body:
+EndBody.
+Function: foo
+Body:
+EndBody.
+        """
+        expect = str(Redeclared(Function(),"foo"))
+        self.assertTrue(TestChecker.test(input,expect,466))
+
+    def test_467(self):
+        input = r"""Function: main
+Body:
+    Var: m = 4, s = "string", s2;
+    s2 = read();
+    If m > 5 Then
+        Var: f;
+        f = float_of_string(s2);
+        Return f;
+    EndIf.
+    Return m;
+EndBody.
+        """
+        expect = str(TypeMismatchInStatement(Return(Id("m"))))
+        self.assertTrue(TestChecker.test(input,expect,467))
+
+    def test_468(self):
+        input = r"""Function: main
+Parameter: m
+Body:
+    If m Then
+        Var: m = 4;
+        m = m + 1;
+    EndIf.
+    m = False;
+    Return;
+EndBody.
+        """
+        expect = str()
+        self.assertTrue(TestChecker.test(input,expect,468))
+
+    def test_469(self):
+        input = r""" Function: main
+Body:
+    Var: foo = 0;
+    foo = foo + foo();
+EndBody.
+Function: foo
+Body:
+    Return True;
+EndBody.
+        """
+        expect = str(Undeclared(Function(),"foo"))
+        self.assertTrue(TestChecker.test(input,expect,469))
+
+    # def test_470(self):
     #     input = r"""
     #     """
     #     expect = str()
-    #     self.assertTrue(TestChecker.test(input,expect,464))
+    #     self.assertTrue(TestChecker.test(input,expect,470))
 
     

@@ -62,13 +62,8 @@ class Symbol:
         sym = None
         for x in env:
             if x.name == name:
-                if type(x.kind) is Function:
-                    if type(kind) is Function:
-                        sym = x
-                        break
-                else:
-                    sym = x
-                    break
+                sym = x
+                break
         return sym
 
     @staticmethod
@@ -180,7 +175,7 @@ class StaticChecker(BaseVisitor):
         self.ast = ast
         self.global_envi = [
             Symbol("int_of_float",MType([FloatType()],IntType()),Function()),
-            Symbol("float_of_int",MType([IntType()],FloatType()),Function()),
+            Symbol("float_to_int",MType([IntType()],FloatType()),Function()),
             Symbol("int_of_string",MType([StringType()],IntType()),Function()),
             Symbol("string_of_int",MType([IntType()],StringType()),Function()),
             Symbol("float_of_string",MType([StringType()],FloatType()),Function()),
@@ -387,20 +382,20 @@ class StaticChecker(BaseVisitor):
         funcInfo, env = c
         func = Checker.checkUndeclared(ast.method.name,env,Function())
         if type(func.kind) != Function:
-            raise TypeMismatchInStatement(ast)
+            raise Undeclared(Function(),ast.method.name)
         if len(func.mtype.intype) != len(ast.param):
             raise TypeMismatchInExpression(ast)
         for i, (arg, typePara) in enumerate(zip(ast.param,func.mtype.intype)):
             a = self.visit(arg,(funcInfo,env))
             if not a:
-                raise TypeMismatchInStatement(ast)
+                raise TypeMismatchInExpression(ast)
             tArg = Symbol.getType(a)
             if type(arg) is ArrayCell:
                 tArg = tArg.eletype
             if type(tArg) is Unknown:
                 if type(typePara) is not Unknown:
                     if not Symbol.setTypeFromObj(a,typePara,funcInfo):
-                        raise TypeMismatchInStatement(ast)
+                        raise TypeMismatchInExpression(ast)
                 else:
                     raise TypeCannotBeInferred(ast)
             elif type(typePara) is Unknown:
@@ -455,6 +450,9 @@ class StaticChecker(BaseVisitor):
                 x = self.visit(e,None)
                 if type(Symbol.getType(x)) != type(Symbol.getType(tmp)):
                     raise TypeMismatchInExpression(ast)
+                if type(Symbol.getType(x)) is ArrayType:
+                    if x.dimen != tmp.dimen or type(x.eletype) != type(tmp.eletype):
+                        raise TypeMismatchInExpression(ast)
 
         return ArrayType(dimen,eleType)
 
@@ -744,7 +742,7 @@ class StaticChecker(BaseVisitor):
         funcInfo, env = c
         func = Checker.checkUndeclared(ast.method.name,env,Function())
         if type(func.kind) != Function:
-            raise TypeMismatchInStatement(ast)
+            raise Undeclared(Function(),ast.method.name)
         if len(func.mtype.intype) != len(ast.param):
             raise TypeMismatchInStatement(ast)
         for i, (arg, typePara) in enumerate(zip(ast.param,func.mtype.intype)):
@@ -781,7 +779,7 @@ class StaticChecker(BaseVisitor):
         funcInfo, env = c
         checker = Checker.checkUndeclared(ast.name,env,Identifier())
         if type(checker.kind) is Function:
-            return False
+            raise Undeclared(Identifier(),ast.name)
         return checker
 
     def visitStmts(self, stmts, c):
