@@ -434,7 +434,7 @@ Body:
     Return 3;
 EndBody.
         """
-        expect = str(TypeCannotBeInferred(CallExpr(Id("main"),[Id("d"),Id("c"),Id("a")])))
+        expect = str(TypeCannotBeInferred(Assign(Id("e"),CallExpr(Id("main"),[CallExpr(Id("main"),[Id("d"),Id("c"),Id("a")]),Id("b"),BinaryOp("+",Id("a"),Id("d"))]))))
         self.assertTrue(TestChecker.test(input,expect,434))
 
     def test_435(self):
