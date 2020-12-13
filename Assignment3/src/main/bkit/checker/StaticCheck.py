@@ -526,6 +526,8 @@ class StaticChecker(BaseVisitor):
             if type(typeRight) is ArrayType and type(typeLeft) is ArrayType:
                 if len(typeLeft.dimen) != len(typeRight.dimen):
                     raise TypeMismatchInStatement(ast)
+                if typeLeft.dimen != typeRight.dimen:
+                    raise TypeMismatchInStatement(ast)
                 if type(typeLeft.eletype) is Unknown and type(typeRight.eletype) is Unknown:
                     raise TypeCannotBeInferred(ast)
                 elif type(typeLeft.eletype) is Unknown:

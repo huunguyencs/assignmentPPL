@@ -1194,11 +1194,199 @@ EndBody.
         expect = str(Undeclared(Function(),"main"))
         self.assertTrue(TestChecker.test(input,expect,484))
         
-    # def test_485(self):
-    #     input = r"""
-    #     """
-    #     expect = str()
-    #     self.assertTrue(TestChecker.test(input,expect,485))
+    def test_485(self):
+        input = r"""Function: main
+Body:
+    foo(1.1);
+EndBody.
+
+Function: foo
+Parameter: x
+Body:
+    x = 1;
+    Return;
+EndBody.
+        """
+        expect = str(TypeMismatchInStatement(Assign(Id("x"),IntLiteral(1))))
+        self.assertTrue(TestChecker.test(input,expect,485))
+        
+    def test_486(self):
+        input = r"""Function: main
+Body:
+    Var: i;
+    For(i = 1, i < 10,1) Do
+        Var: i = True;
+    EndFor.
+    i = 5.1 +. 3.e-1;
+    Return;
+EndBody.
+        """
+        expect = str(TypeMismatchInStatement(Assign(Id("i"),BinaryOp("+.",FloatLiteral(5.1),FloatLiteral(0.3)))))
+        self.assertTrue(TestChecker.test(input,expect,486))
+        
+    def test_487(self):
+        input = r"""Function: main
+Body:
+    Var: i = 0X7B;
+    For(i = 1,main(1),i) Do
+    EndFor.
+    Return False;
+EndBody.
+        """
+        expect = str(TypeMismatchInExpression(CallExpr(Id("main"),[IntLiteral(1)])))
+        self.assertTrue(TestChecker.test(input,expect,487))
+        
+    def test_488(self):
+        input = r"""Function: foo
+Body:
+    If foo() Then
+    EndIf.
+    Return False;
+EndBody.
+Function: main
+Body:
+    Var: i;
+    i = foo();
+    i = main();
+    Return;
+EndBody.
+        """
+        expect = str(TypeMismatchInStatement(Return(None)))
+        self.assertTrue(TestChecker.test(input,expect,488))
+        
+    def test_489(self):
+        input = r"""Function: submain
+Body:
+    Return 0;
+EndBody.
+        """
+        expect = str(NoEntryPoint())
+        self.assertTrue(TestChecker.test(input,expect,489))
+        
+    def test_490(self):
+        input = r"""Function: main
+Body:
+    Var: foo;
+    foo();
+EndBody.
+        """
+        expect = str(Undeclared(Function(),"foo"))
+        self.assertTrue(TestChecker.test(input,expect,490))
+        
+    def test_491(self):
+        input = r"""Function: main
+Body:
+    Var: x;
+    x = 3;
+    If True Then
+        Var: y;
+        Var: x;
+        Var: y;
+    EndIf.
+EndBody.
+        """
+        expect = str(Redeclared(Variable(),"y"))
+        self.assertTrue(TestChecker.test(input,expect,491))
+        
+    def test_492(self):
+        input = r"""Var: x;
+Function: main
+Parameter: main
+Body:
+    main(main + 2);
+EndBody.
+        """
+        expect = str(Undeclared(Function(),"main"))
+        self.assertTrue(TestChecker.test(input,expect,492))
+        
+    def test_493(self):
+        input = r"""Function: main
+Parameter: para
+Body: 
+    Var: t = 3;
+    Var: x;
+    x = para && x;
+    t = -para;
+EndBody.
+        """
+        expect = str(TypeMismatchInExpression(UnaryOp("-",Id("para"))))
+        self.assertTrue(TestChecker.test(input,expect,493))
+        
+    def test_494(self):
+        input = r"""Function: main
+Body: 
+    Var: x[4];
+    Var: t[6] = {2,8,2,4,0x7,0o3};
+    x = t;
+EndBody.
+        """
+        expect = str(TypeMismatchInStatement(Assign(Id("x"),Id("t"))))
+        self.assertTrue(TestChecker.test(input,expect,494))
+        
+    def test_495(self):
+        input = r"""Function: main
+Body: 
+    Var: x;
+    Var: y;
+    x = y;
+EndBody.
+        """
+        expect = str(TypeCannotBeInferred(Assign(Id("x"),Id("y"))))
+        self.assertTrue(TestChecker.test(input,expect,495))
+        
+    def test_496(self):
+        input = r"""Function: main
+** comment
+**
+Body:
+    Var: x = 1;
+    Var: y = 5;
+    Var: z;
+    z = x +. y;
+    Return;
+EndBody.
+        """
+        expect = str(TypeMismatchInExpression(BinaryOp("+.",Id("x"),Id("y"))))
+        self.assertTrue(TestChecker.test(input,expect,496))
+        
+    def test_497(self):
+        input = r"""Function: main
+Body:
+    Var: s1 = "string1";
+    Var: s2 = "string2";
+    Var: s3;
+    s3 = s1 + s2;
+    printStr(s3);
+    Return;
+EndBody.
+        """
+        expect = str(TypeMismatchInExpression(BinaryOp("+",Id("s1"),Id("s2"))))
+        self.assertTrue(TestChecker.test(input,expect,497))
+        
+    def test_498(self):
+        input = r"""Function: main
+Parameter: x
+Body: 
+    Var: arg = 3.1;
+    x = 4;
+    main(arg);
+EndBody.
+        """
+        expect = str(TypeMismatchInStatement(CallStmt(Id("main"),[Id("arg")])))
+        self.assertTrue(TestChecker.test(input,expect,498))
+        
+    def test_499(self):
+        input = r"""Function: main
+Parameter: x, q
+Body:
+    Var: y;
+    main(6,"s");
+    main(x,string_of_int(y));
+    Return;
+EndBody.
+        """
+        expect = str()
+        self.assertTrue(TestChecker.test(input,expect,499))
         
     
     
