@@ -678,6 +678,8 @@ class StaticChecker(BaseVisitor):
             if type(ast.expr) is ArrayCell:
                 tRe = tRe.eletype
             if type(returnType) is not Unknown:
+                if type(tRe) is VoidType:
+                    raise TypeMismatchInStatement(ast)
                 if type(tRe) is not Unknown:
                     if type(returnType) != type(tRe):
                         raise TypeMismatchInStatement(ast)
