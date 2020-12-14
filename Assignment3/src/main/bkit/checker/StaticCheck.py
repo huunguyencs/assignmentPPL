@@ -394,6 +394,8 @@ class StaticChecker(BaseVisitor):
             if not a:
                 return None
             tArg = Symbol.getType(a)
+            if type(tArg) is VoidType:
+                raise TypeMismatchInStatement(ast)
             if type(arg) is ArrayCell:
                 tArg = tArg.eletype
             if type(tArg) is Unknown:
@@ -768,6 +770,8 @@ class StaticChecker(BaseVisitor):
             if not a:
                 raise TypeCannotBeInferred(ast)
             tArg = Symbol.getType(a)
+            if type(tArg) is VoidType:
+                raise TypeMismatchInStatement(ast)
             if type(arg) is ArrayCell:
                 tArg = tArg.eletype
             if type(tArg) is Unknown:
