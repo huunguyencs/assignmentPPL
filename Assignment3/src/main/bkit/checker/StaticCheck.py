@@ -183,7 +183,7 @@ class StaticChecker(BaseVisitor):
             Symbol("string_of_bool",MType([BoolType()],StringType()),Function()),
             Symbol("read",MType([],StringType()),Function()),
             Symbol("printLn",MType([],VoidType()),Function()),
-            Symbol("printStr",MType([StringType()],VoidType()),Function()),
+            Symbol("print",MType([StringType()],VoidType()),Function()),
             Symbol("printStrLn",MType([StringType()],VoidType()),Function())]                           
    
     def check(self):
@@ -300,27 +300,32 @@ class StaticChecker(BaseVisitor):
         """
         funcInfo, env = c
         op = ast.op
+
+        # left
         left = self.visit(ast.left,(funcInfo, env))
         if not left:
             return None
-        right = self.visit(ast.right,(funcInfo, env))
-        if not right:
-            return None
+        
         typeLeft = Symbol.getType(left)
         isArrayCellLeft = False
-        isArrayCellRight = False
+        
         if type(ast.left) is ArrayCell:
             typeLeft = typeLeft.eletype
-            isArrayCellLeft = True
-        typeRight = Symbol.getType(right)
-        if type(ast.right) is ArrayCell:
-            typeRight = typeRight.eletype
-            isArrayCellRight = True
 
         if type(typeLeft) is Unknown:
             typeLeft = Symbol.setVarTypeWithOp(left,op,env,funcInfo,isArrayCellLeft)
             if not typeLeft:
                 raise TypeMismatchInExpression(ast)
+        # right
+        right = self.visit(ast.right,(funcInfo, env))
+        if not right:
+            return None
+        
+        typeRight = Symbol.getType(right)
+        isArrayCellRight = False
+        if type(ast.right) is ArrayCell:
+            typeRight = typeRight.eletype
+            isArrayCellRight = True
 
         if type(typeRight) is Unknown:
             typeRight = Symbol.setVarTypeWithOp(right,op,env,funcInfo,isArrayCellRight)
@@ -394,7 +399,6 @@ class StaticChecker(BaseVisitor):
             if not a:
                 return None
             tArg = Symbol.getType(a)
-            typePara = func.mtype.intype[i]
             if type(tArg) is VoidType:
                 raise TypeMismatchInStatement(ast)
             if type(arg) is ArrayCell:
@@ -678,11 +682,11 @@ class StaticChecker(BaseVisitor):
         returnType = funcInfo[0].mtype.restype
         if ast.expr:
             reType = self.visit(ast.expr,(funcInfo, env))
-            returnType = funcInfo[0].mtype.restype
             if not reType:
                 raise TypeCannotBeInferred(ast)
             tRe = Symbol.getType(reType)
             if type(ast.expr) is ArrayCell:
+                print(tRe.eletype)
                 tRe = tRe.eletype
             if type(returnType) is not Unknown:
                 if type(tRe) is VoidType:
@@ -690,6 +694,9 @@ class StaticChecker(BaseVisitor):
                 if type(tRe) is not Unknown:
                     if type(returnType) != type(tRe):
                         raise TypeMismatchInStatement(ast)
+                    elif type(returnType) is ArrayType:
+                        if returnType.dimen != tRe.dimen or type(returnType.eletype) != type(tRe.eletype):
+                            raise TypeMismatchInStatement(ast)
                 else:
                     if type(ast.expr) is ArrayCell:
                         reType.mtype.eletype = returnType
@@ -770,16 +777,11 @@ class StaticChecker(BaseVisitor):
             raise Undeclared(Function(),ast.method.name)
         if len(func.mtype.intype) != len(ast.param):
             raise TypeMismatchInStatement(ast)
-        if type(func.mtype.restype) is Unknown:
-            func.mtype.restype = VoidType()
-        elif type(func.mtype.restype) is not VoidType:
-            raise TypeMismatchInStatement(ast)
         for i, (arg, typePara) in enumerate(zip(ast.param,func.mtype.intype)):
             a = self.visit(arg,(funcInfo,env))
             if not a:
                 raise TypeCannotBeInferred(ast)
             tArg = Symbol.getType(a)
-            typePara = func.mtype.intype[i]
             if type(tArg) is VoidType:
                 raise TypeMismatchInStatement(ast)
             if type(arg) is ArrayCell:
@@ -805,9 +807,12 @@ class StaticChecker(BaseVisitor):
                     elif type(tArg.eletype) is Unknown:
                         a.mtype.eletype = typePara.eletype
                     elif type(typePara.eletype) is Unknown:
-                        typePara.eletype = a.mtype.eletype
+                        typePara.eletype = tArg.eletype
         
-        
+        if type(func.mtype.restype) is Unknown:
+            func.mtype.restype = VoidType()
+        elif type(func.mtype.restype) is not VoidType:
+            raise TypeMismatchInStatement(ast)
        
     def visitId(self, ast, c):
         """
