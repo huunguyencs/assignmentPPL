@@ -394,6 +394,7 @@ class StaticChecker(BaseVisitor):
             if not a:
                 return None
             tArg = Symbol.getType(a)
+            typePara = func.mtype.intype[i]
             if type(tArg) is VoidType:
                 raise TypeMismatchInStatement(ast)
             if type(arg) is ArrayCell:
@@ -677,6 +678,7 @@ class StaticChecker(BaseVisitor):
         returnType = funcInfo[0].mtype.restype
         if ast.expr:
             reType = self.visit(ast.expr,(funcInfo, env))
+            returnType = funcInfo[0].mtype.restype
             if not reType:
                 raise TypeCannotBeInferred(ast)
             tRe = Symbol.getType(reType)
@@ -773,6 +775,7 @@ class StaticChecker(BaseVisitor):
             if not a:
                 raise TypeCannotBeInferred(ast)
             tArg = Symbol.getType(a)
+            typePara = func.mtype.intype[i]
             if type(tArg) is VoidType:
                 raise TypeMismatchInStatement(ast)
             if type(arg) is ArrayCell:
