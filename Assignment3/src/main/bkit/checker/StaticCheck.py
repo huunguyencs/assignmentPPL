@@ -770,6 +770,10 @@ class StaticChecker(BaseVisitor):
             raise Undeclared(Function(),ast.method.name)
         if len(func.mtype.intype) != len(ast.param):
             raise TypeMismatchInStatement(ast)
+        if type(func.mtype.restype) is Unknown:
+            func.mtype.restype = VoidType()
+        elif type(func.mtype.restype) is not VoidType:
+            raise TypeMismatchInStatement(ast)
         for i, (arg, typePara) in enumerate(zip(ast.param,func.mtype.intype)):
             a = self.visit(arg,(funcInfo,env))
             if not a:
@@ -803,10 +807,7 @@ class StaticChecker(BaseVisitor):
                     elif type(typePara.eletype) is Unknown:
                         typePara.eletype = a.mtype.eletype
         
-        if type(func.mtype.restype) is Unknown:
-            func.mtype.restype = VoidType()
-        elif type(func.mtype.restype) is not VoidType:
-            raise TypeMismatchInStatement(ast)
+        
        
     def visitId(self, ast, c):
         """
