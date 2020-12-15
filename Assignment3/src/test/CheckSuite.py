@@ -271,7 +271,7 @@ EndBody.
 
     def test_421(self):
         input = r"""Var: println;
-Function: printStr
+Function: print
 Body:
     Var: m;
     Return 0;
@@ -281,7 +281,7 @@ Body:
     Return 0;
 EndBody.
         """
-        expect = str(Redeclared(Function(),"printStr"))
+        expect = str(Redeclared(Function(),"print"))
         self.assertTrue(TestChecker.test(input,expect,421))
 
     def test_422(self):
@@ -578,7 +578,7 @@ EndBody.
         self.assertTrue(TestChecker.test(input,expect,444))
 
     def test_445(self):
-        input = r"""Function: print
+        input = r"""Function: printStr
 Parameter: x
 Body:
     Return;
@@ -591,7 +591,7 @@ EndBody.
 Function: main
 Parameter: x, y
 Body:
-    print(m);
+    printStr(m);
     Return 0;
 EndBody.
         """
@@ -786,7 +786,7 @@ EndBody.
 Body:
     Var: x = 5;
     x = foo(4);
-    print(x);
+    printStr(x);
 EndBody.
 Function: foo
 Parameter: x
@@ -794,7 +794,7 @@ Body:
     Return 7;
 EndBody.
         """
-        expect = str(Undeclared(Function(),"print"))
+        expect = str(Undeclared(Function(),"printStr"))
         self.assertTrue(TestChecker.test(input,expect,459))  
 
     def test_460(self):
@@ -840,7 +840,7 @@ Body:
         n = 8;
     ElseIf m Then
         Var: n = "string", x;
-        printStr(n);
+        print(n);
     Else
         x = 5;
     EndIf.
@@ -1062,7 +1062,7 @@ Body:
     Var: x = 1;
     While x < 10 Do
         If x < 10 Then
-            printStr(string_of_int(x));
+            print(string_of_int(x));
         EndIf.
     EndWhile.
 EndBody.
@@ -1180,7 +1180,7 @@ Function: main
 Body:
     Var: x = 7.2;
     x = 7.0e-1 +. y;
-    printStr(string_of_float(x));
+    print(string_of_float(x));
     Return x;
 EndBody.
 Function: foo
