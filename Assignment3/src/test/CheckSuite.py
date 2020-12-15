@@ -1388,5 +1388,17 @@ EndBody.
         expect = str()
         self.assertTrue(TestChecker.test(input,expect,499))
         
-    
+#     def test_500(self):
+#         input = r"""Function: main
+#     Body:
+#         foo()[0] = 1; **1**
+#     EndBody.
+
+# Function: foo
+#     Body:
+#         Return 0; **2**
+#     EndBody
+#         """
+#         expect = str()
+#         self.assertTrue(TestChecker.test(input,expect,500))
     

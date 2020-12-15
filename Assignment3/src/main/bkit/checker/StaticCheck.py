@@ -1,5 +1,5 @@
 """
- * @author nhphung
+ * @author nvhuu 1812516
 """
 from abc import ABC, abstractmethod, ABCMeta
 from dataclasses import dataclass
@@ -496,7 +496,6 @@ class StaticChecker(BaseVisitor):
         if type(ast.rhs) is ArrayCell:
             typeRight = typeRight.eletype
             isArrayCellRight = True
-
         if type(typeLeft) is VoidType or type(typeRight) is VoidType:
             raise TypeMismatchInStatement(ast)
 
@@ -505,11 +504,15 @@ class StaticChecker(BaseVisitor):
         elif type(typeLeft) is Unknown:
             if isArrayCellLeft:
                 left.mtype.eletype = typeRight
+            elif type(typeRight) is ArrayType and type(typeRight.eletype) is Unknown:
+                raise TypeCannotBeInferred(ast)
             elif not Symbol.setTypeFromObj(left,typeRight,funcInfo):
                 raise TypeMismatchInStatement(ast)
         elif type(typeRight) is Unknown:
             if isArrayCellRight:
                 right.mtype.eletype = typeLeft
+            elif type(typeLeft) is ArrayType and type(typeLeft.eletype) is Unknown:
+                raise TypeCannotBeInferred(ast)
             elif not Symbol.setTypeFromObj(right,typeLeft,funcInfo):
                 raise TypeMismatchInStatement(ast)
         elif isArrayCellRight and not isArrayCellLeft:
